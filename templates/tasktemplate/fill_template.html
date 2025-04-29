@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'loancase' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                <h3>{{ screen_name }}</h3>
+            </div>
+
+            <div class="card-body">
+                <h2 class="mb-4">Fill Template: {{ template.name }}</h2>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if placeholders %}
+                        {% for placeholder in placeholders %}
+                            <div class="form-group mb-3">
+                                <label for="{{ placeholder }}">{{ placeholder|capfirst }}</label>
+                                <input type="text" name="{{ placeholder }}" class="form-control"
+                                       value="{{ post_data|get_item:placeholder }}">
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No placeholders found in the template.</p>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

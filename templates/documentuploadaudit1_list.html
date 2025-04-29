@@ -1,0 +1,69 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'documentuploadaudit1' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
+                <h3>Document Upload Audit</h3>
+            </div>                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+<th>document id</th>
+<th>document title</th>
+<th>document type</th>
+<th>folder</th>
+<th>document size</th>
+<th>description</th>
+<th>document upload</th>
+<th>upload date</th>
+<th>expiry date</th>
+<th>start date</th>
+<th>end date</th>
+<th>status</th>
+<th>created by</th>
+<th>updated by</th>
+<th>created at</th>
+<th>updated at</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+<td>{{data.document_id}}</td>
+<td>{{data.document_title}}</td>
+<td>{{data.document_type}}</td>
+<td>{{data.folder}}</td>
+<td>{{data.document_size}}</td>
+<td>{{data.description}}</td>
+<td>{{data.document_upload}}</td>
+<td>{{data.upload_date}}</td>
+<td>{{data.expiry_date}}</td>
+<td>{{data.start_date}}</td>
+<td>{{data.end_date}}</td>
+<td>{{data.status}}</td>
+<td>{{data.created_by}}</td>
+<td>{{data.updated_by}}</td>
+<td>{{data.created_at}}</td>
+<td>{{data.updated_at}}</td>
+                    <td>
+                        <a href="{% url 'documentuploadaudit1_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'documentuploadaudit1_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock  %}

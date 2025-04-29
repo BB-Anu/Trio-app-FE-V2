@@ -1,0 +1,55 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'workschedule' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
+                <h3>Work Schedule</h3>
+            </div>                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+<th>monday</th>
+<th>tuesday</th>
+<th>wednesday</th>
+<th>thursday</th>
+<th>friday</th>
+<th>saturday</th>
+<th>sunday</th>
+<th>created by</th>
+<th>created at</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+<td>{{data.monday}}</td>
+<td>{{data.tuesday}}</td>
+<td>{{data.wednesday}}</td>
+<td>{{data.thursday}}</td>
+<td>{{data.friday}}</td>
+<td>{{data.saturday}}</td>
+<td>{{data.sunday}}</td>
+<td>{{data.created_by}}</td>
+<td>{{data.created_at}}</td>
+                    <td>
+                        <a href="{% url 'workschedule_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'workschedule_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock  %}

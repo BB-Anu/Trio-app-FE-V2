@@ -1,0 +1,47 @@
+{% extends 'base.html' %} 
+{% block body_block %}
+
+
+{% load static %}
+
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'create_template' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                <h3>Template</h3>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tableID" class="display table table-hover">
+                        <thead class="bg-col">
+                         <tr>   <th>No.</th>
+                            <th>Name</th>
+                            <th>Content</th>
+                            <th>Action</th>
+
+                         </tr>
+            <tbody>
+                {% for template in records %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ template.name }}</td>
+                        <td>{{ template.content }}</td>
+                        <td>
+                            <a href="{% url 'fill_and_save_template' template.id %}" class="btn btn-primary text-white btn-sm">Fill & Save</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br><br><br>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}

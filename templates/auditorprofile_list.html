@@ -1,0 +1,61 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'auditorprofile' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
+                <h3>Auditor Profile</h3>
+            </div>                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+<th>user</th>
+<th>firm name</th>
+<th>license number</th>
+<th>years of experience</th>
+<th>qualifications</th>
+<th>accreditation body</th>
+<th>contact phone</th>
+<th>contact email</th>
+<th>address</th>
+<th>is internal</th>
+<th>nda signed</th>
+<th>active</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+<td>{{data.user}}</td>
+<td>{{data.firm_name}}</td>
+<td>{{data.license_number}}</td>
+<td>{{data.years_of_experience}}</td>
+<td>{{data.qualifications}}</td>
+<td>{{data.accreditation_body}}</td>
+<td>{{data.contact_phone}}</td>
+<td>{{data.contact_email}}</td>
+<td>{{data.address}}</td>
+<td>{{data.is_internal}}</td>
+<td>{{data.nda_signed}}</td>
+<td>{{data.active}}</td>
+                    <td>
+                        <a href="{% url 'auditorprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'auditorprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock  %}

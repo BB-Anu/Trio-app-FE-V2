@@ -1,0 +1,57 @@
+{% extends 'base.html' %} 
+{% block body_block %}
+<div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'documentgroup' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                <h3>Document Access</h3>
+            </div>                
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tableID" class="display table table-hover">
+                        <thead class="bg-col">
+                            <tr>
+                                <th>No.</th>
+                                <th>Document</th>
+                                <th>Access To</th>
+                                <th>Permission</th>
+                                <th>Expiry From</th>
+                                <th>Expiry To</th>
+                                {% comment %} <th>Created By</th>
+                                <th>Created At</th>
+                                <th>Updated By</th>
+                                <th>Updated At</th> {% endcomment %}
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in records %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ data.document }}</td>
+                                <td>{{ data.access_to }}</td>
+                                <td>{{ data.permission }}</td>
+                                <td>{{ data.expiry_from_at }}</td>
+                                <td>{{ data.expiry_to_at }}</td>
+                                {% comment %} <td>{{ data.created_by }}</td>
+                                <td>{{ data.created_at }}</td>
+                                <td>{{ data.update_by }}</td>
+                                <td>{{ data.update_at }}</td> {% endcomment %}
+                                <td>
+                                    <a href="{% url 'documentgroup_edit' data.id %}" title="Edit"><i class='fa fa-edit' style="color: black;"></i></a>
+                                    <a href="{% url 'documentgroup_delete' data.id %}" title="Delete" onclick="return confirm('You want to delete this item..?')"><i class='fa fa-remove' style="color: black;"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

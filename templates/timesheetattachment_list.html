@@ -1,0 +1,38 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+    <a href="{% url 'timesheetattachment' %}" class="btn btn-primary-gradient bg-primary text-dark">Create New</a>
+</div>
+
+<div class="card p-3 mt-3">
+    <div class="table-responsive  mt-3">
+        <table id="tableID" class="display">
+            <thead style="background-color: rgb(231, 252, 231); " class="mt-3">
+                <tr>
+<th>entry</th>
+<th>filename</th>
+<th>file type</th>
+<th>created at</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+<td>{{data.entry}}</td>
+<td>{{data.filename}}</td>
+<td>{{data.file_type}}</td>
+<td>{{data.created_at}}</td>
+                    <td>
+                        <a href="{% url 'timesheetattachment_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'timesheetattachment_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock  %}

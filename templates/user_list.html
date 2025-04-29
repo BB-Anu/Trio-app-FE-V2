@@ -1,0 +1,49 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'user' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
+                <h3>User</h3>
+            </div>                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+<th>first name</th>
+<th>last name</th>
+<th>address</th>
+<th>Email</th>
+<th>Roles</th>
+{% comment %} <th>Department</th> {% endcomment %}
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+<td>{{data.first_name}}</td>
+<td>{{data.last_name}}</td>
+<td>{{data.address}}</td>
+<td>{{data.email}}</td>
+<td>{{data.roles.name}}</td>
+{% comment %} <td>{{data.department}}</td> {% endcomment %}
+                    <td>
+                        {% comment %} <a href="{% url 'user_permission' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a> {% endcomment %}
+                            <a href="{% url 'user_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'user_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock  %}

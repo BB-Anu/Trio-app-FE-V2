@@ -1,0 +1,47 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'compliancechecklist' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
+                <h3>compliance checklist</h3>
+            </div>                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+<th>case</th>
+<th>item name</th>
+<th>is verified</th>
+<th>verified by</th>
+<th>verified at</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+<td>{{data.case}}</td>
+<td>{{data.item_name}}</td>
+<td>{{data.is_verified}}</td>
+<td>{{data.verified_by}}</td>
+<td>{{data.verified_at}}</td>
+                    <td>
+                        <a href="{% url 'compliancechecklist_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'compliancechecklist_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock  %}

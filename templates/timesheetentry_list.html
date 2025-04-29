@@ -1,0 +1,69 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'timesheetentry' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
+                <h3>Timesheet Entry</h3>
+            </div>                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+<th>timesheet</th>
+<th>task</th>
+<th>hours</th>
+<th>work done</th>
+<th>uploaded at</th>
+<th>filename</th>
+<th>file type</th>
+<th>attachment name</th>
+<th>attachment type</th>
+<th>is late hours</th>
+<th>is wfh hours</th>
+<th>payment status</th>
+<th>approved by</th>
+<th>status</th>
+<th>created by</th>
+<th>created at</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+<td>{{data.timesheet}}</td>
+<td>{{data.task}}</td>
+<td>{{data.hours}}</td>
+<td>{{data.work_done}}</td>
+<td>{{data.uploaded_at}}</td>
+<td>{{data.filename}}</td>
+<td>{{data.file_type}}</td>
+<td>{{data.attachment_name}}</td>
+<td>{{data.attachment_type}}</td>
+<td>{{data.is_late_hours}}</td>
+<td>{{data.is_wfh_hours}}</td>
+<td>{{data.payment_status}}</td>
+<td>{{data.approved_by}}</td>
+<td>{{data.status}}</td>
+<td>{{data.created_by}}</td>
+<td>{{data.created_at}}</td>
+                    <td>
+                        <a href="{% url 'timesheetentry_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'timesheetentry_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock  %}

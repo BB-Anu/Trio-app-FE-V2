@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>BB CRUD</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{% static 'assets2/vendors/feather/feather.css'  %}">
+  <link rel="stylesheet" href="{% static 'assets2/vendors/ti-icons/css/themify-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'assets2/vendors/css/vendor.bundle.base.css' %}">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="{% static 'assets2/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'assets2/vendors/ti-icons/css/themify-icons.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'assets2/js/select.dataTables.min.css' %}">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{% static 'assets2/css/vertical-layout-light/style.css' %}">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="{% static 'assets2/images/favicon.png' %}"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css">
+<style>
+    html:after {
+
+
+/* common custom values */
+
+content: "Bharathbrands"; /* your site name */
+
+font-size: 520%;         /* font size */
+
+color: rgba(134, 134, 134, 0.1);
+
+/* alpha, could be even rgba(0,0,0,.05) */
+
+
+/* rest of the logic */
+
+z-index: 9999;
+
+cursor: default;
+
+display: block;
+
+position: fixed;
+
+top: 33%;
+
+right: 0;
+
+bottom: 0;
+
+left: 15%;
+
+font-family: sans-serif;
+
+font-weight: bold;
+
+font-style: italic;
+
+text-align: center;
+
+line-height: 100%;
+
+
+/* not sure about who implemented what ..
+
+  ... so bring it all */
+
+-webkit-pointer-events: none;
+
+-moz-pointer-events: none;
+
+-ms-pointer-events: none;
+
+-o-pointer-events: none;
+
+pointer-events: none;
+
+
+-webkit-transform: rotate(-45deg);
+
+-moz-transform: rotate(-45deg);
+
+-ms-transform: rotate(-45deg);
+
+-o-transform: rotate(-45deg);
+
+transform: rotate(-45deg);
+
+
+-webkit-user-select: none;
+
+-moz-user-select: none;
+
+-ms-user-select: none;
+
+-o-user-select: none;
+
+user-select: none;
+
+}
+  /* General styling for the tab navigation */
+.nav-tabs .nav-link {
+    border: 1px solid #ddd; /* Default border color for inactive tabs */
+    border-radius: 0.25rem; /* Rounded corners */
+    background-color: #f8f9fa; /* Default background color for inactive tabs */
+    color: #495057; /* Default text color for inactive tabs */
+}
+
+/* Styling for the active tab */
+.nav-tabs .nav-link.active {
+    background-color: #4747A1; /* Background color for the active tab */
+    color: #fff; /* Text color for the active tab */
+    border-color: #4747A1; /* Border color for the active tab */
+}
+
+/* Optional: Styling for hover effect */
+.nav-tabs .nav-link:hover {
+    background-color: #e2e6ea; /* Background color on hover */
+    color: #495057; /* Text color on hover */
+}
+
+/* Optional: Styling for the tab content */
+.tab-content {
+    padding: 1rem; /* Padding inside the tab content area */
+}
+
+</style>
+<!-- Custom Styles -->
+<style>
+  .collapse {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: height 0.3s ease, opacity 0.3s ease; /* Smooth transition for both height and opacity */
+}
+
+/* When the menu is shown, set height to auto and opacity to full */
+.collapse.show {
+  height: auto; /* Ensures it takes the required height */
+  opacity: 1;
+  overflow: visible; /* Allows content to be visible */
+  transition: height 0.3s ease, opacity 0.3s ease; /* Ensure the transition matches */
+}
+.sidebar .nav.sub-menu{
+  
+  padding: 0.25rem 0 0 2.07rem;
+}
+</style>
+  </head>
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo mr-5" href="{% url 'dashboard' %}"><img src="{% static 'assets2/images/bb_logo.jpg' %}" class="mr-2" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="{% url 'dashboard' %}"><img src="{% static 'assets2/images/bb_logo.jpg' %}" alt="logo"/></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+        <ul class="navbar-nav mr-lg-2">
+          <li class="nav-item nav-search d-none d-lg-block">
+            <div class="input-group">
+              <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                <span class="input-group-text" id="search">
+                  <i class="icon-search"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now" aria-label="search" aria-describedby="search">
+            </div>
+          </li>
+        </ul>
+        <ul class="navbar-nav navbar-nav-right">
+          <li class="nav-item dropdown">
+            <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
+              <i class="icon-bell mx-0"></i>
+              <span class="count"></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+              <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-success">
+                    <i class="ti-info-alt mx-0"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject font-weight-normal">Application Error</h6>
+                  <p class="font-weight-light small-text mb-0 text-muted">
+                    Just now
+                  </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-warning">
+                    <i class="ti-settings mx-0"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject font-weight-normal">Settings</h6>
+                  <p class="font-weight-light small-text mb-0 text-muted">
+                    Private message
+                  </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-info">
+                    <i class="ti-user mx-0"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject font-weight-normal">New user registration</h6>
+                  <p class="font-weight-light small-text mb-0 text-muted">
+                    2 days ago
+                  </p>
+                </div>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item nav-profile dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+              <img src="{% static 'assets2/images/faces/face28.jpg' %}" alt="profile"/>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+              <a class="dropdown-item">
+                <i class="ti-settings text-primary"></i>
+                Settings
+              </a>
+              <a class="dropdown-item" href="">
+                <i class="ti-power-off text-primary"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    <!-- partial -->
+   <div class="container-fluid page-body-wrapper">
+
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item {{dashboard}}">
+            <a class="nav-link" href="{% url 'dashboard' %}">
+              <i class="icon-grid menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+
+
+            {% comment %} <li class="nav-item ">
+             
+            
+                <a class="nav-link {{suppliercustomermapping}}" href="{% url 'suppliercustomermapping_list' %}">
+                  <i class="icon-grid menu-icon"></i>
+                  <span class="menu-title">SupplierCustomerMapping</span>
+                </a>
+              </li>
+                
+  
+  
+
+            <li class="nav-item ">
+
+              <a class="nav-link {{logisticspartner}}" href="{% url 'logisticspartner_list' %}">
+                <i class="icon-grid menu-icon"></i>
+                <span class="menu-title">Logistics Partners</span>
+              </a>
+            </li>
+         {% endcomment %}
+
+ 
+
+
+  
+ 
+  <!-- {% if 'orderrequestparent_list' in request.session.permission or  'orderrequestparent_create' in request.session.permission %}
+<li class="nav-item ">
+  
+    <a class="nav-link {{orderrequestparent}}" href="{% url 'orderrequestparent_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">OrderRequestParent</span>
+    </a>
+  </li>{%endif%}
+  {% if 'stocktransferroutemain_list' in request.session.permission or  'stocktransferroutemain_create' in request.session.permission %}
+<li class="nav-item ">
+  
+    <a class="nav-link {{stocktransferroutemain}}" href="{% url 'stocktransferroutemain_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">StockTransferRouteMain</span>
+    </a>
+  </li>{%endif%}
+  {% if 'itemunit_list' in request.session.permission or  'itemunit_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link {{itemunit}}" href="{% url 'itemunit_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">ItemUnit</span>
+    </a>
+  </li>{%endif%}
+  {% if 'invoice_list' in request.session.permission or  'invoice_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link {{invoice}}" href="{% url 'invoice_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">Invoice</span>
+    </a>
+  </li>{%endif%}
+  {% if 'stocktransferparent_list' in request.session.permission or  'stocktransferparent_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link{{stocktransferparent}}" href="{% url 'stocktransferparent_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">StockTransferParent</span>
+    </a>
+  </li>{%endif%}
+  {% if 'stocktransferroutesub_list' in request.session.permission or  'stocktransferroutesub_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link {{stocktransferroutesub}}" href="{% url 'stocktransferroutesub_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">StockTransferRouteSub</span>
+    </a>
+  </li>{%endif%}
+ 
+  {% if 'packageassignment_list' in request.session.permission or  'packageassignment_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link" href="{% url 'packageassignment_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">PackageAssignment</span>
+    </a>
+  </li>{%endif%}
+  {% if 'inventory_list' in request.session.permission or  'inventory_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link{{inventory_list}}" href="{% url 'inventory_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">Inventory</span>
+    </a>
+  </li>{%endif%}
+  {% if 'inventorybatchwise_list' in request.session.permission or  'inventorybatchwise_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link {{inventorybatchwise}}" href="{% url 'inventorybatchwise_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">InventoryBatchWise</span>
+    </a>
+  </li>{%endif%}
+  {% if 'orderrequestchild_list' in request.session.permission or  'orderrequestchild_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link{{orderrequestchild}}" href="{% url 'orderrequestchild_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">OrderRequestChild</span>
+    </a>
+  </li>{%endif%}
+  {% if 'manualstockadjustment_list' in request.session.permission or  'manualstockadjustment_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link{{manualstockadjustment}}" href="{% url 'manualstockadjustment_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">ManualStockAdjustment</span>
+    </a>
+  </li>{%endif%}
+  {% if 'stocktransferchild_list' in request.session.permission or  'stocktransferchild_create' in request.session.permission %}
+  <li class="nav-item ">
+
+    <a class="nav-link{{stocktransferchild}}" href="{% url 'stocktransferchild_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">StockTransferChild</span>
+    </a>
+  </li>{%endif%} -->
+
+  <li class="nav-item {{ task }}">
+    <a class="nav-link" href="#task" aria-expanded="false" aria-controls="task">
+        <i class="icon-layout menu-icon"></i>
+        <span class="menu-title">Task</span>
+        <i class="menu-arrow"></i>
+    </a>
+    <div class="collapse {{ task_show }}" id="task">
+        <ul class="sub-menu">
+
+          <a class="nav-link {{task}}" href="{% url 'task_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">Task</span>
+          </a>
+       
+          <a class="nav-link {{template_list}}" href="{% url 'template_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">Templates</span>
+          </a>
+        
+          <a class="nav-link {{tasktemplate}}" href="{% url 'tasktemplate_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">Task Template</span>
+          </a>
+         <a class="nav-link {{taskassignment}}" href="{% url 'taskassignment_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">Task Assignment</span>
+          </a> 
+          <a class="nav-link {{taskauditlog}}" href="{% url 'taskauditlog_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">taskauditlog</span>
+          </a>
+
+          <a class="nav-link {{taskdeliverable}}" href="{% url 'taskdeliverable_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">taskdeliverable</span>
+          </a>
+
+          <a class="nav-link {{ tasktimesheet }}" href="{% url 'tasktimesheet_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">tasktimesheet</span>
+        </a>
+
+        <a class="nav-link {{timesheetentry}}" href="{% url 'timesheetentry_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">timesheetentry</span>
+        </a>
+
+        {% comment %} <a class="nav-link {{timesheetattachment}}" href="{% url 'timesheetattachment' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">timesheetattachment</span>
+        </a> {% endcomment %}
+
+          
+
+            {% comment %} <a class="nav-link {{timesheetdocument}}" href="{% url 'timesheetdocument' %}">
+              <i class="icon-grid menu-icon"></i>
+              <span class="menu-title">timesheetdocument</span>
+            </a> {% endcomment %}
+          {% comment %} </li>
+          <a class="nav-link {{ workschedule_list }}" href="{% url 'workschedule_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">workschedule</span>
+        </a> {% endcomment %}
+        </ul>
+    </div> 
+</li>
+
+<li class="nav-item {{ profile }}">
+  <a class="nav-link" href="#profile" aria-expanded="false" aria-controls="profile">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">Profile Management</span>
+      <i class="menu-arrow"></i>
+  </a>
+  <div class="collapse {{ profile }}" id="profile">
+      <ul class="sub-menu">
+
+        <a class="nav-link {{clientprofile_list}}" href="{% url 'clientprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">clientprofile</span>
+        </a>
+     
+        <a class="nav-link {{userprofile_list}}" href="{% url 'userprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">userprofile</span>
+        </a>
+      
+        <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">trioprofile</span>
+        </a>
+
+        <a class="nav-link {{auditorprofile_list}}" href="{% url 'auditorprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">auditorprofile</span>
+        </a>
+
+        <a class="nav-link {{marketingagentprofile_list}}" href="{% url 'marketingagentprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">marketingagentprofile_list</span>
+        </a>
+
+
+      </ul>
+  </div> 
+</li>
+
+<li class="nav-item {{ trioprofile }}">
+  <a class="nav-link" href="#trioprofile" aria-expanded="false" aria-controls="trioprofile">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">TRIO Profile </span>
+      <i class="menu-arrow"></i>
+  </a>
+  <div class="collapse {{ trioprofile }}" id="trioprofile">
+      <ul class="sub-menu">
+
+        <a class="nav-link {{trioassignment_list}}" href="{% url 'trioassignment_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">trioassignment</span>
+        </a>
+     
+        <a class="nav-link {{triogroup_list}}" href="{% url 'triogroup_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">triogroup</span>
+        </a>
+      
+        <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">trioprofile</span>
+        </a>
+
+        <a class="nav-link {{triogroupmember_list}}" href="{% url 'triogroupmember_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">triogroupmember</span>
+        </a>
+
+        
+
+
+      </ul>
+  </div> 
+</li>
+
+
+<li class="nav-item {{ document }}">
+  <a class="nav-link" href="#document" aria-expanded="false" aria-controls="document">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">DMS</span>
+      <i class="menu-arrow"></i>
+  </a>
+  <div class="collapse {{ document }}" id="document">
+      <ul class="sub-menu">
+
+        <a class="nav-link {{documentgroup_list}}" href="{% url 'documentgroup_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">documentgroup</span>
+        </a>
+     
+        <a class="nav-link {{customdocumententity_list}}" href="{% url 'customdocumententity_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">customdocumententity</span>
+        </a>
+      
+        <a class="nav-link {{documenttype_list}}" href="{% url 'documenttype_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">documenttype_list</span>
+        </a>
+
+        <a class="nav-link {{document}}" href="{% url 'document' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">document</span>
+        </a>
+
+        <a class="nav-link {{documentupload_list}}" href="{% url 'documentupload_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">documentupload</span>
+        </a>
+
+        <a class="nav-link {{foldermaster_list}}" href="{% url 'foldermaster_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">foldermaster</span>
+        </a>
+        <a class="nav-link {{documentuploadaudit1}}" href="{% url 'documentuploadaudit1_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">documentuploadaudit1</span>
+        </a>
+        <a class="nav-link {{documentuploadhistory1}}" href="{% url 'documentuploadhistory1_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">documentuploadhistory1</span>
+        </a>
+        <a class="nav-link {{documentaccess}}" href="{% url 'documentaccess' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">documentaccess</span>
+        </a>
+      </ul>
+  </div> 
+</li>
+<li class="nav-item {{ mainapp }}">
+  <a class="nav-link" href="#mainapp" aria-expanded="false" aria-controls="mainapp">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">Mainapp</span>
+      <i class="menu-arrow"></i>
+  </a>
+  <div class="collapse {{ mainapp }}" id="mainapp">
+      <ul class="sub-menu">
+
+        <a class="nav-link {{loancase_list}}" href="{% url 'loancase_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">loancase</span>
+        </a>
+        <a class="nav-link {{caseassignment}}" href="{% url 'caseassignment_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">case assignment</span>
+        </a>
+        {% comment %} <a class="nav-link {{template_list}}" href="{% url 'template_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Templates</span>
+        </a> {% endcomment %}
+        
+        <a class="nav-link {{issuereport}}" href="{% url 'issuereport_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Issue Report</span>
+        </a>
+
+        <a class="nav-link {{projects_list}}" href="{% url 'projects_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">projects</span>
+        </a>
+        {% comment %} <a class="nav-link {{auditlog}}" href="{% url 'auditlog_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">auditlog</span>
+        </a> {% endcomment %}
+
+        <a class="nav-link {{compliancechecklist_list}}" href="{% url 'compliancechecklist_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">compliancechecklist</span>
+        </a>
+
+        <a class="nav-link {{ riskassessment_list }}" href="{% url 'riskassessment_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">riskassessment</span>
+      </a>
+
+      <a class="nav-link {{clientquery_list}}" href="{% url 'clientquery_list' %}">
+        <i class="icon-grid menu-icon"></i>
+        <span class="menu-title">client query</span>
+      </a>
+
+      <a class="nav-link {{filedownloadreason_list}}" href="{% url 'filedownloadreason_list' %}">
+        <i class="icon-grid menu-icon"></i>
+        <span class="menu-title">filedownloadreason</span>
+      </a>
+
+        
+
+          <a class="nav-link {{finalreport_list}}" href="{% url 'finalreport_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">finalreport</span>
+          </a>
+        </li>
+
+      </ul>
+  </div> 
+</li>
+
+<li class="nav-item {{ usermanagement }}">
+  <a class="nav-link" href="#usermanagement" aria-expanded="false" aria-controls="usermanagement">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">user management</span>
+      <i class="menu-arrow"></i>
+  </a>
+  <div class="collapse {{ usermanagement }}" id="usermanagement">
+      <ul class="sub-menu">
+
+        <a class="nav-link {{role_list}}" href="{% url 'role_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Roles</span>
+        </a>
+     
+        <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Ward</span>
+        </a>
+      
+        <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">County</span>
+        </a>
+
+        <a class="nav-link {{subcounty_list}}" href="{% url 'subcounty_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Sub County</span>
+        </a>
+
+        <a class="nav-link {{user_list}}" href="{% url 'user_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Users</span>
+        </a>
+
+        <a class="nav-link {{ function_list }}" href="{% url 'function_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Functions</span>
+      </a>
+
+
+        
+
+      </ul>
+  </div> 
+</li>
+{% comment %} <li class="nav-item ">
+    <a class="nav-link" href="{% url 'role_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">Role</span>
+    </a>
+  </li> {% endcomment %}
+          <!-- next menu -->
+          {% comment %} {% if 'supplier_approval' in request.session.permission%}
+
+          <li class="nav-item {{admin_approval}}">
+            <a class="nav-link" href="#admin-approval" aria-expanded="false" aria-controls="admin-approval">
+                <i class="icon-layout menu-icon"></i>
+                <span class="menu-title">Admin Approval</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse {{admin_approval_show}}" id="admin-approval">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item {{supplier_approval}}">
+                        <a class="nav-link" href="{% url 'supplier_approval' %}">Supplier Approval</a>
+                    </li>
+                    <li class="nav-item {{customer_approval}}">
+                        <a class="nav-link" href="{% url 'customer_approval' %}">Customer Approval</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        
+          {%endif%} {% endcomment %}
+
+       
+
+          {% comment %} <li class="nav-item {{user_registration}}{{user_list}}{{roles}}">
+            <a class="nav-link" href="#user-management" aria-expanded="false" aria-controls="user-management">
+              <i class="icon-layout menu-icon"></i>
+              <span class="menu-title">User Management</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse {{user_registration_show}}{{user_list_show}}{{roles_show}}" id="user-management">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item" {{roles}}> 
+                  <a class="nav-link" href="{% url 'roles' %}">User roles</a>
+                </li>
+                <li class="nav-item" {{user_list}}> 
+                  <a class="nav-link" href="{% url 'user_list' %}">User</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+           {% endcomment %}
+
+          <!-- <li class="nav-item">
+            <a class="nav-link"  href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+              <i class="icon-columns menu-icon"></i>
+              <span class="menu-title">Form elements</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Basic Elements</a></li>
+              </ul>
+            </div>
+          </li> -->
+
+
+        </ul>
+      </nav>
+      <!-- partial -->
+      <div class="main-panel">
+        {% block body_block %}
+        {% endblock %}
+
+
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        <footer class="footer">
+          <!-- <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024.  Premium <a href="#" target="_blank">ERP Sacco</a> from Us. All rights reserved.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
+          </div>
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Distributed by <a href="#" target="_blank">Us</a></span>
+          </div> -->
+        </footer>
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  {% block script_block %}
+
+  {% endblock %}
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Find all elements that are links with href starting with '#'
+      var collapsibleLinks = document.querySelectorAll('a.nav-link[href^="#"]');
+  
+      collapsibleLinks.forEach(function (link) {
+        link.addEventListener('click', function (event) {
+          event.preventDefault(); // Prevent default anchor click behavior
+  
+          var targetId = link.getAttribute('href').substring(1); // Get the ID from href (without '#')
+          var targetElement = document.getElementById(targetId); // Find the element with that ID
+  
+          if (targetElement) {
+            // Check if this is a main menu (not a sub-menu)
+            var isMainMenu = !link.closest('.sub-menu');
+  
+            if (isMainMenu) {
+              // Close all other open main menus
+              document.querySelectorAll('.collapse.show').forEach(function (openElement) {
+                if (openElement !== targetElement && !openElement.closest('.sub-menu')) {
+                  // Collapse other open main menus
+                  var openLink = document.querySelector('a.nav-link[href="#' + openElement.id + '"]');
+                  if (openLink) {
+                    openLink.setAttribute('aria-expanded', 'false'); // Update aria-expanded
+                  }
+                  openElement.style.height = openElement.scrollHeight + 'px'; // Set height to current height
+                  openElement.offsetHeight; // Force browser reflow
+                  openElement.style.height = '0'; // Animate to height 0
+                  openElement.style.opacity = '0'; // Fade out
+                  setTimeout(function () {
+                    openElement.classList.remove('show');
+                  }, 300); // Remove class after transition duration
+                }
+              });
+            }
+  
+            // Toggle the current menu
+            if (targetElement.classList.contains('show')) {
+              // Collapse menu
+              link.setAttribute('aria-expanded', 'false'); // Set aria-expanded to false
+              targetElement.style.height = targetElement.scrollHeight + 'px'; // Set height to current height
+              targetElement.offsetHeight; // Force browser reflow
+              targetElement.style.height = '0'; // Animate to height 0
+              targetElement.style.opacity = '0'; // Fade out
+              setTimeout(function () {
+                targetElement.classList.remove('show');
+              }, 300); // Remove class after transition duration
+            } else {
+              // Expand menu
+              link.setAttribute('aria-expanded', 'true'); // Set aria-expanded to true
+              targetElement.classList.add('show'); // Add the show class to transition smoothly
+              targetElement.style.height = '0'; // Reset height to zero first
+              targetElement.offsetHeight; // Force browser reflow
+              targetElement.style.height = targetElement.scrollHeight + 'px'; // Animate to full height
+              targetElement.style.opacity = '1'; // Fade in
+              setTimeout(function () {
+                targetElement.style.height = 'auto'; // Set height to auto after transition
+              }, 300); // Reset height after the transition duration
+            }
+          }
+        });
+      });
+    });
+  </script>
+
+  <!-- plugins:js -->
+  <script src="{% static 'assets2/vendors/js/vendor.bundle.base.js' %}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="{% static 'assets2/vendors/chart.js/Chart.min.js' %}"></script> 
+ <script src="{% static 'assets2/vendors/datatables.net-bs4/dataTables.bootstrap4.js' %}"></script> 
+ <script src="{% static 'assets2/js/dataTables.select.min.js' %}"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{% static 'assets2/js/off-canvas.js' %}"></script>
+  <script src="{% static 'assets2/js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'assets2/js/template.js' %}"></script>
+  <script src="{% static 'assets2/js/settings.js' %}"></script>
+  <script src="{% static 'assets2/js/todolist.js' %}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="{% static 'assets2/js/dashboard.js' %}"></script>
+  <script src="{% static 'assets2/js/Chart.roundedBarCharts.js' %}"></script>
+  <!-- End custom js for this page-->
+
+     <!-- DataTables -->
+     {% comment %} <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> {% endcomment %}
+     <script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+     <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+     <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
+     <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.colVis.min.js"></script>
+     
+  
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Export to Copy
+        document.getElementById('copy').addEventListener('click', function () {
+            copyTableData();
+        });
+
+        // Export to CSV
+        document.getElementById('csv').addEventListener('click', function () {
+            exportTableToCSV('report.csv');
+        });
+
+        // Export to Excel
+        document.getElementById('excel').addEventListener('click', function () {
+            exportTableToExcel('ReportID', 'report.xlsx');
+        });
+
+        // Export to PDF
+        document.getElementById('pdf').addEventListener('click', function () {
+            exportTableToPDF('ReportID', 'report.pdf');
+        });
+
+        // Export to Print
+        document.getElementById('print').addEventListener('click', function () {
+            printTable('ReportID');
+        });
+
+        // Function to copy table data to clipboard
+        function copyTableData() {
+            const table = document.getElementById('ReportID');
+            const rows = Array.from(table.querySelectorAll('tr'));
+            let textToCopy = rows.map(row => {
+                const cols = Array.from(row.querySelectorAll('th, td'));
+                return cols.map(col => col.innerText).join('\t');
+            }).join('\n');
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Table data copied to clipboard!');
+            });
+        }
+
+        // Function to export table data to CSV
+        function exportTableToCSV(filename) {
+            const table = document.getElementById('ReportID');
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const csvContent = rows.map(row => {
+                const cols = Array.from(row.querySelectorAll('th, td'));
+                return cols.map(col => col.innerText).join(',');
+            }).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            saveAs(blob, filename);
+        }
+
+        // Function to export table data to Excel
+        function exportTableToExcel(ReportID, filename) {
+            const table = document.getElementById(ReportID);
+            const worksheet = XLSX.utils.table_to_sheet(table);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+            XLSX.writeFile(workbook, filename);
+        }
+
+        // Function to export table data to PDF
+        function exportTableToPDF(ReportID, filename) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            pdf.autoTable({ html: `#${ReportID}` });
+            pdf.save(filename);
+        }
+
+        // Function to print table
+        function printTable(ReportID) {
+            const table = document.getElementById(ReportID).outerHTML;
+            const newWin = window.open('');
+            newWin.document.write('<html><head><title>Print Table</title></head><body>' + table + '</body></html>');
+            newWin.document.close();
+            newWin.print();
+        }
+    });
+</script>
+
+
+  <script>
+    $(document).ready(function () {
+    const dataTable = $('#tableID').DataTable({
+        dom: 'Blfrtip', // Add custom buttons to the DataTable
+        buttons: [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> ',
+                titleAttr: 'Copy',
+                className: 'btn btn-info btn-sm',
+            },
+            {
+                extend: 'csv',
+                text: '<i class="fas fa-file-csv"></i> ',
+                titleAttr: 'CSV',
+                className: 'btn btn-success btn-sm',
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> ',
+                titleAttr: 'Excel',
+                className: 'btn btn-success btn-sm',
+            },  
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> ',
+                titleAttr: 'PDF',
+                className: 'btn btn-danger btn-sm',
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> ',
+                titleAttr: 'Print',
+                className: 'btn btn-primary btn-sm',
+            },
+        ],
+        // Add custom styles to the DataTable
+        initComplete: function () {
+            $('.buttons-copy, .buttons-csv, .buttons-excel, .buttons-pdf, .buttons-print')
+                .css('margin', '5px')
+                .css('padding', '5px')
+                .css('border-radius', '4px')
+                .css('border', '1px solid #ccc')
+                .css('background', '#4747A1')
+                .css('color', '#fff')
+                .css('font-size', '14px')
+                .css('cursor', 'pointer')
+                .hover(
+                    function () {
+                        $(this).css('background', '#4745A1');
+                    },
+                    function () {
+                        $(this).css('background', '#4745A1');
+                    }
+                );
+        }
+    });
+});
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+
+  // Common function to handle dropdown population based on payload
+function fetchData(...fieldsArray) {
+  // Loop through the fieldsArray (which contains multiple arrays of arguments)
+  fieldsArray.forEach(function(fieldData) {
+    const [service_name, field_name, field_id, linkTableName, selectValue] = fieldData;
+
+    // Only make AJAX request if selectValue is not empty
+    if (selectValue) {
+      let payload = {
+        'service_name': service_name, // dynamically setting the service name
+        'field_name': field_name,     // the primary key or value to filter data
+        'field_value': selectValue,
+        'link_table_name': linkTableName
+      };
+
+      $.ajax({
+        url: '/get_data/', // URL for the request
+        type: 'GET',
+        dataType: 'json',
+        data: payload, // Payload data
+        success: function(data) {
+          console.log(data);
+          console.log('field_id', field_id);
+          let selectElement = $(field_id);
+          selectElement.empty(); // Clear existing options
+          // Populate the select element with the response data
+          selectElement.append(`<option value="">---select---</option>`);
+          $.each(data.value, function(index, datas) {
+            selectElement.append(`<option value="${datas.id}">${datas.name}</option>`);
+          });
+        },
+        error: function(xhr, status, error) {
+          console.error('Error fetching data:', error);
+        }
+      });
+    } else {
+      console.error('selectValue is required to fetch data');
+    }
+  });
+}
+
+
+</script>
+</body>
+
+</html>
+
