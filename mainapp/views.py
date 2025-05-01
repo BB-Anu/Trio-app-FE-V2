@@ -4107,15 +4107,16 @@ def tasktimesheet_delete(request,pk):
 
 # create and view table function
 def timesheetentry(request):
+    user_token=request.session['user_token']
     endpoint1='task/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         task = records_response2.json()
     endpoint2='timesheet/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
