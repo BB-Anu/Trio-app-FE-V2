@@ -31,6 +31,9 @@
                         <td>{{ template.name }}</td>
                         <td>{{ template.content }}</td>
                         <td>
+                            {% comment %} <a href="{% url 'templates_edit' template.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                            <a href="{% url 'templates_delete' template.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a> {% endcomment %}
+        
                             <a href="{% url 'fill_and_save_template' template.id %}" class="btn btn-primary text-white btn-sm">Fill & Save</a>
                         </td>
                     </tr>

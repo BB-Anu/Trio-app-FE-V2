@@ -125,7 +125,7 @@ def login(request):
 def clientprofile(request):
     user_token=request.session['user_token']
     endpoint2='customer_user/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -183,7 +183,7 @@ def clientprofile_list(request):
     user_token=request.session['user_token']
     endpoint = 'clientprofile/'
         # getting data from backend
-    records_response = call_get_method_without_token(BASEURL,endpoint)
+    records_response = call_get_method(BASEURL,endpoint,user_token)
     if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
@@ -196,7 +196,7 @@ def clientprofile_list(request):
 # edit function
 def clientprofile_edit(request,pk):
     user_token=request.session['user_token']
-    endpoint2='UserManagement/user/'    
+    endpoint2='customer_user/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
 
     print('records_response.status_code',records_response2.status_code)
@@ -223,7 +223,7 @@ def clientprofile_edit(request,pk):
             updated_data['updated_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
-                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField) or isinstance(field, forms.DecimalField):
                     if updated_data[field_name]:
                         del updated_data[field_name]
                         updated_data[field_name] = request.POST.get(field_name)
@@ -248,14 +248,15 @@ def clientprofile_edit(request,pk):
     return render(request,'clientprofile_edit.html',context)
 
 def clientprofile_delete(request,pk):
+    user_token=request.session['user_token']
     end_point = f'clientprofile/{pk}/'
-    clientprofile = call_delete_method_without_token(BASEURL, end_point)
+    clientprofile = call_delete_method(BASEURL, end_point,user_token)
     if clientprofile.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for clientprofile. Please try again.', extra_tags='warning')
-        return redirect('clientprofile')
+        return redirect('clientprofile_list')
     else:
         messages.success(request, 'Successfully deleted data for clientprofile', extra_tags='success')
-        return redirect('clientprofile')
+        return redirect('clientprofile-list')
 
 # create and view table function
 def documentgroup(request):
@@ -418,7 +419,7 @@ def customdocumententity_list(request):
     user_token=request.session['user_token']
     endpoint = 'customdocumententity/'
         # getting data from backend
-    records_response = call_get_method_without_token(BASEURL,endpoint)
+    records_response = call_get_method(BASEURL,endpoint,user_token)
     if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
@@ -430,7 +431,9 @@ def customdocumententity_list(request):
 
 # edit function
 def customdocumententity_edit(request,pk):
-    customdocumententity = call_get_method_without_token(BASEURL, f'customdocumententity/{pk}/')
+    user_token=request.session['user_token']
+
+    customdocumententity = call_get_method(BASEURL, f'customdocumententity/{pk}/',user_token)
     
     if customdocumententity.status_code in [200,201]:
         customdocumententity_data = customdocumententity.json()
@@ -705,7 +708,7 @@ def loancase(request):
     user_token=request.session['user_token']
 
     endpoint2='clientprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -756,7 +759,7 @@ def loancase_list(request):
     user_token=request.session['user_token']
     endpoint = 'loancase/'
         # getting data from backend
-    records_response = call_get_method_without_token(BASEURL,endpoint)
+    records_response = call_get_method(BASEURL,endpoint,user_token)
     if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
@@ -768,8 +771,10 @@ def loancase_list(request):
 
 # edit function
 def loancase_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint2='clientprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -822,10 +827,10 @@ def loancase_delete(request,pk):
     loancase = call_delete_method_without_token(BASEURL, end_point)
     if loancase.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for loancase. Please try again.', extra_tags='warning')
-        return redirect('loancase')
+        return redirect('loancase_list')
     else:
         messages.success(request, 'Successfully deleted data for loancase', extra_tags='success')
-        return redirect('loancase')
+        return redirect('loancase_list')
 
 # create and view table function
 def projects(request):
@@ -1239,15 +1244,15 @@ def foldermaster_delete(request,pk):
 def trioassignment(request):
     user_token=request.session['user_token']
 
-    endpoint1='clientprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    endpoint1='loancase/'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
-    endpoint2='customdocumententity/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    endpoint2='triogroup/'    
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -1296,7 +1301,7 @@ def trioassignment_list(request):
     user_token=request.session['user_token']
     endpoint = 'trioassignment/'
         # getting data from backend
-    records_response = call_get_method_without_token(BASEURL,endpoint)
+    records_response = call_get_method(BASEURL,endpoint,user_token)
     if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
@@ -2617,7 +2622,6 @@ def userprofile(request):
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
-            Output['created_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
@@ -2625,7 +2629,8 @@ def userprofile(request):
                         del Output[field_name]
                         Output[field_name] = request.POST.get(field_name)
             json_data=json.dumps(Output)
-            response = call_post_method_for_without_token(BASEURL,endpoint,json_data)
+            print('------',user_token)
+            response = call_post_with_method(BASEURL,endpoint,json_data,user_token)
             if response.status_code not in [200,201]:
                 print("error",response)
             else:
@@ -2655,7 +2660,7 @@ def userprofile_list(request):
     endpoint = 'userprofile/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -2669,8 +2674,10 @@ def userprofile_list(request):
 
 # edit function
 def userprofile_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint1='UserManagement/user/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -2683,7 +2690,7 @@ def userprofile_edit(request,pk):
     #     messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     # else:
     #     folder = records_response2.json()
-    userprofile = call_get_method_without_token(BASEURL, f'userprofile/{pk}/')
+    userprofile = call_get_method(BASEURL, f'userprofile/{pk}/',user_token)
     
     if userprofile.status_code in [200,201]:
         userprofile_data = userprofile.json()
@@ -3152,7 +3159,7 @@ def caseassignment_delete(request,pk):
 # create and view table function
 def triogroupmember(request):
     user_token=request.session['user_token']
-    endpoint1='userprofile/'    
+    endpoint1='trio_group_user/'    
     records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
@@ -3185,6 +3192,7 @@ def triogroupmember(request):
             response = call_post_method_for_without_token(BASEURL,endpoint,json_data)
             if response.status_code not in [200,201]:
                 print("error",response)
+                
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
                 return redirect('triogroupmember_list')
@@ -3297,30 +3305,30 @@ def triogroupmember_delete(request,pk):
 # create and view table function
 def trioprofile(request):
     user_token=request.session['user_token']
-    endpoint2='UserManagement/user/'    
+    endpoint2='trio_user/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
-
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
         print('----',clients)
-    # endpoint3='UserManagement/role/'    
-    # records_response2 = call_get_method_without_token(BASEURL,endpoint3)
-    # print('records_response.status_code',records_response2.status_code)
-    # if records_response2.status_code not in [200,201]:
-    #     messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
-    # else:
-    #     folder = records_response2.json()
-    form=TRIOProfileForm(user_choices=clients,)
+    endpoint3='tasktemplate/'    
+    records_response2 = call_get_method(BASEURL,endpoint3,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        folder = records_response2.json()
+        print('folder',folder)
     endpoint = 'trioprofile/'
+
+    form=TRIOProfileForm(user_choices=clients,task_template_choices=folder)
     if request.method=="POST":
-        form=TRIOProfileForm(request.POST,user_choices=clients,)
+        form=TRIOProfileForm(request.POST,user_choices=clients,task_template_choices=folder)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
-            Output['created_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
@@ -3328,9 +3336,9 @@ def trioprofile(request):
                         del Output[field_name]
                         Output[field_name] = request.POST.get(field_name)
             json_data=json.dumps(Output)
-            response = call_post_method_for_without_token(BASEURL,endpoint,json_data)
+            response = call_post_with_method(BASEURL,endpoint,json_data,user_token)
             if response.status_code not in [200,201]:
-                print("error",response)
+                print("error",response.json())
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
                 return redirect('trioprofile_list')
@@ -3358,11 +3366,12 @@ def trioprofile_list(request):
     endpoint = 'trioprofile/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
             records = records_response.json()
+            print('records',records)
             # You can pass 'records' to your template for rendering
             context = {'records': records}
             return render(request, 'trioprofile_list.html', context)
@@ -3374,14 +3383,14 @@ def trioprofile_list(request):
 def trioprofile_edit(request,pk):
     user_token=request.session['user_token']
 
-    endpoint1='UserManagement/user/'    
+    endpoint1='trio_user/'    
     records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
-    endpoint3='UserManagement/role/'    
+    endpoint3='tasktemplate/'    
     records_response2 = call_get_method_without_token(BASEURL,endpoint3)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
@@ -3398,7 +3407,7 @@ def trioprofile_edit(request,pk):
         return redirect('trioprofile')
 
     if request.method=="POST":
-        form=TRIOProfileForm(request.POST, initial=trioprofile_data,user_choices=clients,role_choices=folder)
+        form=TRIOProfileForm(request.POST, initial=trioprofile_data,user_choices=clients,task_template_choices=folder)
         if form.is_valid():
             updated_data = form.cleaned_data
             for field_name, field in form.fields.items():
@@ -3412,14 +3421,14 @@ def trioprofile_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('trioprofile') 
+                return redirect('trioprofile_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
-        form = TRIOProfileForm(initial=trioprofile_data,user_choices=clients,role_choices=folder)
+        form = TRIOProfileForm(initial=trioprofile_data,user_choices=clients,task_template_choices=folder)
 
     context={
         'form':form,
@@ -3431,10 +3440,10 @@ def trioprofile_delete(request,pk):
     trioprofile = call_delete_method_without_token(BASEURL, end_point)
     if trioprofile.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for trioprofile. Please try again.', extra_tags='warning')
-        return redirect('trioprofile')
+        return redirect('trioprofile_list')
     else:
         messages.success(request, 'Successfully deleted data for trioprofile', extra_tags='success')
-        return redirect('trioprofile')
+        return redirect('trioprofile_list')
 
 # create and view table function
 def finalreport(request):
@@ -3560,22 +3569,24 @@ def finalreport_delete(request,pk):
 
 # create and view table function
 def task(request):
+    user_token=request.session['user_token']
     endpoint1='trioassignment/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
+        print('clients)')
     endpoint1='tasktemplate/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         tasktemplate = records_response2.json()
     endpoint1='trioprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -3622,10 +3633,11 @@ def task(request):
     return render(request,'task.html',context)
 
 def task_list(request):
+    user_token=request.session['user_token']
     endpoint = 'task/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -3956,24 +3968,24 @@ def taskdeliverable_delete(request,pk):
 # create and view table function
 def tasktimesheet(request):
     user_token=request.session['user_token']
-    endpoint1='task/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
-    print('records_response.status_code',records_response2.status_code)
-    if records_response2.status_code not in [200,201]:
-        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
-    else:
-        task = records_response2.json()
-    endpoint2='UserManagement/user/'    
+    # endpoint1='task/'    
+    # records_response2 = call_get_method(BASEURL,endpoint1,user_token)
+    # print('records_response.status_code',records_response2.status_code)
+    # if records_response2.status_code not in [200,201]:
+    #     messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    # else:
+    #     task = records_response2.json()
+    endpoint2='trioprofile/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
-    form=TaskTimesheetForm(user_choices=clients,task_choices=task)
+    form=TaskTimesheetForm(user_choices=clients)
     endpoint = 'tasktimesheet/'
     if request.method=="POST":
-        form=TaskTimesheetForm(request.POST,user_choices=clients,task_choices=task)
+        form=TaskTimesheetForm(request.POST,user_choices=clients,)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
@@ -4011,10 +4023,12 @@ def tasktimesheet(request):
     return render(request,'tasktimesheet.html',context)
 
 def tasktimesheet_list(request):
+    user_token=request.session['user_token']
+
     endpoint = 'tasktimesheet/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -4028,15 +4042,16 @@ def tasktimesheet_list(request):
 
 # edit function
 def tasktimesheet_edit(request,pk):
-    endpoint1='task/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
-    print('records_response.status_code',records_response2.status_code)
-    if records_response2.status_code not in [200,201]:
-        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
-    else:
-        task = records_response2.json()
-    endpoint2='UserManagement/user/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    # endpoint1='task/'    
+    # records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    # print('records_response.status_code',records_response2.status_code)
+    # if records_response2.status_code not in [200,201]:
+    #     messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    # else:
+    #     task = records_response2.json()
+    user_token=request.session['user_token']
+    endpoint2='trioprofile/'    
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -4052,7 +4067,7 @@ def tasktimesheet_edit(request,pk):
         return redirect('tasktimesheet')
 
     if request.method=="POST":
-        form=TaskTimesheetForm(request.POST, initial=tasktimesheet_data,user_choices=clients,task_choices=task)
+        form=TaskTimesheetForm(request.POST, initial=tasktimesheet_data,user_choices=clients)
         if form.is_valid():
             updated_data = form.cleaned_data
             for field_name, field in form.fields.items():
@@ -4073,7 +4088,7 @@ def tasktimesheet_edit(request,pk):
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
-        form = TaskTimesheetForm(initial=tasktimesheet_data,user_choices=clients,task_choices=task)
+        form = TaskTimesheetForm(initial=tasktimesheet_data,user_choices=clients,)
 
     context={
         'form':form,
@@ -5798,9 +5813,10 @@ def taskassignment(request):
 
 def taskassignment_list(request):
     try:
+        user_token=request.session['user_token']
         # getting data from backend
         endpoint = 'taskassignment/'
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:

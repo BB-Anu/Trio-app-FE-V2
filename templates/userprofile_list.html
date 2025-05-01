@@ -21,7 +21,7 @@
 <th>phone</th>
 <th>email</th>
 <th>profile completed</th>
-<th>status</th>
+{% comment %} <th>status</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -34,7 +34,7 @@
 <td>{{data.phone}}</td>
 <td>{{data.email}}</td>
 <td>{{data.profile_completed}}</td>
-<td>{{data.status}}</td>
+{% comment %} <td>{{data.status}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'userprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
                         <a href="{% url 'userprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>

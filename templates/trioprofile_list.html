@@ -17,7 +17,7 @@
                                 <tr>
                                     <th>No.</th>
 <th>user</th>
-{% comment %} <th>role</th> {% endcomment %}
+<th>Template</th>
 <th>qualification</th>
 <th>experience years</th>
 <th>phone</th>
@@ -31,7 +31,7 @@
                     <td>{{forloop.counter}}</td>
 
 <td>{{data.user.name}}</td>
-{% comment %} <td>{{data.role}}</td> {% endcomment %}
+<td>{{data.task_template.name}}</td>
 <td>{{data.qualification}}</td>
 <td>{{data.experience_years}}</td>
 <td>{{data.phone}}</td>

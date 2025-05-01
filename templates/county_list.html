@@ -9,7 +9,7 @@
                     <button type="button" class="btn btn-primary float-right">+ New</button>
                 </a>
                 {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
-                <h3>Task Template</h3>
+                <h3>County</h3>
             </div>                <div class="card-body">
                     <div class="table-responsive">
                         <table id="tableID" class="display table table-hover">
@@ -17,10 +17,10 @@
                                 <tr>
                                     <th>No.</th>
 <th>name</th>
-<th>created by</th>
+{% comment %} <th>created by</th>
 <th>created at</th>
 <th>updated by</th>
-<th>updated at</th>
+<th>updated at</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -30,10 +30,10 @@
                     <td>{{forloop.counter}}</td>
 
 <td>{{data.name}}</td>
-<td>{{data.created_by}}</td>
+{% comment %} <td>{{data.created_by}}</td>
 <td>{{data.created_at}}</td>
 <td>{{data.updated_by}}</td>
-<td>{{data.updated_at}}</td>
+<td>{{data.updated_at}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'county_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
                         <a href="{% url 'county_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>

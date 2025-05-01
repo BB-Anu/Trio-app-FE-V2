@@ -99,8 +99,10 @@ def role(request):
     return render(request, 'role.html', context)
 
 def role_list(request):
+    user_token=request.session['user_token']
+
     endpoint = 'UserManagement/role/'
-    records_response = call_get_method_without_token(BASEURL, endpoint)
+    records_response = call_get_method(BASEURL, endpoint,user_token)
     if records_response.status_code not in [200, 201]:
         messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         records = []
@@ -113,6 +115,8 @@ def role_list(request):
 
 # edit function
 def role_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint1 = 'UserManagement/api_functions_setup/'
     records_response1 = call_get_method_without_token(BASEURL, endpoint1)
     print('records_response.status_code', records_response1.status_code)
@@ -123,7 +127,7 @@ def role_edit(request,pk):
  
     print("Formatted Permissions:", permissions_data)  # Debugging
 
-    role = call_get_method_without_token(BASEURL, f'UserManagement/role/{pk}/')
+    role = call_get_method(BASEURL, f'UserManagement/role/{pk}/',user_token)
     
     if role.status_code in [200,201]:
         role_data = role.json()
@@ -174,19 +178,24 @@ def role_delete(request,pk):
 
 # create and view table function
 def subcounty(request):
+    user_token=request.session['user_token']
+
     endpoint2='UserManagement/county/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         roles = records_response2.json()
+    print('----',roles)
     form=SubCountyForm(roles_choices=roles)
     endpoint = 'UserManagement/subcounty/'
     if request.method=="POST":
         form=SubCountyForm(request.POST,roles_choices=roles)
         if form.is_valid():
             Output = form.cleaned_data
+            Output['branch']=request.session['branch']
+            Output['created_by']=request.session['user_data']['id']
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if Output[field_name]:
@@ -219,8 +228,10 @@ def subcounty(request):
     return render(request,'subcounty.html',context)
 
 def subcounty_list(request):
+    user_token=request.session['user_token']
+
     endpoint = 'UserManagement/subcounty/'
-    records_response = call_get_method_without_token(BASEURL, endpoint)
+    records_response = call_get_method(BASEURL, endpoint,user_token)
     if records_response.status_code not in [200, 201]:
         messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         records = []
@@ -232,8 +243,10 @@ def subcounty_list(request):
     return render(request, 'subcounty_list.html', context)
 # edit function
 def subcounty_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint2='UserManagement/county/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -252,6 +265,8 @@ def subcounty_edit(request,pk):
         form=SubCountyForm(request.POST, initial=subcounty_data,roles_choices=roles)
         if form.is_valid():
             updated_data = form.cleaned_data
+            updated_data['updated_by']=request.session['user_data']['id']
+
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if updated_data[field_name]:
@@ -288,8 +303,10 @@ def subcounty_delete(request,pk):
         return redirect('subcounty')
     
 def ward(request):
+    user_token=request.session['user_token']
+
     endpoint2='UserManagement/subcounty/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -301,6 +318,9 @@ def ward(request):
         form=WardForm(request.POST,roles_choices=roles)
         if form.is_valid():
             Output = form.cleaned_data
+            Output['branch']=request.session['branch']
+            Output['created_by']=request.session['user_data']['id']
+
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if Output[field_name]:
@@ -333,8 +353,10 @@ def ward(request):
     return render(request,'ward.html',context)
 
 def ward_list(request):
+    user_token=request.session['user_token']
+
     endpoint = 'UserManagement/ward/'
-    records_response = call_get_method_without_token(BASEURL, endpoint)
+    records_response = call_get_method(BASEURL, endpoint,user_token)
     if records_response.status_code not in [200, 201]:
         messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         records = []
@@ -346,15 +368,17 @@ def ward_list(request):
     return render(request, 'ward_list.html', context)
 # edit function
 def ward_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint2='UserManagement/subcounty/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         roles = records_response2.json()
 
-    ward = call_get_method_without_token(BASEURL, f'UserManagement/ward/{pk}/')
+    ward = call_get_method(BASEURL, f'UserManagement/ward/{pk}/',user_token)
     
     if ward.status_code in [200,201]:
         ward_data = ward.json()
@@ -367,6 +391,8 @@ def ward_edit(request,pk):
         form=WardForm(request.POST, initial=ward_data,roles_choices=roles)
         if form.is_valid():
             updated_data = form.cleaned_data
+            updated_data['created_by']=request.session['user_data']['id']
+
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if updated_data[field_name]:
@@ -513,6 +539,9 @@ def county(request):
         form=CountyForm(request.POST)
         if form.is_valid():
             Output = form.cleaned_data
+            Output['branch']=request.session['branch']
+            Output['created_by']=request.session['user_data']['id']
+
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if Output[field_name]:
@@ -545,8 +574,9 @@ def county(request):
     return render(request,'county.html',context)
 
 def county_list(request):
+    user_token=request.session['user_token']
     endpoint = 'UserManagement/county/'
-    records_response = call_get_method_without_token(BASEURL, endpoint)
+    records_response = call_get_method(BASEURL, endpoint,user_token)
     if records_response.status_code not in [200, 201]:
         messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         records = []
@@ -559,7 +589,9 @@ def county_list(request):
 
 # edit function
 def county_edit(request,pk):
-    county = call_get_method_without_token(BASEURL, f'UserManagement/county/{pk}/')
+    user_token=request.session['user_token']
+
+    county = call_get_method(BASEURL, f'UserManagement/county/{pk}/',user_token)
     
     if county.status_code in [200,201]:
         county_data = county.json()
@@ -572,6 +604,8 @@ def county_edit(request,pk):
         form=CountyForm(request.POST, initial=county_data)
         if form.is_valid():
             updated_data = form.cleaned_data
+            updated_data['created_by']=request.session['user_data']['id']
+
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if updated_data[field_name]:
@@ -614,7 +648,7 @@ def user(request):
     form=UserForm()
     endpoint = 'UserManagement/user/'
     endpoint2='UserManagement/role/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -675,7 +709,9 @@ def user_list(request):
 
 # edit function
 def user_edit(request,pk):
-    user = call_get_method_without_token(BASEURL, f'UserManagement/user/{pk}/')
+    user_token=request.session['user_token']
+
+    user = call_get_method(BASEURL, f'UserManagement/user/{pk}/',user_token)
     
     if user.status_code in [200,201]:
         user_data = user.json()
@@ -685,7 +721,7 @@ def user_edit(request,pk):
         return redirect('user_list')
    
     endpoint2='UserManagement/role/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -696,6 +732,7 @@ def user_edit(request,pk):
         form=UserForm(request.POST, initial=user_data,roles_choices=roles)
         if form.is_valid():
             updated_data = form.cleaned_data
+
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if updated_data[field_name]:
