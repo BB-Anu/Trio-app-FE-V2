@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.views.generic import ListView, UpdateView, CreateView, DetailView
 
@@ -123,8 +124,8 @@ def login(request):
 # create and view table function
 def clientprofile(request):
     user_token=request.session['user_token']
-    endpoint2='UserManagement/user/'    
-    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
+    endpoint2='customer_user/'    
+    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -436,7 +437,7 @@ def customdocumententity_edit(request,pk):
     else:
         print('error------',customdocumententity)
         messages.error(request, 'Failed to retrieve data for customdocumententity. Please check your connection and try again.', extra_tags='warning')
-        return redirect('customdocumententity')
+        return redirect('customdocumententity_list')
 
     if request.method=="POST":
         form=CustomDocumentEntityForm(request.POST, initial=customdocumententity_data)
@@ -455,7 +456,7 @@ def customdocumententity_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('customdocumententity') 
+                return redirect('customdocumententity_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -474,10 +475,10 @@ def customdocumententity_delete(request,pk):
     customdocumententity = call_delete_method_without_token(BASEURL, end_point)
     if customdocumententity.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for customdocumententity. Please try again.', extra_tags='warning')
-        return redirect('customdocumententity')
+        return redirect('customdocumententity_list')
     else:
         messages.success(request, 'Successfully deleted data for customdocumententity', extra_tags='success')
-        return redirect('customdocumententity')
+        return redirect('customdocumententity_list')
 
 # create and view table function
 def tasktemplate(request):
@@ -675,7 +676,7 @@ def triogroup_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('triogroup') 
+                return redirect('triogroup_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -957,22 +958,21 @@ def projects_delete(request,pk):
 def documenttype(request):
     user_token=request.session['user_token']
 
-    endpoint2='documentgroup/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
-    print('records_response.status_code',records_response2.status_code)
-    if records_response2.status_code not in [200,201]:
-        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
-    else:
-        groups = records_response2.json()
-        print('client_choices',groups)
-    form=DocumentTypeForm(group_choices=groups)
+    # endpoint2='documentgroup/'    
+    # records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    # print('records_response.status_code',records_response2.status_code)
+    # if records_response2.status_code not in [200,201]:
+    #     messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    # else:
+    #     groups = records_response2.json()
+    #     print('client_choices',groups)
+    form=DocumentTypeForm()
     endpoint = 'documenttype/'
     if request.method=="POST":
-        form=DocumentTypeForm(request.POST,group_choices=groups)
+        form=DocumentTypeForm(request.POST)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
-            Output['created_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
@@ -1036,14 +1036,13 @@ def documenttype_edit(request,pk):
     else:
         print('error------',documenttype)
         messages.error(request, 'Failed to retrieve data for documenttype. Please check your connection and try again.', extra_tags='warning')
-        return redirect('documenttype')
+        return redirect('documenttype_list')
 
     if request.method=="POST":
         form=DocumentTypeForm(request.POST, initial=documenttype_data)
         if form.is_valid():
             updated_data = form.cleaned_data
             updated_data['branch']=request.session['branch']
-            updated_data['updated_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
@@ -1056,7 +1055,7 @@ def documenttype_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('documenttype') 
+                return redirect('documenttype_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -1075,10 +1074,10 @@ def documenttype_delete(request,pk):
     documenttype = call_delete_method_without_token(BASEURL, end_point)
     if documenttype.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for documenttype. Please try again.', extra_tags='warning')
-        return redirect('documenttype')
+        return redirect('documenttype_list')
     else:
         messages.success(request, 'Successfully deleted data for documenttype', extra_tags='success')
-        return redirect('documenttype')
+        return redirect('documenttype_list')
 
 # create and view table function
 def foldermaster(request):
@@ -1091,6 +1090,7 @@ def foldermaster(request):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
+    print('clients',clients)
     endpoint2='customdocumententity/'    
     records_response2 = call_get_method_without_token(BASEURL,endpoint2)
     print('records_response.status_code',records_response2.status_code)
@@ -1675,7 +1675,7 @@ def document(request):
                     print("error",response)
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
-                return redirect('document')
+                return redirect('document_list')
     else:
         print('errorss',form.errors)
     try:
@@ -1695,7 +1695,21 @@ def document(request):
     }
     return render(request,'document.html',context)
 
-
+def document_list(request):
+    try:
+        endpoint = 'document/'
+        records_response = call_get_method_without_token(BASEURL,endpoint)
+        if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'document_list.html', context)
+    except Exception as e:
+        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    
+    return render(request,'document_list.html',context)
 # edit function
 def document_edit(request,pk):
     endpoint1='loancase/'    
@@ -1712,7 +1726,7 @@ def document_edit(request,pk):
     else:
         print('error------',document)
         messages.error(request, 'Failed to retrieve data for document. Please check your connection and try again.', extra_tags='warning')
-        return redirect('document')
+        return redirect('document_list')
 
     if request.method=="POST":
         form=DocumentForm(request.POST, initial=document_data,case_choices=clients)
@@ -1729,7 +1743,7 @@ def document_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('document') 
+                return redirect('document_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -1748,10 +1762,10 @@ def document_delete(request,pk):
     document = call_delete_method_without_token(BASEURL, end_point)
     if document.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for document. Please try again.', extra_tags='warning')
-        return redirect('document')
+        return redirect('document_list')
     else:
         messages.success(request, 'Successfully deleted data for document', extra_tags='success')
-        return redirect('document')
+        return redirect('document_list')
 
 # create and view table function
 def riskassessment(request):
@@ -2162,6 +2176,7 @@ def documentupload(request):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
+    print('----',clients)
     endpoint2='customdocumententity/'    
     records_response2 = call_get_method_without_token(BASEURL,endpoint2)
     print('records_response.status_code',records_response2.status_code)
@@ -2179,7 +2194,7 @@ def documentupload(request):
     form=DocumentUploadForm(document_choices=clients,entity_choices=entity,folder_choices=folder)
     endpoint = 'documentupload/'
     if request.method=="POST":
-        form=DocumentUploadForm(request.POST,document_choices=clients,entity_choices=entity,folder_choices=folder)
+        form=DocumentUploadForm(request.POST,request.FILES,document_choices=clients,entity_choices=entity,folder_choices=folder)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
@@ -2190,15 +2205,24 @@ def documentupload(request):
                     if Output[field_name]:
                         del Output[field_name]
                         Output[field_name] = request.POST.get(field_name)
-            json_data=json.dumps(Output)
-            response = call_post_method_for_without_token(BASEURL,endpoint,json_data)
-            if response.status_code not in [200,201]:
+            # json_data=json.dumps(Output)
+            # response = call_post_method_for_without_token(BASEURL,endpoint,json_data)
+            # if response.status_code not in [200,201]:
+            #     print("error",response)
+
+            cleaned_data = form.cleaned_data
+            files, cleaned_data = image_filescreate(cleaned_data)
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+            print('==json_data==,',json_data)
+            response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
+            print('==response==',response)
+            if response['status_code'] == 1:
                 print("error",response)
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
                 return redirect('documentupload_list')
-    else:
-        print('errorss',form.errors)
+        else:
+            print('errorss',form.errors)
     try:
         # getting data from backend
         records_response = call_get_method_without_token(BASEURL,endpoint)
@@ -2260,7 +2284,7 @@ def documentupload_edit(request,pk):
     else:
         print('error------',documentupload)
         messages.error(request, 'Failed to retrieve data for documentupload. Please check your connection and try again.', extra_tags='warning')
-        return redirect('documentupload')
+        return redirect('documentupload_list')
 
     if request.method=="POST":
         form=DocumentUploadForm(request.POST, initial=documentupload_data,document_choices=clients,entity_choices=entity,folder_choices=folder)
@@ -2277,7 +2301,7 @@ def documentupload_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('documentupload') 
+                return redirect('documentupload_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -2296,10 +2320,10 @@ def documentupload_delete(request,pk):
     documentupload = call_delete_method_without_token(BASEURL, end_point)
     if documentupload.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for documentupload. Please try again.', extra_tags='warning')
-        return redirect('documentupload')
+        return redirect('documentupload_list')
     else:
         messages.success(request, 'Successfully deleted data for documentupload', extra_tags='success')
-        return redirect('documentupload')
+        return redirect('documentupload_list')
 
 # create and view table function
 def documentuploadaudit1(request):
@@ -2963,7 +2987,7 @@ def filedownloadreason_delete(request,pk):
 def caseassignment(request):
     user_token=request.session['user_token']
 
-    endpoint1='UserManagement/user/'    
+    endpoint1='customer_user/'    
     records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
@@ -3047,13 +3071,23 @@ def caseassignment_list(request):
 
 # edit function
 def caseassignment_edit(request,pk):
-    endpoint1='UserManagement/user/'    
+    user_token=request.session['user_token']
+    endpoint1='customer_user/'    
     records_response2 = call_get_method_without_token(BASEURL,endpoint1)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
+    endpoint1='userprofile/'    
+    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    print('userprofile',records_response2.json())
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        Profiles = records_response2.json()
+        print("Profiles",Profiles)
+
     endpoint3='loancase/'    
     records_response2 = call_get_method_without_token(BASEURL,endpoint3)
     print('records_response.status_code',records_response2.status_code)
@@ -3069,9 +3103,15 @@ def caseassignment_edit(request,pk):
         print('error------',caseassignment)
         messages.error(request, 'Failed to retrieve data for caseassignment. Please check your connection and try again.', extra_tags='warning')
         return redirect('caseassignment_list')
-
+    endpoint4='userprofile/'    
+    records_response2 = call_get_method(BASEURL,endpoint4,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        users = records_response2.json()
     if request.method=="POST":
-        form=CaseAssignmentForm(request.POST, initial=caseassignment_data,user_choices=clients,case_choices=folder,assigned_to_choices=clients)
+        form=CaseAssignmentForm(request.POST, initial=caseassignment_data,user_choices=clients,case_choices=folder,assigned_to_choices=Profiles)
         if form.is_valid():
             updated_data = form.cleaned_data
             for field_name, field in form.fields.items():
@@ -3092,7 +3132,7 @@ def caseassignment_edit(request,pk):
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
-        form = CaseAssignmentForm(initial=caseassignment_data,user_choices=clients,case_choices=folder,assigned_to_choices=clients)
+        form = CaseAssignmentForm(initial=caseassignment_data,user_choices=clients,case_choices=folder,assigned_to_choices=Profiles)
 
     context={
         'form':form,
@@ -3119,6 +3159,7 @@ def triogroupmember(request):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
+        print('---',clients)
     endpoint3='triogroup/'    
     records_response2 = call_get_method(BASEURL,endpoint3,user_token)
     print('records_response.status_code',records_response2.status_code)
@@ -3176,6 +3217,7 @@ def triogroupmember_list(request):
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
             records = records_response.json()
+            print('---',records)
             # You can pass 'records' to your template for rendering
             context = {'records': records}
             return render(request, 'triogroupmember_list.html', context)
@@ -3200,7 +3242,8 @@ def triogroupmember_edit(request,pk):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         folder = records_response2.json()
-    triogroupmember = call_get_method_without_token(BASEURL, f'triogroupmember/{pk}/')
+    triogroupmember = call_get_method(BASEURL, f'triogroupmember/{pk}/',user_token)
+    print('------',triogroupmember.json())
     
     if triogroupmember.status_code in [200,201]:
         triogroupmember_data = triogroupmember.json()
@@ -3210,7 +3253,9 @@ def triogroupmember_edit(request,pk):
         return redirect('triogroupmember_list')
 
     if request.method=="POST":
-        form=TRIOGroupMemberForm(request.POST, initial=triogroupmember_data,user_choices=clients,case_choices=folder)
+        form=TRIOGroupMemberForm(request.POST,initial=triogroupmember_data,user_choices=clients,case_choices=folder)
+        print('Form initial data:', form.initial)
+
         if form.is_valid():
             updated_data = form.cleaned_data
             for field_name, field in form.fields.items():
@@ -3232,6 +3277,7 @@ def triogroupmember_edit(request,pk):
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
         form = TRIOGroupMemberForm(initial=triogroupmember_data,user_choices=clients,case_choices=folder)
+        print('Form initial data:', form.initial)
 
     context={
         'form':form,
@@ -3259,6 +3305,7 @@ def trioprofile(request):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
+        print('----',clients)
     # endpoint3='UserManagement/role/'    
     # records_response2 = call_get_method_without_token(BASEURL,endpoint3)
     # print('records_response.status_code',records_response2.status_code)
@@ -4764,13 +4811,14 @@ def meetings_delete(request,pk):
 # create and view table function
 def auditorprofile(request):
     user_token=request.session['user_token']
-    endpoint2='UserManagement/user/'    
-    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
+    endpoint2='audit_user/'    
+    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         employee = records_response2.json()
+        print('---',employee)
     form=AuditorProfileForm(user_choices=employee)
     endpoint = 'auditorprofile/'
     if request.method=="POST":
@@ -4887,7 +4935,7 @@ def auditorprofile_delete(request,pk):
 # create and view table function
 def marketingagentprofile(request):
     user_token=request.session['user_token']
-    endpoint2='UserManagement/user/'    
+    endpoint2='agent_user/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
@@ -5077,8 +5125,10 @@ def issuereport_list(request):
     return render(request,'issuereport_list.html',context)
 # edit function
 def issuereport_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint1='UserManagement/user/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -5243,7 +5293,7 @@ def notification_delete(request,pk):
 # create and view table function
 def lawyerprofile(request):
     user_token=request.session['user_token']
-    endpoint2='UserManagement/user/'    
+    endpoint2='lawyer_user/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
@@ -5949,3 +5999,68 @@ def select_branch(request,pk):
     form=BranchForm()
 
     return render(request,'select_branch.html',{'branch_list':branch_list,'form':form,'company':company})
+
+def document_entity(request):
+    try:
+        # Getting data from backend
+        endpoint = 'entities/'
+        records_response = call_get_method_without_token(BASEURL, endpoint)
+
+        if records_response.status_code not in [200, 201]:
+            try:
+                error_msg = records_response.json()
+            except json.JSONDecodeError:
+                error_msg = records_response.text
+            messages.error(request, f"Failed to fetch records. {error_msg}", extra_tags="warning")
+            return render(request, 'entity_list.html', {'records': []})  # Return empty list if failed
+        else:
+            records = records_response.json()
+            print('-----', records)
+            context = {'records': records}
+            return render(request, 'entity_list.html', context)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        messages.error(request, f"An unexpected error occurred: {e}", extra_tags="danger")
+        return render(request, 'entity_list.html', {'records': []})
+
+
+# def get_documents(request, entityId):
+#     # Getting data from backend
+#     endpoint = f'folder/{entityId}'
+#     records_response = call_get_method_without_token(BASEURL, endpoint)
+
+#     if records_response.status_code not in [200, 201]:
+#         error_msg = "Error fetching records"  # Simplified error message
+#         return JsonResponse({'error': error_msg}, status=400)
+#     else:
+#         records = records_response.json()
+#         # Only return the id and folder_name for each document
+#         simplified_records = [{'id': record['id'], 'folder_name': record['folder_name']} for record in records]
+#         print('---',simplified_records)
+#         return JsonResponse({'records': simplified_records})
+
+def get_documents(request, entityId):
+    try:
+        # Getting data from backend
+        endpoint = f'folder/{entityId}'
+        records_response = call_get_method_without_token(BASEURL, endpoint)
+
+        if records_response.status_code not in [200, 201]:
+            try:
+                error_msg = records_response.json()
+            except json.JSONDecodeError:
+                error_msg = records_response.text
+            messages.error(request, f"Failed to fetch records. {error_msg}", extra_tags="warning")
+            return render(request, 'folder_list.html', {'records': []})  # Return empty list if failed
+        else:
+            records = records_response.json()
+            print('-----', records)
+            context = {'records': records}
+            return render(request, 'folder_list.html', context)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        messages.error(request, f"An unexpected error occurred: {e}", extra_tags="danger")
+        return render(request, 'folder_list.html', {'records': []})
+

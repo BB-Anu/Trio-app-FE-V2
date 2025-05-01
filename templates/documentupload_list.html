@@ -28,10 +28,10 @@
 <th>expiry date</th>
 <th>start date</th>
 <th>end date</th>
-<th>created by</th>
+{% comment %} <th>created by</th>
 <th>created at</th>
 <th>update by</th>
-<th>update at</th>
+<th>update at</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -39,7 +39,6 @@
                 {% for data in records %}
                 <tr>
                     <td>{{forloop.counter}}</td>
-
 <td>{{data.document_id}}</td>
 <td>{{data.document_title}}</td>
 <td>{{data.document_type}}</td>
@@ -52,13 +51,13 @@
 <td>{{data.expiry_date}}</td>
 <td>{{data.start_date}}</td>
 <td>{{data.end_date}}</td>
-<td>{{data.created_by}}</td>
+{% comment %} <td>{{data.created_by}}</td>
 <td>{{data.created_at}}</td>
 <td>{{data.update_by}}</td>
-<td>{{data.update_at}}</td>
+<td>{{data.update_at}}</td> {% endcomment %}
                     <td>
-                        <a href="{% url 'documentupload_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'documentupload_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                        {% comment %} <a href="{% url 'documentupload_edit' forloop.counter %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a> {% endcomment %}
+                        {% comment %} <a href="{% url 'documentupload_delete' forloop.counter %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a> {% endcomment %}
                     </td>
                 </tr>
                 {% endfor %}

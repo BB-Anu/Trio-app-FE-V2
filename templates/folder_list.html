@@ -1,0 +1,49 @@
+{% extends 'base.html' %} 
+{% block body_block %}
+{% load static %}
+
+<div class="content-wrapper">
+
+    {% if not view %}
+    <button type="submit" form="myForm" class="btn btn-success">Save</button>
+    {% endif %}
+    <a href="javascript:window.history.back()" class="btn btn-danger">Cancel</a>
+
+    <div class="col-12 grid-margin stretch-card">
+        <div class="container mt-5 col-md-10">
+            <div class="card card-body">
+                <h4>Document Folders</h4>
+                <div class="row">
+                    {% for data in records %}
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="folder-box p-3 border rounded shadow-sm bg-light" style="cursor: pointer;"
+                             onclick="viewDocuments('{{ data.id }}', '{{ data.folder }}')">
+                             <p class="mt-2 mb-0 font-weight-bold"> class="text-decoration-none">
+                                    {{ data.entity_name }}
+                                </a>
+                            </p>
+                                                    </div>
+                    </div>
+                    {% empty %}
+                    <p>No folders available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+{% if view %}
+<script>
+    // Disable form fields if view-only mode
+    var form = document.getElementById('myForm');
+    for (var i = 0; i < form.elements.length; i++) {
+        form.elements[i].disabled = true;
+    }
+</script>
+{% endif %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}

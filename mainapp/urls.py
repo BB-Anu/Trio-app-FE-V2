@@ -65,6 +65,7 @@ urlpatterns = [
 	path("compliancechecklist_delete/<pk>/", compliancechecklist_delete, name="compliancechecklist_delete"),
     
 	path("document/", document, name="document"),
+	path("document_list/", document_list, name="document_list"),
 	path("document_edit/<pk>/", document_edit, name="document_edit"),
 	path("document_delete/<pk>/", document_delete, name="document_delete"),
     
@@ -229,5 +230,8 @@ urlpatterns = [
 
 	path("select_company/", select_company, name="select_company"),
 	path("select_branch/<int:pk>/", select_branch, name="select_branch"),
+	path("document_entity/", document_entity, name="document_entity"),
+	path("get_documents/<str:entityId>/", get_documents, name="get_documents"),
+
 
 ]
