@@ -682,7 +682,7 @@ def user_edit(request,pk):
     else:
         print('error------',user)
         messages.error(request, 'Failed to retrieve data for user. Please check your connection and try again.', extra_tags='warning')
-        return redirect('user')
+        return redirect('user_list')
    
     endpoint2='UserManagement/role/'    
     records_response2 = call_get_method_without_token(BASEURL,endpoint2)
@@ -707,7 +707,7 @@ def user_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('user') 
+                return redirect('user_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -727,10 +727,10 @@ def user_delete(request,pk):
     print(user.status_code)
     if user.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for user. Please try again.', extra_tags='warning')
-        return redirect('user')
+        return redirect('user_list')
     else:
         messages.success(request, 'Successfully deleted data for user', extra_tags='success')
-        return redirect('user')
+        return redirect('user_list')
 
 
 

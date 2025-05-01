@@ -387,6 +387,87 @@ user-select: none;
       <span class="menu-title">StockTransferChild</span>
     </a>
   </li>{%endif%} -->
+  <li class="nav-item {{ profile }}">
+    <a class="nav-link" href="#profile" aria-expanded="false" aria-controls="profile">
+        <i class="icon-layout menu-icon"></i>
+        <span class="menu-title">Profile Management</span>
+        <i class="menu-arrow"></i>
+    </a>
+    <div class="collapse {{ profile }}" id="profile">
+        <ul class="sub-menu">
+  
+          <a class="nav-link {{clientprofile_list}}" href="{% url 'clientprofile_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">clientprofile</span>
+          </a>
+       
+          <a class="nav-link {{userprofile_list}}" href="{% url 'userprofile_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">userprofile</span>
+          </a>
+        
+          {% comment %} <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">trioprofile</span>
+          </a> {% endcomment %}
+  
+          <a class="nav-link {{auditorprofile_list}}" href="{% url 'auditorprofile_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">auditorprofile</span>
+          </a>
+  
+          <a class="nav-link {{marketingagentprofile_list}}" href="{% url 'marketingagentprofile_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">marketingagentprofile_list</span>
+          </a>
+          <a class="nav-link {{lawyerprofile_list}}" href="{% url 'lawyerprofile_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">lawyerprofile</span>
+          </a>
+  
+  
+        </ul>
+    </div> 
+  </li>
+  
+  
+<li class="nav-item {{ trioprofile }}">
+  <a class="nav-link" href="#trioprofile" aria-expanded="false" aria-controls="trioprofile">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">TRIO Profile </span>
+      <i class="menu-arrow"></i>
+  </a>
+  <div class="collapse {{ trioprofile }}" id="trioprofile">
+      <ul class="sub-menu">
+
+       
+     
+        <a class="nav-link {{triogroup_list}}" href="{% url 'triogroup_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">triogroup</span>
+        </a>
+      
+        
+
+        <a class="nav-link {{triogroupmember_list}}" href="{% url 'triogroupmember_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">triogroupmember</span>
+        </a>
+        <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">trioprofile</span>
+        </a>
+        <a class="nav-link {{trioassignment_list}}" href="{% url 'trioassignment_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">trioassignment</span>
+        </a>
+        
+
+
+      </ul>
+  </div> 
+</li>
+
 
   <li class="nav-item {{ task }}">
     <a class="nav-link" href="#task" aria-expanded="false" aria-controls="task">
@@ -455,80 +536,6 @@ user-select: none;
     </div> 
 </li>
 
-<li class="nav-item {{ profile }}">
-  <a class="nav-link" href="#profile" aria-expanded="false" aria-controls="profile">
-      <i class="icon-layout menu-icon"></i>
-      <span class="menu-title">Profile Management</span>
-      <i class="menu-arrow"></i>
-  </a>
-  <div class="collapse {{ profile }}" id="profile">
-      <ul class="sub-menu">
-
-        <a class="nav-link {{clientprofile_list}}" href="{% url 'clientprofile_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">clientprofile</span>
-        </a>
-     
-        <a class="nav-link {{userprofile_list}}" href="{% url 'userprofile_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">userprofile</span>
-        </a>
-      
-        <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">trioprofile</span>
-        </a>
-
-        <a class="nav-link {{auditorprofile_list}}" href="{% url 'auditorprofile_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">auditorprofile</span>
-        </a>
-
-        <a class="nav-link {{marketingagentprofile_list}}" href="{% url 'marketingagentprofile_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">marketingagentprofile_list</span>
-        </a>
-
-
-      </ul>
-  </div> 
-</li>
-
-<li class="nav-item {{ trioprofile }}">
-  <a class="nav-link" href="#trioprofile" aria-expanded="false" aria-controls="trioprofile">
-      <i class="icon-layout menu-icon"></i>
-      <span class="menu-title">TRIO Profile </span>
-      <i class="menu-arrow"></i>
-  </a>
-  <div class="collapse {{ trioprofile }}" id="trioprofile">
-      <ul class="sub-menu">
-
-        <a class="nav-link {{trioassignment_list}}" href="{% url 'trioassignment_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">trioassignment</span>
-        </a>
-     
-        <a class="nav-link {{triogroup_list}}" href="{% url 'triogroup_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">triogroup</span>
-        </a>
-      
-        <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">trioprofile</span>
-        </a>
-
-        <a class="nav-link {{triogroupmember_list}}" href="{% url 'triogroupmember_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">triogroupmember</span>
-        </a>
-
-        
-
-
-      </ul>
-  </div> 
-</li>
 
 
 <li class="nav-item {{ document }}">
@@ -540,22 +547,26 @@ user-select: none;
   <div class="collapse {{ document }}" id="document">
       <ul class="sub-menu">
 
-        <a class="nav-link {{documentgroup_list}}" href="{% url 'documentgroup_list' %}">
+        {% comment %} <a class="nav-link {{documentgroup_list}}" href="{% url 'documentgroup_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">documentgroup</span>
         </a>
-     
+      {% endcomment %}
         <a class="nav-link {{customdocumententity_list}}" href="{% url 'customdocumententity_list' %}">
           <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">customdocumententity</span>
+          <span class="menu-title">Document Entity</span>
         </a>
-      
         <a class="nav-link {{documenttype_list}}" href="{% url 'documenttype_list' %}">
           <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">documenttype_list</span>
-        </a>
+          <span class="menu-title">Document Type </span>
+        </a> 
 
-        <a class="nav-link {{document}}" href="{% url 'document' %}">
+        <a class="nav-link {{foldermaster_list}}" href="{% url 'foldermaster_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">folder master</span>
+        </a>
+    
+        <a class="nav-link {{document}}" href="{% url 'document_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">document</span>
         </a>
@@ -565,10 +576,7 @@ user-select: none;
           <span class="menu-title">documentupload</span>
         </a>
 
-        <a class="nav-link {{foldermaster_list}}" href="{% url 'foldermaster_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">foldermaster</span>
-        </a>
+       
         <a class="nav-link {{documentuploadaudit1}}" href="{% url 'documentuploadaudit1_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">documentuploadaudit1</span>

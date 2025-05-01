@@ -17,8 +17,9 @@
                                 <tr>
                                     <th>No.</th>
 <th>Case_id</th>
-<th>role</th>
+{% comment %} <th>role</th> {% endcomment %}
 <th>assigned_at</th>
+<th>assigned To</th>
 <th>due_date</th>
 <th>status</th>
                     <th>Action</th>
@@ -30,8 +31,9 @@
                     <td>{{ forloop.counter }}</td>
 
 <td>{{data.case}}</td>
-<td>{{data.role}}</td>
+{% comment %} <td>{{data.role}}</td> {% endcomment %}
 <td>{{data.assigned_at}}</td>
+<td>{{data.assigned_to}}</td>
 <td>{{data.due_date}}</td>
 <td>{{data.status}}</td>
                     <td>

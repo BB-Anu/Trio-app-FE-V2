@@ -83,15 +83,16 @@ class ProjectsForm(forms.Form):
 
 class DocumentTypeForm(forms.Form):
 	type = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
-	group = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	def __init__(self, *args, **kwargs):
-		user_choices_list = kwargs.pop('group_choices', [])
-		initial_data = kwargs.get("initial", {})
-		selected_user_choices = initial_data.get('group', '')
-		super().__init__(*args, **kwargs)
-		self.fields['group'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('group_name', '')) for record in user_choices_list]
-		if selected_user_choices:
-			self.fields['group'].initial = selected_user_choices
+	description = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# group = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+	# def __init__(self, *args, **kwargs):
+	# 	user_choices_list = kwargs.pop('group_choices', [])
+	# 	initial_data = kwargs.get("initial", {})
+	# 	selected_user_choices = initial_data.get('group', '')
+	# 	super().__init__(*args, **kwargs)
+	# 	self.fields['group'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('group_name', '')) for record in user_choices_list]
+	# 	if selected_user_choices:
+	# 		self.fields['group'].initial = selected_user_choices
 
 class FolderMasterForm(forms.Form):
 	folder_id = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
@@ -111,7 +112,9 @@ class FolderMasterForm(forms.Form):
 		selected_entity_choices = initial_data.get('entity', '')
 		selected_parent_folder_choices = initial_data.get('parent_folder', '')
 		super().__init__(*args, **kwargs)
-		self.fields['client'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('user', '')) for record in user_choices_list]
+		self.fields['client'].choices = [('', '---select---')] + [
+			(record.get('id', ''), record.get('user', {}).get('name', '')) for record in user_choices_list
+		]
 		self.fields['entity'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
 		self.fields['parent_folder'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('folder_name', '')) for record in parent_folder_choices_list]
 		if selected_user_choices:
@@ -268,9 +271,9 @@ class DocumentUploadForm(forms.Form):
 		selected_entity_choices = initial_data.get('entity_type', '')
 		selected_folder_choices = initial_data.get('folder', '')
 		super().__init__(*args, **kwargs)
-		self.fields['document_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in user_choices_list]
-		self.fields['entity_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
-		self.fields['folder'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in folder_choices_list]
+		self.fields['document_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('type', '')) for record in user_choices_list]
+		self.fields['entity_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('entity_name', '')) for record in entity_choices_list]
+		self.fields['folder'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('folder_name', '')) for record in folder_choices_list]
 		if selected_user_choices:
 			self.fields['document_type'].initial = selected_user_choices
 		if selected_entity_choices:
@@ -347,8 +350,13 @@ class UserProfileForm(forms.Form):
 		selected_user_choices = initial_data.get('user', '')
 		# selected_entity_choices = initial_data.get('role', '')
 		super().__init__(*args, **kwargs)
-		self.fields['user'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('first_name', '')) for record in user_choices_list]
-		# self.fields['role'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
+		self.fields['user'].choices = [('', '---select---')] + [
+		(
+			record.get('id', ''),
+			f"{record.get('first_name', '')} ({record.get('roles', {}).get('name', '')})"
+		)
+		for record in user_choices_list
+		]		# self.fields['role'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices
 		# if selected_entity_choices:
@@ -391,8 +399,8 @@ class CaseAssignmentForm(forms.Form):
 	case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	user = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	assigned_to = forms.MultipleChoiceField( required=True, widget=forms.SelectMultiple(attrs={"class": "form-control"}))
-	role = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
-	assigned_at = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={"type": "date","class": "form-control"}))
+	# role = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# assigned_at = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={"type": "date","class": "form-control"}))
 	due_date = forms.DateField(input_formats=['%Y-%m-%d'],required=True, widget=forms.DateInput(attrs={"type": "date","class": "form-control"}))
 	def __init__(self, *args, **kwargs):
 		user_choices_list = kwargs.pop('user_choices', [])
@@ -404,7 +412,12 @@ class CaseAssignmentForm(forms.Form):
 		selected_assigned_to_choices = initial_data.get('assigned_to', '')
 		super().__init__(*args, **kwargs)
 		self.fields['user'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('first_name', '')) for record in user_choices_list]
-		self.fields['assigned_to'].choices = [('', '---select---')] + [(record['user']['id'], record['user']['name']) for record in assigned_to_choices_list if 'user' in record and record['user']]
+		self.fields['assigned_to'].choices = [
+			('', '---select---')
+		] + [
+			(record['user']['id'], f"{record['user']['name']} ({record['user']['roles']})")
+			for record in assigned_to_choices_list if 'user' in record and record['user']
+		]		
 		self.fields['case'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices
@@ -423,7 +436,12 @@ class TRIOGroupMemberForm(forms.Form):
 		selected_user_choices = initial_data.get('profile', '')
 		selected_entity_choices = initial_data.get('group', '')
 		super().__init__(*args, **kwargs)
-		self.fields['profile'].choices = [('', '---select---')] + [(record['user']['id'], record['user']['name']) for record in user_choices_list if 'user' in record and record['user']]
+		self.fields['profile'].choices = [
+			('', '---select---')
+		] + [
+			(record['user']['id'], f"{record['user']['name']} ({record['user']['roles']})")
+			for record in user_choices_list if 'user' in record and record['user']
+		]
 		self.fields['group'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('name', '')) for record in entity_choices_list]
 		if selected_user_choices:
 			self.fields['profile'].initial = selected_user_choices
@@ -444,7 +462,13 @@ class TRIOProfileForm(forms.Form):
 		selected_user_choices = initial_data.get('user', '')
 		# selected_entity_choices = initial_data.get('role', '')
 		super().__init__(*args, **kwargs)
-		self.fields['user'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('first_name', '')) for record in user_choices_list]
+		self.fields['user'].choices = [('', '---select---')] + [
+		(
+			record.get('id', ''),
+			f"{record.get('first_name', '')} ({record.get('roles', {}).get('name', '')})"
+		)
+		for record in user_choices_list
+	]
 		# self.fields['role'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices

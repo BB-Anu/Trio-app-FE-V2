@@ -15,5 +15,5 @@ class MiddlewareExecutionStart(object):
         # This is where post-processing can happen if needed
         return response
     
-    def process_exception(self,request,exception):
-        return render(request,'error.html',{'error':exception})
+    # def process_exception(self,request,exception):
+    #     return render(request,'error.html',{'error':exception})

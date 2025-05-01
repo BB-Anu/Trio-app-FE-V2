@@ -5,22 +5,20 @@
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <a href="{% url 'documentgroup' %}">
+                <a href="{% url 'documenttype' %}">
                     <button type="button" class="btn btn-primary float-right">+ New</button>
                 </a>
                 {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
-                <h3>Document Group</h3>
+                <h3>Document Type</h3>
             </div>                <div class="card-body">
                     <div class="table-responsive">
                         <table id="tableID" class="display table table-hover">
                             <thead class="bg-col">
                                 <tr>
                                     <th>No.</th>
-<th>group name</th>
-{% comment %} <th>created by</th>
-<th>created at</th>
-<th>updated by</th>
-<th>updated at</th> {% endcomment %}
+<th> Type</th>
+<th> Description</th>
+
                     <th>Action</th>
                 </tr>
             </thead>
@@ -28,14 +26,14 @@
                 {% for data in records %}
                 <tr>
                     <td>{{forloop.counter}}</td>
-<td>{{data.group_name}}</td>
-{% comment %} <td>{{data.created_by}}</td>
-<td>{{data.created_at}}</td>
-<td>{{data.updated_by}}</td>
-<td>{{data.updated_at}}</td> {% endcomment %}
+
+
+<td>{{data.type}}</td>
+<td>{{data.description}}</td>
+
                     <td>
-                        <a href="{% url 'documentgroup_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'documentgroup_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                        <a href="{% url 'documenttype_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'documenttype_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>
                     </td>
                 </tr>
                 {% endfor %}

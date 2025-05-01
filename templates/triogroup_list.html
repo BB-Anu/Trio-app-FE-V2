@@ -17,9 +17,9 @@
                                 <tr>
                                     <th>No.</th>
 <th>name</th>
-<th>created by</th>
+{% comment %} <th>created by</th> {% endcomment %}
 <th>description</th>
-<th>created at</th>
+{% comment %} <th>created at</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -29,9 +29,9 @@
                     <td>{{forloop.counter}}</td>
 
 <td>{{data.name}}</td>
-<td>{{data.created_by}}</td>
+{% comment %} <td>{{data.created_by}}</td> {% endcomment %}
 <td>{{data.description}}</td>
-<td>{{data.created_at}}</td>
+{% comment %} <td>{{data.created_at}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'triogroup_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
                         <a href="{% url 'triogroup_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
