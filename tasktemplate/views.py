@@ -42,7 +42,9 @@ def create_template_view(request):
     }
     return render(request,'tasktemplate/create_template.html',context)
 
+
 def template_list_view(request):
+    
     endpoint = 'template/'
     records_response = call_get_method_without_token(BASEURL,endpoint)
     if records_response.status_code not in [200,201]:
@@ -52,6 +54,30 @@ def template_list_view(request):
         print('----',records)
         context = { 'records': records}
         return render(request, 'tasktemplate/template_list.html', context)
+
+
+def template_delete(request,pk):
+    endpoint = f'template/{pk}'
+    records_response = call_get_method_without_token(BASEURL,endpoint)
+    if records_response.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    else:
+        records = records_response.json()
+        print('----',records)
+        context = { 'records': records}
+        return render(request, 'tasktemplate/template_list.html', context)
+
+def template_edit(request,pk):
+    endpoint = f'template/{pk}'
+    records_response = call_get_method_without_token(BASEURL,endpoint)
+    if records_response.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    else:
+        records = records_response.json()
+        print('----',records)
+        context = { 'records': records}
+        return render(request, 'tasktemplate/create_template.html', context)
+
 
 def fill_and_save_template_view(request, pk):
     endpoint = f'templates/{pk}/'

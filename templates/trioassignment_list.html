@@ -19,7 +19,7 @@
 <th>customer</th>
 <th>group</th>
 <th>assigned by</th>
-<th>assigned on</th>
+<th>assigned To</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -28,10 +28,10 @@
                 <tr>
                     <td>{{forloop.counter}}</td>
 
-<td>{{data.customer}}</td>
-<td>{{data.group}}</td>
-<td>{{data.assigned_by}}</td>
-<td>{{data.assigned_on}}</td>
+<td>{{data.case.name}}</td>
+<td>{{data.group.name}}</td>
+<td>{{data.assigned_by.name}}</td>
+<td>{{data.assigned_to}}</td>
                     <td>
                         <a href="{% url 'trioassignment_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
                         <a href="{% url 'trioassignment_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>

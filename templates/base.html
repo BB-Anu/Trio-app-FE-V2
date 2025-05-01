@@ -439,7 +439,10 @@ user-select: none;
   </a>
   <div class="collapse {{ trioprofile }}" id="trioprofile">
       <ul class="sub-menu">
-
+        <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">trioprofile</span>
+        </a>
        
      
         <a class="nav-link {{triogroup_list}}" href="{% url 'triogroup_list' %}">
@@ -453,10 +456,7 @@ user-select: none;
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">triogroupmember</span>
         </a>
-        <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">trioprofile</span>
-        </a>
+        
         <a class="nav-link {{trioassignment_list}}" href="{% url 'trioassignment_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">trioassignment</span>
@@ -673,12 +673,10 @@ user-select: none;
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Roles</span>
         </a>
-     
-        <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
+        <a class="nav-link {{user_list}}" href="{% url 'user_list' %}">
           <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">Ward</span>
+          <span class="menu-title">Users</span>
         </a>
-      
         <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">County</span>
@@ -688,16 +686,17 @@ user-select: none;
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Sub County</span>
         </a>
-
-        <a class="nav-link {{user_list}}" href="{% url 'user_list' %}">
+        <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
           <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">Users</span>
+          <span class="menu-title">Ward</span>
         </a>
 
-        <a class="nav-link {{ function_list }}" href="{% url 'function_list' %}">
+      
+
+        {% comment %} <a class="nav-link {{ function_list }}" href="{% url 'function_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Functions</span>
-      </a>
+      </a> {% endcomment %}
 
 
         

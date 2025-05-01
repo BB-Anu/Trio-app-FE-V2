@@ -19,6 +19,8 @@
 <th>name</th>
 {% comment %} <th>created by</th> {% endcomment %}
 <th>description</th>
+<th>enterprise size</th>
+<th>Available</th>
 {% comment %} <th>created at</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
@@ -31,6 +33,9 @@
 <td>{{data.name}}</td>
 {% comment %} <td>{{data.created_by}}</td> {% endcomment %}
 <td>{{data.description}}</td>
+<td>{{data.enterprise_size}}</td>
+<td>{{data.is_available}}</td>
+
 {% comment %} <td>{{data.created_at}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'triogroup_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
