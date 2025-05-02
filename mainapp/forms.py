@@ -581,6 +581,7 @@ class TaskTimesheetForm(forms.Form):
 class TimesheetEntryForm(forms.Form):
 	timesheet = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	task = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+	given_hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}))
 	hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
 	work_done = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
 	uploaded_at = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={"type": "date","class": "form-control"}))
@@ -595,8 +596,14 @@ class TimesheetEntryForm(forms.Form):
 		selected_user_choices = initial_data.get('timesheet', '')
 		selected_entity_choices = initial_data.get('task', '')
 		super().__init__(*args, **kwargs)
-		self.fields['timesheet'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in user_choices_list]
-		self.fields['task'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
+		self.fields['timesheet'].choices = [('', '---select---')] + [
+			(record.get('id', ''), f"{record.get('id', '')} - {record.get('task', '')[:70]}")
+			for record in user_choices_list
+		]
+		self.fields['task'].choices = [('', '---select---')] + [
+			(record.get('id', ''), f"{record.get('id', '')} - {record.get('template', {}).get('name', '')}")
+			for record in entity_choices_list
+		]
 		if selected_entity_choices:
 			self.fields['task'].initial = selected_entity_choices
 		if selected_user_choices:

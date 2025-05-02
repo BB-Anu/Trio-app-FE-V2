@@ -153,6 +153,7 @@ urlpatterns = [
 	path("tasktimesheet_list/", tasktimesheet_list, name="tasktimesheet_list"),
 	path("tasktimesheet_edit/<pk>/", tasktimesheet_edit, name="tasktimesheet_edit"),
 	path("tasktimesheet_delete/<pk>/", tasktimesheet_delete, name="tasktimesheet_delete"),
+	path("taskhours/<int:pk>/", taskhours, name="taskhours"),
     
 	path("timesheetentry/", timesheetentry, name="timesheetentry"),
 	path("timesheetentry_list/", timesheetentry_list, name="timesheetentry_list"),
