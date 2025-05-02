@@ -4105,6 +4105,35 @@ def tasktimesheet_delete(request,pk):
         messages.success(request, 'Successfully deleted data for tasktimesheet', extra_tags='success')
         return redirect('tasktimesheet')
 
+
+def taskhours(request, pk):
+    user_token = request.session.get('user_token')
+    print('-------',pk)
+
+    endpoint = f'tasktimesheet_hours/{pk}/'
+    try:
+        # Get data from backend
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code not in [200, 201]:
+            return JsonResponse({
+                "error": "Failed to fetch records",
+                "details": records_response.json()
+            }, status=records_response.status_code)
+        else:
+            records = records_response.json()
+            # Return only id and hours_spent
+            data = {
+                "id": records.get('id'),
+                "hours_spent": records.get('total_working_hours')
+            }
+            return JsonResponse(data, status=200)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return JsonResponse({
+            "error": "An unexpected error occurred",
+            "message": str(e)
+        }, status=500)
+
 # create and view table function
 def timesheetentry(request):
     user_token=request.session['user_token']
@@ -4115,17 +4144,25 @@ def timesheetentry(request):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         task = records_response2.json()
-    endpoint2='timesheet/'    
+        print('task',task)
+
+    endpoint2='tasktimesheet/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         timesheet = records_response2.json()
-    form=TimesheetEntryForm(timesheet_choices=timesheet,task_choices=task)
+        print('timesheet',timesheet)
+    # hours = timesheet[0]  # or any index or filter logic
+    # given_hours = hours.get('total_working_hours')
+    # print('Given Hours:', given_hours)
+
+    # initial={'given_hours':given_hours}
+    form=TimesheetEntryForm(timesheet_choices=timesheet,task_choices=task,)
     endpoint = 'timesheetentry/'
     if request.method=="POST":
-        form=TimesheetEntryForm(request.POST,timesheet_choices=timesheet,task_choices=task)
+        form=TimesheetEntryForm(request.POST,timesheet_choices=timesheet,task_choices=task,)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
@@ -4137,7 +4174,7 @@ def timesheetentry(request):
                         del Output[field_name]
                         Output[field_name] = request.POST.get(field_name)
             json_data=json.dumps(Output)
-            response = call_post_method_for_without_token(BASEURL,endpoint,json_data)
+            response = call_post_with_method(BASEURL,endpoint,json_data,user_token)
             if response.status_code not in [200,201]:
                 print("error",response)
             else:
@@ -4147,7 +4184,7 @@ def timesheetentry(request):
         print('errorss',form.errors)
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -4163,10 +4200,12 @@ def timesheetentry(request):
     return render(request,'timesheetentry.html',context)
 
 def timesheetentry_list(request):
+    user_token=request.session['user_token']
+
     endpoint = 'timesheetentry/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:

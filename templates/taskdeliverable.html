@@ -42,5 +42,48 @@
 {% endif %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // When timesheet is selected
+    $('#id_timesheet').on('change', function () {
+        var timesheetId = $(this).val();
+        if (timesheetId) {
+            $.ajax({
+                url: '/taskhours/' + timesheetId + '/',
+                method: 'GET',
+                success: function (response) {
+                    // Set given_hours as total_working_hours - hours_spent
+                    var availableHours = parseFloat(response.total_working_hours) - parseFloat(response.hours_spent);
+                    if (availableHours < 0) availableHours = 0;
+
+                    $('#id_given_hours').val(availableHours.toFixed(2));
+
+                    // Set max attribute for 'hours' field
+                    $('#id_hours').attr('max', availableHours.toFixed(2));
+                },
+                error: function () {
+                    alert('Failed to fetch task hours.');
+                    $('#id_given_hours').val('');
+                    $('#id_hours').removeAttr('max');
+                }
+            });
+        } else {
+            $('#id_given_hours').val('');
+            $('#id_hours').removeAttr('max');
+        }
+    });
+
+    // Client-side validation to prevent entering more than allowed
+    $('#id_hours').on('input', function () {
+        var max = parseFloat($(this).attr('max'));
+        var val = parseFloat($(this).val());
+        if (val > max) {
+            alert('Entered hours exceed the available working hours.');
+            $(this).val('');
+        }
+    });
+});
+</script>
 
 {% endblock %}

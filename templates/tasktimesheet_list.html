@@ -17,6 +17,7 @@
                                 <tr>
                                     <th>No.</th>
 <th>Trio User </th>
+<th>Case </th>
 <th>task</th>
 <th>date</th>
 <th>total working hours</th>
@@ -30,7 +31,8 @@
                 <tr>
                     <td>{{forloop.counter}}</td>
 
-<td>{{data.employee}}</td>
+<td>{{data.employee.name}}</td>
+<td>{{data.case.name}}</td>
 <td>{{data.task}}</td>
 <td>{{data.date}}</td>
 <td>{{data.total_working_hours}}</td>
