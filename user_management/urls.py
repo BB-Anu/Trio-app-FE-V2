@@ -36,4 +36,15 @@ urlpatterns = [
 	path("branch_create/", branch_create, name="branch_create"),
 	path("branch_edit/<pk>/", branch_edit, name="branch_edit"),
 	path("branch_delete/<pk>/", branch_delete, name="branch_delete"),
+
+
+    path("permissions/", permissions, name="permissions"),
+    path("permissions_add/<int:pk>/", permissions_add, name="permissions_add"),
+    path("roles_page/", roles_page, name="roles_page"),
+    path("roles_add/", roles_add, name="roles_add"),
+    path("roles_edit/<pk>/", roles_edit, name="roles_edit"),
+
+    path("roles_delete/<int:pk>/", roles_delete, name="roles_delete"),
+
+
 ]

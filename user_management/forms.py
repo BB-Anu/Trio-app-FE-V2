@@ -21,6 +21,11 @@ class RoleForm(forms.Form):
 		if selected_permissions_choices:
 			self.fields['permissions'].initial = selected_permissions_choices
 
+class RolesForm(forms.Form):
+	name = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+	description = forms.CharField(max_length=250, required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+	
+
 
 class SubCountyForm(forms.Form):
 	name = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))

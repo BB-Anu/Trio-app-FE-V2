@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+<div class="container-fluid py-4">
+
+    <h5 class="card-title mb-4">Assign Permissions</h5>
+
+    <!-- Permissions Form -->
+    <form method="post" id="permissionsForm">
+        {% csrf_token %}
+
+        <div class="mb-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-danger" onclick="window.location.reload()">Cancel</button>
+            <button type="button" class="btn btn-info" onclick="location.reload()">Refresh</button>
+        </div>
+
+        <!-- Select All Button -->
+        <div class="form-check mb-3 mt-3">
+            <input class="form-check-input" type="checkbox" id="selectAll" />
+            <label class="form-check-label" for="selectAll">
+                Select All Permissions
+            </label>
+        </div>
+
+        <hr>
+
+        <!-- Permissions Section -->
+        <h5 class="mb-3">Assign Permissions</h5>
+
+        <div class="row">
+            {% for permission in permissions_data %}
+                <div class="col-md-2 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input permission-checkbox" type="checkbox" name="permission_ids" value="{{ permission.id }}" id="perm{{ permission.id }}">
+                        <label class="form-check-label" for="perm{{ permission.id }}">
+                            {{ permission.function_name|capfirst }}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Submit</button>
+    </form>
+
+    <!-- JavaScript for "Select All" functionality -->
+    <script>
+        document.getElementById('selectAll').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('.permission-checkbox');
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = this.checked;
+            }.bind(this));
+        });
+    </script>
+
+</div>
+{% endblock %}

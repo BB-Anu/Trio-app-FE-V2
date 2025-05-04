@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+
+<style>
+    .container-in {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        margin-top: 40px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+    .filled-document {
+        border: 2px solid #007bff;
+        border-radius: 5px;
+        padding: 15px;
+        background-color: #ffffff;
+        margin-bottom: 20px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .document-content {
+        margin-left: 30px;
+        margin-right: 30px;
+    }
+    .filled-document-header,
+    .filled-document-footer {
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .btn-print {
+        margin-top: 10px;
+    }
+    .input-placeholder {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    .input-fields input {
+        width: 100%; /* Full width of the container */
+        height: 40px; /* Adjust height for better visibility */
+        padding: 10px; /* Padding inside the input field */
+        margin-bottom: 10px; /* Space between inputs */
+        font-size: 16px; /* Increase font size */
+        border-radius: 5px;
+        border: 1px solid #ccc; /* Border styling */
+    }
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .filled-document, .filled-document * {
+            visibility: visible;
+        }
+        .filled-document {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none;
+            box-shadow: none;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="container-in">
+    <h5 class="mb-4 no-print">Document Detail</h5>
+    
+    <!-- Form to save hidden input fields -->
+    <form method="POST" action="" id="document-form">
+        {% csrf_token %}
+        
+        <!-- Input fields outside the document content -->
+        <div class="input-fields no-print">
+            {% for placeholder in placeholders %}
+                <div class="input-placeholder">
+                    <label for="{{ placeholder }}">{{ placeholder }}:</label>
+                    <input type="text" id="input-{{ placeholder }}" name="{{ placeholder }}" class="form-control" placeholder="Enter value for {{ placeholder }}" data-placeholder="{{ placeholder }}">
+                    <!-- Hidden field to store the input value -->
+                    <input type="hidden" id="hidden-{{ placeholder }}" name="hidden_{{ placeholder }}">
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="filled-document mb-4" id="document-to-print">
+            <div class="document-content">
+                <!-- Display the content with placeholders -->
+                <div id="document-content">
+                    {{ document|safe }}
+                </div>
+            </div>
+        </div>
+
+        <hr class="no-print">
+        <div class="text-center no-print">
+            <button type="button" class="btn btn-primary btn-print" onclick="printDocument()">Print as PDF</button>
+        </div>
+
+        <hr class="no-print">
+        <div class="text-center no-print">
+            <button type="submit" class="btn btn-success">Save Document</button>
+        </div>
+
+        <hr class="no-print">
+        <a href="{% url 'template_list' %}" class="d-block text-center mt-3 no-print">Back to Templates</a>
+    </form>
+</div>
+
+<script>
+    // Store the original content
+    const originalContent = document.getElementById('document-content').innerHTML;
+
+    // Function to update the document content with input values
+    function updateDocumentContent() {
+        let content = originalContent;
+        
+        // Replace each placeholder with its corresponding input field value
+        document.querySelectorAll('input[data-placeholder]').forEach(function(input) {
+            const placeholder = input.getAttribute('data-placeholder');
+            const value = input.value;
+            // Create regex to match {{placeholder}} (with optional whitespace)
+            const regex = new RegExp('\\{\\{\\s*' + placeholder + '\\s*\\}\\}', 'g');
+            content = content.replace(regex, value);
+
+            // Update the hidden input with the current value
+            document.getElementById('hidden-' + placeholder).value = value;
+        });
+
+        // Update the document content with the replaced values
+        document.getElementById('document-content').innerHTML = content;
+    }
+
+    // Listen for changes in the input fields and update the document content
+    document.querySelectorAll('input[data-placeholder]').forEach(function(input) {
+        input.addEventListener('input', updateDocumentContent);
+    });
+
+    // Print function
+    function printDocument() {
+        // First update the content with current values
+        updateDocumentContent();
+        
+        // Then print only the document
+        const printContent = document.getElementById('document-to-print').innerHTML;
+        const originalBody = document.body.innerHTML;
+        
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalBody;
+        
+        // Restore the event listeners
+        document.querySelectorAll('input[data-placeholder]').forEach(function(input) {
+            input.addEventListener('input', updateDocumentContent);
+        });
+    }
+</script>
+
+{% endblock %}
