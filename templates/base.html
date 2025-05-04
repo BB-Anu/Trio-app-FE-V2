@@ -263,174 +263,58 @@ user-select: none;
             </a>
           </li>
 
-
-            {% comment %} <li class="nav-item ">
-             
-            
-                <a class="nav-link {{suppliercustomermapping}}" href="{% url 'suppliercustomermapping_list' %}">
-                  <i class="icon-grid menu-icon"></i>
-                  <span class="menu-title">SupplierCustomerMapping</span>
-                </a>
-              </li>
-                
-  
-  
-
-            <li class="nav-item ">
-
-              <a class="nav-link {{logisticspartner}}" href="{% url 'logisticspartner_list' %}">
-                <i class="icon-grid menu-icon"></i>
-                <span class="menu-title">Logistics Partners</span>
-              </a>
-            </li>
-         {% endcomment %}
-
- 
-
-
-  
- 
-  <!-- {% if 'orderrequestparent_list' in request.session.permission or  'orderrequestparent_create' in request.session.permission %}
-<li class="nav-item ">
-  
-    <a class="nav-link {{orderrequestparent}}" href="{% url 'orderrequestparent_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">OrderRequestParent</span>
-    </a>
-  </li>{%endif%}
-  {% if 'stocktransferroutemain_list' in request.session.permission or  'stocktransferroutemain_create' in request.session.permission %}
-<li class="nav-item ">
-  
-    <a class="nav-link {{stocktransferroutemain}}" href="{% url 'stocktransferroutemain_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">StockTransferRouteMain</span>
-    </a>
-  </li>{%endif%}
-  {% if 'itemunit_list' in request.session.permission or  'itemunit_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link {{itemunit}}" href="{% url 'itemunit_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">ItemUnit</span>
-    </a>
-  </li>{%endif%}
-  {% if 'invoice_list' in request.session.permission or  'invoice_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link {{invoice}}" href="{% url 'invoice_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">Invoice</span>
-    </a>
-  </li>{%endif%}
-  {% if 'stocktransferparent_list' in request.session.permission or  'stocktransferparent_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link{{stocktransferparent}}" href="{% url 'stocktransferparent_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">StockTransferParent</span>
-    </a>
-  </li>{%endif%}
-  {% if 'stocktransferroutesub_list' in request.session.permission or  'stocktransferroutesub_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link {{stocktransferroutesub}}" href="{% url 'stocktransferroutesub_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">StockTransferRouteSub</span>
-    </a>
-  </li>{%endif%}
- 
-  {% if 'packageassignment_list' in request.session.permission or  'packageassignment_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link" href="{% url 'packageassignment_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">PackageAssignment</span>
-    </a>
-  </li>{%endif%}
-  {% if 'inventory_list' in request.session.permission or  'inventory_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link{{inventory_list}}" href="{% url 'inventory_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">Inventory</span>
-    </a>
-  </li>{%endif%}
-  {% if 'inventorybatchwise_list' in request.session.permission or  'inventorybatchwise_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link {{inventorybatchwise}}" href="{% url 'inventorybatchwise_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">InventoryBatchWise</span>
-    </a>
-  </li>{%endif%}
-  {% if 'orderrequestchild_list' in request.session.permission or  'orderrequestchild_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link{{orderrequestchild}}" href="{% url 'orderrequestchild_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">OrderRequestChild</span>
-    </a>
-  </li>{%endif%}
-  {% if 'manualstockadjustment_list' in request.session.permission or  'manualstockadjustment_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link{{manualstockadjustment}}" href="{% url 'manualstockadjustment_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">ManualStockAdjustment</span>
-    </a>
-  </li>{%endif%}
-  {% if 'stocktransferchild_list' in request.session.permission or  'stocktransferchild_create' in request.session.permission %}
-  <li class="nav-item ">
-
-    <a class="nav-link{{stocktransferchild}}" href="{% url 'stocktransferchild_list' %}">
-      <i class="icon-grid menu-icon"></i>
-      <span class="menu-title">StockTransferChild</span>
-    </a>
-  </li>{%endif%} -->
-  <li class="nav-item {{ profile }}">
-    <a class="nav-link" href="#profile" aria-expanded="false" aria-controls="profile">
+          {% comment %} {% if 'clientprofile-create' in request.session.permission or 'clientprofile-update' in request.session.permission or
+          'userprofile-create' in request.session.permission or 'userprofile-update' in request.session.permission or
+          'auditorprofile-create' in request.session.permission or 'auditorprofile-update' in request.session.permission or
+          'marketingagentprofile-create' in request.session.permission or 'marketingagentprofile-update' in request.session.permission or
+          'lawyerprofile-create' in request.session.permission or 'lawyerprofile-update' in request.session.permission %} {% endcomment %}
+          
+    <li class="nav-item {{ profile }}">
+      <a class="nav-link" href="#profile" aria-expanded="false" aria-controls="profile">
         <i class="icon-layout menu-icon"></i>
-        <span class="menu-title">Profile Management</span>
-        <i class="menu-arrow"></i>
-    </a>
-    <div class="collapse {{ profile }}" id="profile">
-        <ul class="sub-menu">
-  
-          <a class="nav-link {{clientprofile_list}}" href="{% url 'clientprofile_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">clientprofile</span>
-          </a>
-       
-          <a class="nav-link {{userprofile_list}}" href="{% url 'userprofile_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">userprofile</span>
-          </a>
+            <span class="menu-title">Profile Management</span>
+            <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ profile }}" id="profile">
+            <ul class="sub-menu">
+                {% if 'clientprofile-create' in request.session.permission or 'clientprofile-update' in request.session.permission %}
+                  <a class="nav-link {{clientprofile_list}}" href="{% url 'clientprofile_list' %}">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">clientprofile</span>
+                  </a>
+                {% endif %}
+    
+                {% if 'userprofile-create' in request.session.permission or 'userprofile-update' in request.session.permission %}
+                  <a class="nav-link {{userprofile_list}}" href="{% url 'userprofile_list' %}">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">userprofile</span>
+                  </a>
+                {% endif %}
+    
+                {% if 'auditorprofile-create' in request.session.permission or 'auditorprofile-update' in request.session.permission %}
+                  <a class="nav-link {{auditorprofile_list}}" href="{% url 'auditorprofile_list' %}">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">auditorprofile</span>
+                  </a>
+                {% endif %}
+    
+                {% if 'marketingagentprofile-create' in request.session.permission or 'marketingagentprofile-update' in request.session.permission %}
+                  <a class="nav-link {{marketingagentprofile_list}}" href="{% url 'marketingagentprofile_list' %}">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">marketingagentprofile</span>
+                  </a>
+                {% endif %}
+    
+                {% if 'lawyerprofile-create' in request.session.permission or 'lawyerprofile-update' in request.session.permission %}
+                  <a class="nav-link {{lawyerprofile_list}}" href="{% url 'lawyerprofile_list' %}">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">lawyerprofile</span>
+                  </a>
+                {% endif %}
+            </ul>
+        </div>
+    </li>
         
-          {% comment %} <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">trioprofile</span>
-          </a> {% endcomment %}
-  
-          <a class="nav-link {{auditorprofile_list}}" href="{% url 'auditorprofile_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">auditorprofile</span>
-          </a>
-  
-          <a class="nav-link {{marketingagentprofile_list}}" href="{% url 'marketingagentprofile_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">marketingagentprofile_list</span>
-          </a>
-          <a class="nav-link {{lawyerprofile_list}}" href="{% url 'lawyerprofile_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">lawyerprofile</span>
-          </a>
-  
-  
-        </ul>
-    </div> 
-  </li>
-  
-  
 <li class="nav-item {{ trioprofile }}">
   <a class="nav-link" href="#trioprofile" aria-expanded="false" aria-controls="trioprofile">
       <i class="icon-layout menu-icon"></i>
@@ -438,30 +322,46 @@ user-select: none;
       <i class="menu-arrow"></i>
   </a>
   <div class="collapse {{ trioprofile }}" id="trioprofile">
-      <ul class="sub-menu">
+    <ul class="sub-menu">
+      {% if 'template-create' in request.session.permission or 'template-update' in request.session.permission %}
+       
+    <a class="nav-link {{template_list}}" href="{% url 'template_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">Templates</span>
+    </a>
+  {%endif%}
+
+
+  {% if 'tasktemplate-create' in request.session.permission or 'tasktemplate-update' in request.session.permission %}
+    <a class="nav-link {{tasktemplate}}" href="{% url 'tasktemplate_list' %}">
+      <i class="icon-grid menu-icon"></i>
+      <span class="menu-title">Task Template</span>
+    </a>
+        {% if 'trioprofile-create' in request.session.permission or 'trioprofile-update' in request.session.permission %}
         <a class="nav-link {{trioprofile_list}}" href="{% url 'trioprofile_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">trioprofile</span>
         </a>
-       
-     
+      {%endif%}
+      {% if 'triogroup-create' in request.session.permission or 'triogroup-update' in request.session.permission %}
         <a class="nav-link {{triogroup_list}}" href="{% url 'triogroup_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">triogroup</span>
         </a>
       
-        
-
+      {%endif%}
+      {% if 'triogroupmember-create' in request.session.permission or 'triogroupmember-update' in request.session.permission %}
         <a class="nav-link {{triogroupmember_list}}" href="{% url 'triogroupmember_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">triogroupmember</span>
         </a>
-        
+      {%endif%}
+      {% if 'trioassignment-create' in request.session.permission or 'trioassignment-update' in request.session.permission %}
         <a class="nav-link {{trioassignment_list}}" href="{% url 'trioassignment_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">trioassignment</span>
         </a>
-        
+      {%endif%}
 
 
       </ul>
@@ -477,45 +377,54 @@ user-select: none;
     </a>
     <div class="collapse {{ task_show }}" id="task">
         <ul class="sub-menu">
-
+          {% if 'loancase-create' in request.session.permission or 'loancase-update' in request.session.permission %}
+          {% comment %} <li> {% endcomment %}
+          <a class="nav-link {{loancase_list}}" href="{% url 'loancase_list' %}">
+            <i class="icon-grid menu-icon"></i>
+            <span class="menu-title">loancase</span>
+          </a>
+        {% comment %} </li> {% endcomment %}
+        {% endif%}
+         
+        {%endif%}
+        {% if 'task-create' in request.session.permission or 'task-update' in request.session.permission %}
           <a class="nav-link {{task}}" href="{% url 'task_list' %}">
             <i class="icon-grid menu-icon"></i>
             <span class="menu-title">Task</span>
           </a>
-       
-          <a class="nav-link {{template_list}}" href="{% url 'template_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">Templates</span>
-          </a>
-        
-          <a class="nav-link {{tasktemplate}}" href="{% url 'tasktemplate_list' %}">
-            <i class="icon-grid menu-icon"></i>
-            <span class="menu-title">Task Template</span>
-          </a>
-         <a class="nav-link {{taskassignment}}" href="{% url 'taskassignment_list' %}">
+        {%endif%}
+         {% comment %} <a class="nav-link {{taskassignment}}" href="{% url 'taskassignment_list' %}">
             <i class="icon-grid menu-icon"></i>
             <span class="menu-title">Task Assignment</span>
-          </a> 
+          </a>  {% endcomment %}
+          {% comment %} {% if 'taskauditlog-create' in request.session.permission or 'taskauditlog-update' in request.session.permission %}
+        <li>
           <a class="nav-link {{taskauditlog}}" href="{% url 'taskauditlog_list' %}">
             <i class="icon-grid menu-icon"></i>
             <span class="menu-title">taskauditlog</span>
           </a>
-
+        </li>
+        {%endif%}
+        {% if 'taskdeliverable-create' in request.session.permission or 'taskdeliverable-update' in request.session.permission %}
+        <li>
           <a class="nav-link {{taskdeliverable}}" href="{% url 'taskdeliverable_list' %}">
             <i class="icon-grid menu-icon"></i>
             <span class="menu-title">taskdeliverable</span>
           </a>
-
+        </li>
+        {%endif%} {% endcomment %}
+        {% if 'tasktimesheet-create' in request.session.permission or 'tasktimesheet-update' in request.session.permission %}
           <a class="nav-link {{ tasktimesheet }}" href="{% url 'tasktimesheet_list' %}">
             <i class="icon-grid menu-icon"></i>
             <span class="menu-title">tasktimesheet</span>
         </a>
-
+      {%endif%}
+      {% if 'timesheetentry-create' in request.session.permission or 'timesheetentry-update' in request.session.permission %}
         <a class="nav-link {{timesheetentry}}" href="{% url 'timesheetentry_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">timesheetentry</span>
         </a>
-
+      {%endif%}
         {% comment %} <a class="nav-link {{timesheetattachment}}" href="{% url 'timesheetattachment' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">timesheetattachment</span>
@@ -600,61 +509,73 @@ user-select: none;
   </a>
   <div class="collapse {{ mainapp }}" id="mainapp">
       <ul class="sub-menu">
-
-        <a class="nav-link {{loancase_list}}" href="{% url 'loancase_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">loancase</span>
-        </a>
+       
+      {% if 'caseassignment-create' in request.session.permission or 'caseassignment-update' in request.session.permission %}
         <a class="nav-link {{caseassignment}}" href="{% url 'caseassignment_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">case assignment</span>
         </a>
+      {% endif%}
         {% comment %} <a class="nav-link {{template_list}}" href="{% url 'template_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Templates</span>
         </a> {% endcomment %}
-        
+        {% if 'issuereport-create' in request.session.permission or 'issuereport-update' in request.session.permission %}
+
         <a class="nav-link {{issuereport}}" href="{% url 'issuereport_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Issue Report</span>
         </a>
+        {% endif%}
+        {% if 'projects-create' in request.session.permission or 'projects-update' in request.session.permission %}
 
         <a class="nav-link {{projects_list}}" href="{% url 'projects_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">projects</span>
         </a>
+        {% endif%}
+
         {% comment %} <a class="nav-link {{auditlog}}" href="{% url 'auditlog_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">auditlog</span>
         </a> {% endcomment %}
+        {% if 'compliancechecklist-create' in request.session.permission or 'compliancechecklist-update' in request.session.permission %}
 
         <a class="nav-link {{compliancechecklist_list}}" href="{% url 'compliancechecklist_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">compliancechecklist</span>
         </a>
+        {% endif%}
+        {% if 'riskassessment-create' in request.session.permission or 'riskassessment-update' in request.session.permission %}
 
         <a class="nav-link {{ riskassessment_list }}" href="{% url 'riskassessment_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">riskassessment</span>
       </a>
+      {% endif%}
+      {% if 'clientquery-create' in request.session.permission or 'clientquery-update' in request.session.permission %}
 
       <a class="nav-link {{clientquery_list}}" href="{% url 'clientquery_list' %}">
         <i class="icon-grid menu-icon"></i>
         <span class="menu-title">client query</span>
       </a>
+      {% endif%}
+      {% if 'filedownloadreason-create' in request.session.permission or 'filedownloadreason-update' in request.session.permission %}
 
       <a class="nav-link {{filedownloadreason_list}}" href="{% url 'filedownloadreason_list' %}">
         <i class="icon-grid menu-icon"></i>
         <span class="menu-title">filedownloadreason</span>
       </a>
 
+      {% endif%}
         
+      {% if 'finalreport-create' in request.session.permission or 'finalreport-update' in request.session.permission %}
 
           <a class="nav-link {{finalreport_list}}" href="{% url 'finalreport_list' %}">
             <i class="icon-grid menu-icon"></i>
             <span class="menu-title">finalreport</span>
           </a>
-        </li>
+        {% endif%}
 
       </ul>
   </div> 
@@ -668,29 +589,41 @@ user-select: none;
   </a>
   <div class="collapse {{ usermanagement }}" id="usermanagement">
       <ul class="sub-menu">
+        {% if 'role-create' in request.session.permission or 'role-update' in request.session.permission %}
 
-        <a class="nav-link {{role_list}}" href="{% url 'role_list' %}">
+        <a class="nav-link {{roles}}" href="{% url 'roles_page' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Roles</span>
         </a>
+        {%endif%}
+        {% if 'user-create' in request.session.permission or 'user-update' in request.session.permission %}
+
         <a class="nav-link {{user_list}}" href="{% url 'user_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Users</span>
         </a>
+        {%endif%}
+        {% if 'county-create' in request.session.permission or 'county-update' in request.session.permission %}
+
         <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">County</span>
         </a>
+        {%endif%}
+        {% if 'subcounty-create' in request.session.permission or 'subcounty-update' in request.session.permission %}
 
         <a class="nav-link {{subcounty_list}}" href="{% url 'subcounty_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Sub County</span>
         </a>
+        {%endif%}
+        {% if 'ward-create' in request.session.permission or 'ward-update' in request.session.permission %}
+
         <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Ward</span>
         </a>
-
+        {%endif%}
       
 
         {% comment %} <a class="nav-link {{ function_list }}" href="{% url 'function_list' %}">

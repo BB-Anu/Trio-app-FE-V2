@@ -1156,3 +1156,210 @@ def branch_delete(request,pk):
         messages.success(request, 'Successfully deleted data for branch', extra_tags='success')
         return redirect('branch')
 
+
+
+def permissions(request):
+    token = request.session['user_token']
+    endpoint1 = 'UserManagement/api_functions_setup/'
+    records_response1 = call_get_method(BASEURL, endpoint1,token)
+    
+    print('records_response.status_code', records_response1.status_code)
+    permissions = records_response1.json()
+    print("Raw API Response:", permissions)
+
+    permissions_data = permissions.get('functions', [])
+    print("Formatted Permissions:", permissions_data)
+
+    context = {
+        "permissions": "active",
+        "permissions_data": permissions_data
+    }
+    return render(request, 'permissions.html', context)
+
+
+def permissions_add(request, pk):
+    token = request.session['user_token']
+    endpoint1 = 'UserManagement/api_functions_setup/'
+    functions_response = call_get_method(BASEURL, endpoint1,token)
+
+    print('functions_response.status_code', functions_response.status_code)
+    functions_data = functions_response.json()
+    print("Raw API Response:", functions_data)
+
+    permissions_data = functions_data.get('functions', [])
+    print("Formatted Permissions:", permissions_data)
+
+    role_endpoint = f'UserManagement/role_permission/{pk}/'
+    role_response = call_get_method(BASEURL, role_endpoint,token)
+
+    print('role_response.status_code', role_response.status_code)
+    role_permissions = role_response.json()
+    print("Role Response:", role_permissions)
+
+    assigned_permission_ids = [
+        str(permission['id']) for permission in role_permissions.get('data', [])
+    ]
+
+    if request.method == 'POST':
+        selected_permission_ids = request.POST.getlist('permission_ids')
+        print(f"Selected Permissions for Role {pk}: ", selected_permission_ids)
+
+        json_data = json.dumps({"functions": selected_permission_ids})
+        update_response = call_put_method(BASEURL, f'UserManagement/role/{pk}/', json_data,token)
+
+        if update_response.status_code in [200, 201]:
+            messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+            return redirect('roles_page')
+        else:
+            try:
+                error_message = update_response.json()
+            except Exception as e:
+                error_message = str(e)
+            messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+
+    context = {
+        "permissions": "active",
+        "permissions_data": permissions_data,
+        "assigned_permission_ids": assigned_permission_ids
+    }
+    return render(request, 'permissions_list.html', context)
+
+
+
+
+
+def roles_page(request):
+    try:
+        token = request.session['user_token']
+        endpoint = 'UserManagement/role/'
+    
+        records_response = call_get_method(BASEURL, endpoint,token)
+
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+            records = records_response.json()
+            print("records++++",records)
+        context={
+            "roles_page":"active",
+            'roles':records
+             }
+        return render(request, 'roles_page.html', context)
+    except Exception as error:
+        return render(request, "error.html", {"error": error})
+
+def roles_add(request):
+    token = request.session['user_token']
+    endpoint = 'UserManagement/role/'
+    endpoint1 = 'UserManagement/api_functions_setup/'
+    records_response1 = call_get_method(BASEURL, endpoint1,token)
+    print('records_response.status_code', records_response1.status_code)
+    permissions = []
+    permissions = records_response1.json()
+    print("Raw API Response:", permissions)
+    permissions_data = permissions['functions']
+ 
+    print("Formatted Permissions:", permissions_data)  # Debugging
+
+    if request.method == "POST":
+        form = RolesForm(request.POST)
+        if form.is_valid():
+            Output = form.cleaned_data
+            print('Output', Output)
+            # Handle date fields if needed
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if Output.get(field_name):
+                        Output[field_name] = request.POST.get(field_name)
+            
+            json_data = json.dumps(Output)
+            response = call_post_with_method(BASEURL, endpoint, json_data,token)
+            
+            if response.status_code not in [200, 201]:
+                print("error", response)
+            else:
+                messages.success(request, 'Data Successfully Saved', extra_tags="success")
+                return redirect('roles_page')
+    else:
+        form = RolesForm()
+
+    try:
+        records_response = call_get_method(BASEURL, endpoint,token)
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+            records = []
+        else:
+            records = records_response.json()
+    except Exception as e:
+        print("An error occurred:", str(e))
+        records = []
+
+    context = {
+        'form': form,
+        'records': records,
+    }
+    return render(request, 'roles.html', context)
+
+
+def roles_edit(request,pk):
+    token = request.session['user_token']
+    endpoint1 = 'UserManagement/api_functions_setup/'
+    records_response1 = call_get_method(BASEURL, endpoint1,token)
+    print('records_response.status_code', records_response1.status_code)
+    permissions = []
+    permissions = records_response1.json()
+    print("Raw API Response:", permissions)
+    permissions_data = permissions['functions']
+ 
+    print("Formatted Permissions:", permissions_data)  # Debugging
+
+    role = call_get_method(BASEURL, f'UserManagement/role/{pk}/',token)
+    
+    if role.status_code in [200,201]:
+        role_data = role.json()
+    else:
+        print('error------',role)
+        messages.error(request, 'Failed to retrieve data for role. Please check your connection and try again.', extra_tags='warning')
+        return redirect('roles_page')
+
+    if request.method=="POST":
+        form=RolesForm(request.POST, initial=role_data)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+            json_data = json.dumps(updated_data)
+            response = call_put_method(BASEURL, f'UserManagement/role/{pk}/', json_data,token)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('roles_page') 
+            else:
+                error_message = response.json()
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = RolesForm(initial=role_data)
+
+    context={
+        'form':form,
+    }
+    return render(request, 'roles.html', context)
+
+
+def roles_delete(request,pk):
+    token = request.session['user_token']
+    end_point = f'UserManagement/role/{pk}/'
+    jobpost = call_delete_method(BASEURL, end_point,token)
+    if jobpost.status_code not in [200,201]:
+        messages.error(request, 'Failed to delete data for jobpost. Please try again.', extra_tags='warning')
+        return redirect('roles_page')
+    else:
+        messages.success(request, 'Successfully deleted data for jobpost', extra_tags='success')
+        return redirect('roles_page')
+    

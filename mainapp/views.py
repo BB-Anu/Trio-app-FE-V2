@@ -83,6 +83,11 @@ def login(request):
                 request.session['user_data']=login_tokes['user_data']
                 user_id=request.session['user_data']['id']
                 request.session['branch']=request.session['user_data']['branch']
+                permission=login_tokes['permission']
+                permission_list=[]
+                for data in permission:
+                    permission_list.append(data['function_name'])
+                request.session['permission']=permission_list
                 print("user_id+++",user_id)
                 if request.session['user_data']['roles'] == 1:
                     return redirect('dashboard')
@@ -1089,7 +1094,7 @@ def foldermaster(request):
     user_token=request.session['user_token']
 
     endpoint1='clientprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -1097,14 +1102,14 @@ def foldermaster(request):
         clients = records_response2.json()
     print('clients',clients)
     endpoint2='customdocumententity/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         entity = records_response2.json()
     endpoint3='foldermaster/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint3)
+    records_response2 = call_get_method(BASEURL,endpoint3,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -1154,7 +1159,7 @@ def foldermaster_list(request):
     user_token=request.session['user_token']
     endpoint = 'foldermaster/'
         # getting data from backend
-    records_response = call_get_method_without_token(BASEURL,endpoint)
+    records_response = call_get_method(BASEURL,endpoint,user_token)
     if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
@@ -1166,8 +1171,10 @@ def foldermaster_list(request):
 
 # edit function
 def foldermaster_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint1='clientprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -1915,14 +1922,14 @@ def clientquery(request):
     user_token=request.session['user_token']
 
     endpoint1='clientprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
     endpoint2='projects/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -1972,7 +1979,7 @@ def clientquery_list(request):
     user_token=request.session['user_token']
     endpoint = 'clientquery/'
         # getting data from backend
-    records_response = call_get_method_without_token(BASEURL,endpoint)
+    records_response = call_get_method(BASEURL,endpoint,user_token)
     if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
@@ -3390,17 +3397,25 @@ def trioprofile_edit(request,pk):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
+        print('-clients-',clients)
     endpoint3='tasktemplate/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint3)
+    records_response2 = call_get_method(BASEURL,endpoint3,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         folder = records_response2.json()
-    trioprofile = call_get_method_without_token(BASEURL, f'trioprofile/{pk}/')
+    trioprofile = call_get_method(BASEURL, f'trioprofile/{pk}/',user_token)
     
     if trioprofile.status_code in [200,201]:
         trioprofile_data = trioprofile.json()
+        print('profile data------',trioprofile_data)
+        # Flatten initial data
+        if isinstance(trioprofile_data.get('user'), dict):
+            trioprofile_data['user'] = trioprofile_data['user']['id']
+        if isinstance(trioprofile_data.get('task_template'), dict):
+            trioprofile_data['task_template'] = trioprofile_data['task_template']['id']
+
     else:
         print('error------',trioprofile)
         messages.error(request, 'Failed to retrieve data for trioprofile. Please check your connection and try again.', extra_tags='warning')

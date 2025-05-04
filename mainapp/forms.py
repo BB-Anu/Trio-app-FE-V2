@@ -55,6 +55,7 @@ class TRIOGroupForm(forms.Form):
 		('SMALL', 'Small Enterprise'),
 		('MEDIUM', 'Medium Enterprise'),
 	], widget=forms.Select(attrs={"class": "form-control"}))
+	is_available = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
 	
 
 class LoanCaseForm(forms.Form):
@@ -458,38 +459,70 @@ class TRIOGroupMemberForm(forms.Form):
 		if selected_entity_choices:
 			self.fields['group'].initial = selected_entity_choices
 
-class TRIOProfileForm(forms.Form):
-	user = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	task_template = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	qualification = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
-	experience_years = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
-	phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
-	is_active = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
-	def __init__(self, *args, **kwargs):
-		user_choices_list = kwargs.pop('user_choices', [])
-		entity_choices_list = kwargs.pop('task_template_choices', [])
-		initial_data = kwargs.get("initial", {})
-		selected_user_choices = initial_data.get('user', '')
-		selected_entity_choices = initial_data.get('task_template', '')
-		super().__init__(*args, **kwargs)
+# class TRIOProfileForm(forms.Form):
+# 	user = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+# 	task_template = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+# 	qualification = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+# 	experience_years = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
+# 	phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+# 	is_active = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+# 	def __init__(self, *args, **kwargs):
+# 		user_choices_list = kwargs.pop('user_choices', [])
+# 		entity_choices_list = kwargs.pop('task_template_choices', [])
+# 		initial_data = kwargs.get("initial", {})
+# 		selected_user_choices = initial_data.get('user', '')
+# 		selected_entity_choices = initial_data.get('task_template', '')
+# 		super().__init__(*args, **kwargs)
 	
-		self.fields['user'].choices = [('', '---select---')] + [
-    (
-        record.get('id', ''),
-        f"{record.get('group', {}).get('name', '')} ({record.get('group', {}).get('roles', '')})"
-    )
-    for record in user_choices_list
-    if isinstance(record.get('group'), dict) and record.get('group', {}).get('roles', '').lower() != 'customer'
-]
+# 		self.fields['user'].choices = [('', '---select---')] + [
+#     (
+#         record.get('id', ''),
+#         f"{record.get('group', {}).get('name', '')} ({record.get('group', {}).get('roles', '')})"
+#     )
+#     for record in user_choices_list
+#     if isinstance(record.get('group'), dict) and record.get('group', {}).get('roles', '').lower() != 'customer'
+# ]
 
 
-		self.fields['task_template'].choices = [('', '---select---')] + [
-			(record.get('id', ''), record.get('template', {}).get('name', '')) for record in entity_choices_list
-		]
-		if selected_user_choices:
-			self.fields['user'].initial = selected_user_choices
-		if selected_entity_choices:
-			self.fields['task_template'].initial = selected_entity_choices
+# 		self.fields['task_template'].choices = [('', '---select---')] + [
+# 			(record.get('id', ''), record.get('template', {}).get('name', '')) for record in entity_choices_list
+# 		]
+# 		if selected_user_choices:
+# 			self.fields['user'].initial = selected_user_choices
+# 		if selected_entity_choices:
+# 			self.fields['task_template'].initial = selected_entity_choices
+class TRIOProfileForm(forms.Form):
+		user = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+		task_template = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+		qualification = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+		experience_years = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
+		phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+		is_active = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+		def __init__(self, *args, **kwargs):
+			user_choices_list = kwargs.pop('user_choices', [])
+			entity_choices_list = kwargs.pop('task_template_choices', [])
+			initial_data = kwargs.get("initial", {})
+			selected_user_choices = initial_data.get('user', '')
+			selected_entity_choices = initial_data.get('task_template', '')
+			super().__init__(*args, **kwargs)
+
+			self.fields['user'].choices = [('', '---select---')] + [
+				(
+					record['user']['id'],
+					f"{record['user']['name']} ({record['user']['roles']})"
+				)
+				for record in user_choices_list
+				if record.get('user') and record['user'].get('roles', '').lower() != 'customer'
+			]
+
+			self.fields['task_template'].choices = [('', '---select---')] + [
+				(record.get('id', ''), record.get('template', {}).get('name', '')) for record in entity_choices_list
+			]
+
+			if selected_user_choices:
+				self.fields['user'].initial = selected_user_choices
+			if selected_entity_choices:
+				self.fields['task_template'].initial = selected_entity_choices
 
 class FinalReportForm(forms.Form):
 	assignment = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
