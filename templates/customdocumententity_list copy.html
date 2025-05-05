@@ -1,33 +1,26 @@
 {% extends 'base.html' %} 
  {% block body_block %}
+ 
  <div class="text-end mb-3">
 <div class="content-wrapper">
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <a href="{% url 'foldermaster' %}">
+                <a href="{% url 'customdocumententity' %}">
                     <button type="button" class="btn btn-primary float-right">+ New</button>
                 </a>
                 {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
-                <h3>Folder Master</h3>
+                <h3>Custom Document Entity</h3>
             </div>                <div class="card-body">
                     <div class="table-responsive">
                         <table id="tableID" class="display table table-hover">
                             <thead class="bg-col">
                                 <tr>
                                     <th>No.</th>
-<th>folder id</th>
-<th>folder name</th>
+<th>entity id</th>
+<th>entity name</th>
+<th>entity type</th>
 <th>description</th>
-<th>entity</th>
-<th>client</th>
-<th>master checkbox file</th>
-<th>parent folder</th>
-<th>default folder</th>
-<th>created by</th>
-<th>created at</th>
-<th>update by</th>
-<th>update at</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -36,21 +29,13 @@
                 <tr>
                     <td>{{forloop.counter}}</td>
 
-<td>{{data.folder_id}}</td>
-<td>{{data.folder_name}}</td>
+<td><a href="{% url 'get_documents' data.entity_id %}">{{data.entity_id}}</a></td>
+<td>{{data.entity_name}}</td>
+<td>{{data.entity_type}}</td>
 <td>{{data.description}}</td>
-<td>{{data.entity}}</td>
-<td>{{data.client}}</td>
-<td>{{data.master_checkbox_file}}</td>
-<td>{{data.parent_folder}}</td>
-<td>{{data.default_folder}}</td>
-<td>{{data.created_by}}</td>
-<td>{{data.created_at}}</td>
-<td>{{data.update_by}}</td>
-<td>{{data.update_at}}</td>
                     <td>
-                        <a href="{% url 'foldermaster_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'foldermaster_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>
+                        <a href="{% url 'customdocumententity_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
+                        <a href="{% url 'customdocumententity_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>
                     </td>
                 </tr>
                 {% endfor %}

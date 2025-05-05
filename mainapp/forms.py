@@ -195,6 +195,12 @@ class DocumentForm(forms.Form):
 		if selected_entity_choices:
 			self.fields['case'].initial = selected_entity_choices
 
+class ClientDocumentForm(forms.Form):
+	# case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+	document_type = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+	file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=True,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
+	version = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
+
 class RiskAssessmentForm(forms.Form):
 	case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	analyst = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))

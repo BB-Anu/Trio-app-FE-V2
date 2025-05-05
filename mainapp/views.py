@@ -1657,20 +1657,21 @@ def document(request):
     user_token=request.session['user_token']
 
     endpoint1='loancase/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
-    form=DocumentForm(case_choices=clients)
+        print('---',clients)
+    form=DocumentForm()
     endpoint = 'document/'
     if request.method=="POST":
-        form=DocumentForm(request.POST,files=request.FILES,case_choices=clients)
+        form=DocumentForm(request.POST,files=request.FILES,)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
-            Output['created_by']=request.session['user_data']['id']
+            Output['uploaded_by']=request.session['user_data']['id']
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if Output[field_name]:
@@ -1709,8 +1710,10 @@ def document(request):
 
 def document_list(request):
     try:
+        user_token=request.session['user_token']
+
         endpoint = 'document/'
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -1722,10 +1725,74 @@ def document_list(request):
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     
     return render(request,'document_list.html',context)
+
+
+def client_document_list(request, case):
+    context = {}  
+    print('-----case',case)
+    try:
+        user_token = request.session['user_token']
+        endpoint1 = 'loancase/'    
+        records_response2 = call_get_method(BASEURL, endpoint1, user_token)
+
+        if records_response2.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+            clients = []
+        else:
+            clients = records_response2.json()
+        form = ClientDocumentForm()
+
+        if request.method == "POST":
+            form = ClientDocumentForm(request.POST, files=request.FILES, )
+            if form.is_valid():
+                Output = form.cleaned_data
+                Output['branch'] = request.session['branch']
+                Output['case'] = case
+                Output['uploaded_by'] = request.session['user_data']['id']
+
+                for field_name, field in form.fields.items():
+                    if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                        if Output[field_name]:
+                            del Output[field_name]
+                            Output[field_name] = request.POST.get(field_name)
+
+                cleaned_data = form.cleaned_data
+                files, cleaned_data = image_filescreate(cleaned_data)
+                json_data = cleaned_data if files else json.dumps(cleaned_data)
+
+                response = call_post_method_with_token_v2(BASEURL, 'document/', json_data, files)
+
+                if response['status_code'] == 1:
+                    print("error", response)
+                else:
+                    messages.success(request, 'Data Successfully Saved', extra_tags="success")
+                    return redirect('document_list')
+
+        # Fetch the documents for both GET and POST
+        endpoint = f'client_document/{case}/'
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+            records = []
+        else:
+            records = records_response.json()
+            print('---',records)
+
+        context = {'records': records, 'form': form ,'case': case}
+
+    except Exception as e:
+        print("An error occurred:", e)
+        messages.error(request, "An unexpected error occurred.", extra_tags="danger")
+        context={
+        'form':form,
+        }
+    return render(request, 'customer_document_list.html', context)
+
 # edit function
 def document_edit(request,pk):
+    user_token=request.session['user_token']
     endpoint1='loancase/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -6073,9 +6140,11 @@ def select_branch(request,pk):
 
 def document_entity(request):
     try:
+        user_token=request.session['user_token']
+
         # Getting data from backend
         endpoint = 'entities/'
-        records_response = call_get_method_without_token(BASEURL, endpoint)
+        records_response = call_get_method(BASEURL, endpoint,user_token)
 
         if records_response.status_code not in [200, 201]:
             try:
