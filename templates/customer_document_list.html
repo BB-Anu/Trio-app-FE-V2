@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+<div class="text-end mb-3">
+    <div class="content-wrapper">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'client_document_list' case %}">
+                        <button type="button" class="btn btn-primary float-right">+ Upload</button>
+                    </a>
+                    <h3>Document</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Case</th>
+                                    <th>Uploaded By</th>
+                                    <th>Document Type</th>
+                                    <th>File</th>
+                                    <th>Version</th>
+                                    {% comment %} <th>Uploaded At</th> {% endcomment %}
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in records %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ data.case }}</td>
+                                    <td>{{ data.uploaded_by }}</td>
+                                    <td>{{ data.document_type }}</td>
+                                    <td>{{ data.file }}</td>
+                                    <td>{{ data.version }}</td>
+                                    {% comment %} <td>{{ data.uploaded_at }}</td> {% endcomment %}
+                                    <td>
+                                        <a href="{% url 'document_edit' data.id %}">
+                                            <span data-toggle="tooltip" title="Edit" style="color: black;">
+                                                <i class="fa fa-edit"></i>
+                                            </span>
+                                        </a>
+                                        <a href="{% url 'document_delete' data.id %}" onclick="return confirm('You want to delete this item?')">
+                                            <span data-toggle="tooltip" title="Delete" style="color: black;">Delete
+                                                <i class="fa fa-remove"></i>
+                                            </span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
