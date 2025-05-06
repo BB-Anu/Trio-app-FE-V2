@@ -1708,6 +1708,7 @@ def document(request):
     }
     return render(request,'document.html',context)
 
+
 def document_list(request):
     try:
         user_token=request.session['user_token']
@@ -1726,6 +1727,53 @@ def document_list(request):
     
     return render(request,'document_list.html',context)
 
+def client_document(request,case):
+    user_token=request.session['user_token']
+
+    form=ClientDocumentForm()
+    endpoint = 'document/'
+    if request.method=="POST":
+        form=ClientDocumentForm(request.POST,files=request.FILES,)
+        if form.is_valid():
+            Output = form.cleaned_data
+            Output['branch']=request.session['branch']
+            Output['case'] = case
+            Output['uploaded_by']=request.session['user_data']['id']
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if Output[field_name]:
+                        del Output[field_name]
+                        Output[field_name] = request.POST.get(field_name)
+                cleaned_data = form.cleaned_data
+                files, cleaned_data = image_filescreate(cleaned_data)
+                json_data = cleaned_data if files else json.dumps(cleaned_data)
+                print('==json_data==,',json_data)
+                response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
+
+                print('==response==',response)
+                if response['status_code'] == 1:
+                    print("error",response)
+            else:
+                messages.success(request,'Data Successfully Saved', extra_tags="success")
+                return redirect('document_list')
+    else:
+        print('errorss',form.errors)
+    try:
+        # getting data from backend
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'form': form, 'records': records}
+            return render(request, 'document.html', context)
+    except Exception as e:
+        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    context={
+        'form':form,
+    }
+    return render(request,'document.html',context)
 
 def client_document_list(request, case):
     context = {}  
@@ -1835,6 +1883,41 @@ def document_edit(request,pk):
         'form':form,
     }
     return render(request,'document_edit.html',context)
+
+def document_approve(request, pk):
+    try:
+        user_token = request.session.get('user_token')
+        json_data = json.dumps(pk)
+        document = call_put_method_without_token(BASEURL, f'document_approve/{pk}/', json_data)
+        print('--',document)
+        print('--',document.status_code)
+        if document.status_code not in [200, 201]:
+            messages.error(request, 'Failed to approve document. Please try again.', extra_tags='warning')
+        else:
+            messages.success(request, 'Document approved successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('document_list')
+
+def document_reject(request):
+    try:
+        user_token = request.session.get('user_token')
+        if request.method == "POST":
+            pk = request.POST.get("customer_id")
+            reason = request.POST.get("rejection_reason")
+            json_data = json.dumps(pk,reason)
+            print('json_data',json_data)
+            document = call_put_method_without_token(BASEURL, f'document_reject/{pk}/', json_data)
+            
+            if document.status_code not in [200, 201]:
+                messages.error(request, 'Failed to reject document. Please try again.', extra_tags='warning')
+            else:
+                messages.success(request, 'Document rejected successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('document_list') 
 
 def document_delete(request,pk):
     end_point = f'document/{pk}/'

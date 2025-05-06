@@ -67,7 +67,10 @@ urlpatterns = [
 	path("document/", document, name="document"),
 	path("document_list/", document_list, name="document_list"),
 	path("client_document_list/<int:case>/", client_document_list, name="client_document_list"),
+	path("client_document/<int:case>/", client_document, name="client_document"),
 	path("document_edit/<pk>/", document_edit, name="document_edit"),
+    path("document_approve/<int:pk>/", document_approve, name="document_approve"),
+	path("document_reject/", document_reject, name="document_reject"),
 	path("document_delete/<pk>/", document_delete, name="document_delete"),
     
 	path("riskassessment/", riskassessment, name="riskassessment"),

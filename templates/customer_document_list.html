@@ -1,61 +1,35 @@
 {% extends 'base.html' %}
 
 {% block body_block %}
-<div class="text-end mb-3">
-    <div class="content-wrapper">
-        <div class="col-12 grid-margin stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <a href="{% url 'client_document_list' case %}">
-                        <button type="button" class="btn btn-primary float-right">+ Upload</button>
-                    </a>
-                    <h3>Document</h3>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="tableID" class="display table table-hover">
-                            <thead class="bg-col">
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Case</th>
-                                    <th>Uploaded By</th>
-                                    <th>Document Type</th>
-                                    <th>File</th>
-                                    <th>Version</th>
-                                    {% comment %} <th>Uploaded At</th> {% endcomment %}
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for data in records %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ data.case }}</td>
-                                    <td>{{ data.uploaded_by }}</td>
-                                    <td>{{ data.document_type }}</td>
-                                    <td>{{ data.file }}</td>
-                                    <td>{{ data.version }}</td>
-                                    {% comment %} <td>{{ data.uploaded_at }}</td> {% endcomment %}
-                                    <td>
-                                        <a href="{% url 'document_edit' data.id %}">
-                                            <span data-toggle="tooltip" title="Edit" style="color: black;">
-                                                <i class="fa fa-edit"></i>
-                                            </span>
-                                        </a>
-                                        <a href="{% url 'document_delete' data.id %}" onclick="return confirm('You want to delete this item?')">
-                                            <span data-toggle="tooltip" title="Delete" style="color: black;">Delete
-                                                <i class="fa fa-remove"></i>
-                                            </span>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="content-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Documents</h3>
+        <a href="{% url 'client_document' case %}">
+            <button class="btn btn-primary">+ Upload</button>
+        </a>
     </div>
+
+    {% regroup records by case as case_groups %}
+
+    {% for group in case_groups %}
+    <div class="mb-4">
+        <h5><i class="fa fa-folder text-warning"></i> {{ group.grouper }}</h5>
+        <ul class="list-group">
+            {% for item in group.list %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ case}} - {{item.case }}</strong> 
+                    <br>
+                    <small class="text-muted">{{ item.document_type }}</small>
+                </div>
+                <a href="http://127.0.0.1:9000/{{ item.file }}" class="btn btn-sm btn-outline-primary" target="_blank">View</a>
+            
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% empty %}
+    <p>No documents available.</p>
+    {% endfor %}
 </div>
 {% endblock %}
