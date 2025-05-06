@@ -1654,60 +1654,69 @@ def compliancechecklist_delete(request,pk):
 
 # create and view table function
 def document(request):
-    user_token=request.session['user_token']
+    user_token = request.session.get('user_token')
+    branch = request.session.get('branch')
+    uploaded_by = request.session.get('user_data', {}).get('id')
 
-    endpoint1='loancase/'    
-    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
-    print('records_response.status_code',records_response2.status_code)
-    if records_response2.status_code not in [200,201]:
-        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    # Fetch loan cases for dropdown
+    endpoint1 = 'loancase/'    
+    records_response2 = call_get_method(BASEURL, endpoint1, user_token)
+    
+    if records_response2.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch loan cases. {records_response2.json()}", extra_tags="warning")
+        clients = []
     else:
         clients = records_response2.json()
-        print('---',clients)
-    form=DocumentForm()
+
+    form = DocumentForm(case_choices=clients)
     endpoint = 'document/'
-    if request.method=="POST":
-        form=DocumentForm(request.POST,files=request.FILES,)
+
+    if request.method == "POST":
+        form = DocumentForm(request.POST, files=request.FILES, case_choices=clients)
         if form.is_valid():
-            Output = form.cleaned_data
-            Output['branch']=request.session['branch']
-            Output['uploaded_by']=request.session['user_data']['id']
+            cleaned_data = form.cleaned_data
+            # Override or include additional session data
+            cleaned_data['branch'] = branch
+            cleaned_data['uploaded_by'] = uploaded_by
+
+            # Ensure correct date values from request.POST (if any DateInput fields)
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
-                    if Output[field_name]:
-                        del Output[field_name]
-                        Output[field_name] = request.POST.get(field_name)
-                cleaned_data = form.cleaned_data
-                files, cleaned_data = image_filescreate(cleaned_data)
-                json_data = cleaned_data if files else json.dumps(cleaned_data)
-                print('==json_data==,',json_data)
-                response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
+                    cleaned_data[field_name] = request.POST.get(field_name)
 
-                print('==response==',response)
-                if response['status_code'] == 1:
-                    print("error",response)
+            # Handle files if present
+            files, cleaned_data = image_filescreate(cleaned_data)
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+
+            print('==json_data==', json_data)
+            response = call_post_method_with_token_v2(BASEURL, endpoint, json_data, files)
+            print('==response==', response)
+
+            if response.get('status_code') == 1:
+                messages.error(request, f"Error: {response.get('message', 'Unknown error')}", extra_tags="danger")
             else:
-                messages.success(request,'Data Successfully Saved', extra_tags="success")
+                messages.success(request, 'Data Successfully Saved', extra_tags="success")
                 return redirect('document_list')
-    else:
-        print('errorss',form.errors)
+        else:
+            print('Form errors:', form.errors)
+
+    # Fetch existing documents for display
     try:
-        # getting data from backend
-        records_response = call_get_method(BASEURL,endpoint,user_token)
-        if records_response.status_code not in [200,201]:
-            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch document records. {records_response.json()}", extra_tags="warning")
+            records = []
         else:
             records = records_response.json()
-            # You can pass 'records' to your template for rendering
-            context = {'form': form, 'records': records}
-            return render(request, 'document.html', context)
     except Exception as e:
-        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
-    context={
-        'form':form,
-    }
-    return render(request,'document.html',context)
+        print("An error occurred while fetching records:", str(e))
+        records = []
 
+    context = {
+        'form': form,
+        'records': records,
+    }
+    return render(request, 'document.html', context)
 
 def document_list(request):
     try:
