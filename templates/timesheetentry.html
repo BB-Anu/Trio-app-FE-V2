@@ -16,6 +16,11 @@
                 <h2>TimeSheet Entry</h2>
                     <form  method="post" enctype="multipart/form-data" id="myForm">
                     {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
                     {% for form_field in form %}
                     <div class="form-group">
                         {{ form_field.label_tag }}
