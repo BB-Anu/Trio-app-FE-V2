@@ -19,10 +19,19 @@
                     {% for form_field in form %}
                     <div class="form-group">
                         {{ form_field.label_tag }}
+                    
+                        {% if form_field.name == 'file' %}
+                        <br>
+                            {% if form.initial.file %}
+                            Current File    <a href="http://127.0.0.1:9000/{{ form.initial.file }}" target="_blank">{{form.initial.file}}</a><br><br>
+                            {% endif %}
+                        {% endif %}
+                    
                         {{ form_field }}
-                        <span class="text-danger">{{form_field.errors}}</span>
+                        <span class="text-danger">{{ form_field.errors }}</span>
                     </div>
                     {% endfor %}
+                    
                 </form>
             </div>
         </div>

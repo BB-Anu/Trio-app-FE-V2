@@ -461,43 +461,74 @@ user-select: none;
           <span class="menu-title">documentgroup</span>
         </a>
       {% endcomment %}
+      {% if 'customdocumententity-create' in request.session.permission or 'customdocumententity-update' in request.session.permission %}
+
         <a class="nav-link {{customdocumententity_list}}" href="{% url 'customdocumententity_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Document Entity</span>
         </a>
+      {% endif %}
+      {% if 'documenttype-create' in request.session.permission or 'documenttype-update' in request.session.permission %}
+
         <a class="nav-link {{documenttype_list}}" href="{% url 'documenttype_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Document Type </span>
         </a> 
+      {% endif %}
+      {% if 'foldermaster-create' in request.session.permission or 'foldermaster-update' in request.session.permission %}
 
         <a class="nav-link {{foldermaster_list}}" href="{% url 'foldermaster_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">folder master</span>
         </a>
+        {% endif %}
     
+        {% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
+
         <a class="nav-link {{document}}" href="{% url 'document_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">document</span>
         </a>
+        {% endif%}
+
+        {% if 'client_documents' in request.session.permission or 'client_documents' in request.session.permission %}
+
+        <a class="nav-link {{client_document}}" href="{% url 'client_documents' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Document</span>
+        </a>
+        {% endif%}
+
+        {% if 'documentupload-create' in request.session.permission or 'documentupload-update' in request.session.permission %}
 
         <a class="nav-link {{documentupload_list}}" href="{% url 'documentupload_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">documentupload</span>
         </a>
+        {% endif%}
 
-       
+        {% if 'documentuploadaudit1-create' in request.session.permission or 'documentuploadaudit1-update' in request.session.permission %}
+
         <a class="nav-link {{documentuploadaudit1}}" href="{% url 'documentuploadaudit1_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">documentuploadaudit1</span>
         </a>
+        {% endif%}
+
+        {% if 'documentuploadhistory1-create' in request.session.permission or 'documentuploadhistory1-update' in request.session.permission %}
+
         <a class="nav-link {{documentuploadhistory1}}" href="{% url 'documentuploadhistory1_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">documentuploadhistory1</span>
         </a>
+        {% endif%}
+
+        {% if 'documentaccess-create' in request.session.permission or 'documentaccess-update' in request.session.permission %}
         <a class="nav-link {{documentaccess}}" href="{% url 'documentaccess' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">documentaccess</span>
         </a>
+        {% endif%}
       </ul>
   </div> 
 </li>
