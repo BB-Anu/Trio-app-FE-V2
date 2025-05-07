@@ -24,8 +24,33 @@ BASEURL = 'http://127.0.0.1:9000/'
 APP_BUILDER = 'http://127.0.0.1:8000/'
 
 def dashboard(request):
+    user_token=request.session['user_token']
+    endpoint = 'dashboard/'
+        # getting data from backend
+    records_response = call_get_method(BASEURL,endpoint,user_token)
+    if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'dashboard.html', context)
     return render(request, 'dashboard.html')
 
+
+def user_dashboard(request):
+    user_token=request.session['user_token']
+    endpoint = 'user_dashboard/'
+        # getting data from backend
+    records_response = call_get_method(BASEURL,endpoint,user_token)
+    if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'user_dashboard.html', context)
+    return render(request, 'user_dashboard.html')
 def setup(request):
     endpoint = 'project_setups/'
     endpoint1 = 'set_up'
@@ -89,8 +114,8 @@ def login(request):
                     permission_list.append(data['function_name'])
                 request.session['permission']=permission_list
                 print("user_id+++",user_id)
-                if request.session['user_data']['roles'] == 1:
-                    return redirect('dashboard')
+                if request.session['user_data']['roles'] == 'Auditor':
+                    return redirect('user_dashboard')
                 elif request.session['user_data']['is_superuser'] == True:
                     return redirect('select_company')
                 elif request.session['user_data']['is_admin']==True:
@@ -108,12 +133,12 @@ def login(request):
                     if company_id is not None:
                         return redirect('select_branch', pk=company_id)
                     else:
-                        return redirect('dashboard')   
+                        return redirect('user_dashboard')   
                 else:
                     print('===request.session',request.session['user_data']['roles'])
                     request.session['branch']=request.session['user_data']['branch']
 
-                    return redirect('dashboard')
+                    return redirect('user_dashboard')
 
             else:
                 login_tokes = login_response.json()
@@ -1721,7 +1746,6 @@ def document(request):
 def document_list(request):
     try:
         user_token=request.session['user_token']
-
         endpoint = 'document/'
         records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
@@ -1735,6 +1759,25 @@ def document_list(request):
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     
     return render(request,'document_list.html',context)
+
+
+def client_documents(request):
+    try:
+        user_token=request.session['user_token']
+
+        endpoint = 'document/'
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'customer_documents.html', context)
+    except Exception as e:
+        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    
+    return render(request,'customer_documents.html',context)
 
 def client_document(request,case):
     user_token=request.session['user_token']
@@ -1859,30 +1902,65 @@ def document_edit(request,pk):
     
     if document.status_code in [200,201]:
         document_data = document.json()
+        print('---',document_data)
     else:
         print('error------',document)
         messages.error(request, 'Failed to retrieve data for document. Please check your connection and try again.', extra_tags='warning')
         return redirect('document_list')
 
-    if request.method=="POST":
-        form=DocumentForm(request.POST, initial=document_data,case_choices=clients)
+    # if request.method=="POST":
+    #     form=DocumentForm(request.POST,request.FILES, initial=document_data,case_choices=clients)
+    #     if form.is_valid():
+    #         updated_data = form.cleaned_data
+    #         for field_name, field in form.fields.items():
+    #             if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+    #                 if updated_data[field_name]:
+    #                     del updated_data[field_name]
+    #                     updated_data[field_name] = request.POST.get(field_name)
+    #         # Serialize the updated data as JSON
+    #         json_data = json.dumps(updated_data)
+    #         print('json_data',json_data)
+    #         response = call_put_method(BASEURL, f'document/{pk}/', json_data,user_token)
+
+    #         if response.status_code in [200,201]: 
+    #             messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+    #             return redirect('document_list') 
+    #         else:
+    #             error_message = response.json()
+    #             messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+    if request.method == "POST":
+        form = DocumentForm(request.POST, request.FILES, initial=document_data, case_choices=clients)
         if form.is_valid():
             updated_data = form.cleaned_data
+
+            # Remove file-type fields from cleaned_data before json.dumps
+            file_fields = []
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if updated_data[field_name]:
-                        del updated_data[field_name]
                         updated_data[field_name] = request.POST.get(field_name)
-            # Serialize the updated data as JSON
-            json_data = json.dumps(updated_data)
-            response = call_put_method_without_token(BASEURL, f'document/{pk}/', json_data)
+                if hasattr(updated_data[field_name], 'file'):  # File fields like TemporaryUploadedFile
+                    file_fields.append(field_name)
 
-            if response.status_code in [200,201]: 
+            for f in file_fields:
+                updated_data.pop(f)
+
+            # Serialize to JSON
+            json_data = json.dumps(updated_data)
+            print('json_data', json_data)
+
+            # Upload JSON data
+            response = call_put_method(BASEURL, f'document/{pk}/', json_data, user_token)
+
+            # Optionally: Handle file upload separately (depends on your API design)
+
+            if response.status_code in [200, 201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
                 return redirect('document_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
@@ -1915,10 +1993,11 @@ def document_reject(request):
         if request.method == "POST":
             pk = request.POST.get("customer_id")
             reason = request.POST.get("rejection_reason")
-            json_data = json.dumps(pk,reason)
+            print(pk,reason)
+            json_data = json.dumps({"pk": pk, "reason": reason})
             print('json_data',json_data)
-            document = call_put_method_without_token(BASEURL, f'document_reject/{pk}/', json_data)
-            
+            document = call_put_method_without_token(BASEURL, f'document_reject/{pk}/{reason}/', json_data)
+            print('---document',document.status_code)
             if document.status_code not in [200, 201]:
                 messages.error(request, 'Failed to reject document. Please try again.', extra_tags='warning')
             else:

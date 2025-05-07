@@ -3,6 +3,7 @@ from .views import *
 urlpatterns = [
     path("",login, name="login"),
     path("dashboard/",dashboard, name="dashboard"),
+    path("user_dashboard/",user_dashboard, name="user_dashboard"),
     path('setup', setup, name='setup'),
 	path("clientprofile/", clientprofile, name="clientprofile"),
 	path("clientprofile_list/", clientprofile_list, name="clientprofile_list"),
@@ -66,6 +67,7 @@ urlpatterns = [
     
 	path("document/", document, name="document"),
 	path("document_list/", document_list, name="document_list"),
+	path("client_documents/", client_documents, name="client_documents"),
 	path("client_document_list/<int:case>/", client_document_list, name="client_document_list"),
 	path("client_document/<int:case>/", client_document, name="client_document"),
 	path("document_edit/<pk>/", document_edit, name="document_edit"),
