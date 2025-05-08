@@ -31,6 +31,7 @@ urlpatterns = [
 	path("triogroup_delete/<pk>/", triogroup_delete, name="triogroup_delete"),
     
 	path("loancase/", loancase, name="loancase"),
+	path("loancase_details/<int:pk>/", loancase_details, name="loancase_details"),
     path("loancase_list/", loancase_list, name="loancase_list"),
 	path("loancase_edit/<pk>/", loancase_edit, name="loancase_edit"),
 	path("loancase_delete/<pk>/", loancase_delete, name="loancase_delete"),
