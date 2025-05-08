@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 data-toggle="collapse" href="#caseDetails" role="button" aria-expanded="false" aria-controls="caseDetails">
+                    Case Details <i class="fa fa-chevron-down"></i>
+                </h4>
+                <div class="collapse show" id="caseDetails">
+                    <ul>
+                        <li><strong>Client:</strong> {{ case.client }}</li>
+                        <li><strong>Case ID:</strong> {{ case.case_id }}</li>
+                        <li><strong>Case Reference:</strong> {{ case.case_reference }}</li>
+                        <li><strong>Loan Amount:</strong> {{ case.loan_amount }}</li>
+                        <li><strong>Loan Purpose:</strong> {{ case.loan_purpose }}</li>
+                        <li><strong>Status:</strong> {{ case.status }}</li>
+                        <li><strong>Start Date:</strong> {{ case.start_date|default:"Not started" }}</li>
+                        <li><strong>Created At:</strong> {{ case.created_at }}</li>
+                    </ul>
+                </div>
+
+                <hr>
+
+                <h4 data-toggle="collapse" href="#assignmentDetails" role="button" aria-expanded="false" aria-controls="assignmentDetails">
+                    Assignment Details <i class="fa fa-chevron-down"></i>
+                </h4>
+                <div class="collapse show" id="assignmentDetails">
+                    <ul>
+                        <li><strong>Group:</strong> {{ assignment.group.name }}</li>
+                        <li><strong>Assigned By:</strong> {{ assignment.assigned_by.name }}</li>
+                        <li><strong>Assigned On:</strong> {{ assignment.assigned_on }}</li>
+                        <li><strong>Assigned To:</strong>
+                            <ul>
+                                {% for assignee in assignment.assigned_to %}
+                                    <li>User ID: {{ assignee }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <hr>
+
+                <h4 data-toggle="collapse" href="#documentDetails" role="button" aria-expanded="false" aria-controls="documentDetails">
+                    Uploaded Documents <i class="fa fa-chevron-down"></i>
+                </h4>
+                <div class="collapse show" id="documentDetails">
+                    {% if documents %}
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Uploaded By</th>
+                                    <th>Status</th>
+                                    <th>Uploaded At</th>
+                                    <th>File</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doc in documents %}
+                                    <tr>
+                                        <td>{{ doc.document_type }}</td>
+                                        <td>{{ doc.uploaded_by }}</td>
+                                        <td>{{ doc.status }}</td>
+                                        <td>{{ doc.uploaded_at }}</td>
+                                        <td><a href="http://127.0.0.1:9000/{{ doc.file }}" target="_blank">View</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No documents uploaded.</p>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <h4 data-toggle="collapse" href="#timesheetDetails" role="button" aria-expanded="false" aria-controls="timesheetDetails">
+                    Timesheet Tasks <i class="fa fa-chevron-down"></i>
+                </h4>
+                <div class="collapse show" id="timesheetDetails">
+                    {% if timesheets %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Employee</th>
+                                    <th>Task</th>
+                                    <th>Total Hours</th>
+                                    <th>Hours Spent</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in timesheets %}
+                                    <tr>
+                                        <td>{{ t.date }}</td>
+                                        <td>{{ t.employee.name }}</td>
+                                        <td>{{ t.task }}</td>
+                                        <td>{{ t.total_working_hours }}</td>
+                                        <td>{{ t.hours_spent }}</td>
+                                        <td>{{ t.status }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No timesheet tasks found.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional: Fix font load errors -->
+<link href="{% static 'assets2/fonts/Nunito/Nunito-Regular.ttf' %}" rel="stylesheet" as="font" type="font/ttf" crossorigin="anonymous">
+<link href="{% static 'assets2/fonts/Nunito/Nunito-SemiBold.ttf' %}" rel="stylesheet" as="font" type="font/ttf" crossorigin="anonymous">
+{% endblock %}

@@ -620,7 +620,7 @@ class TaskTimesheetForm(forms.Form):
 class TimesheetEntryForm(forms.Form):
 	timesheet = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	task = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	given_hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}))
+	# given_hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}))
 	hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
 	work_done = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
 	uploaded_at = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={"type": "date","class": "form-control"}))

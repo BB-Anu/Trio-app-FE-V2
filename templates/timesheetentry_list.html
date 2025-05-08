@@ -58,7 +58,7 @@
 <td>{{data.created_at}}</td>
                     <td>
                         <a href="{% url 'timesheetentry_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'timesheetentry_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                        <a href="{% url 'timesheetentry_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>
                     </td>
                 </tr>
                 {% endfor %}

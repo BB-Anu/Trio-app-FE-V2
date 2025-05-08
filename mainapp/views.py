@@ -799,6 +799,38 @@ def loancase_list(request):
             return render(request, 'loancase_list.html', context)
     return render(request,'loancase_list.html',context)
 
+    
+def loancase_details(request, pk):
+    user_token = request.session['user_token']
+    endpoint = f'loancase_detail/{pk}'
+
+    # Getting data from backend
+    records_response = call_get_method(BASEURL, endpoint, user_token)
+
+    if records_response.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        return render(request, 'loancase_detail.html', {'screen_name': 'Loan Case Detail'})
+    else:
+        records = records_response.json()
+
+        case = records.get('case', {})
+        print('case', case)
+        assignment = records.get('assignment', {})
+        print('assignment', assignment)
+        documents = records.get('docs', [])
+        print('documents', documents)
+        timesheets = records.get('timesheet', [])
+        print('timesheets', timesheets)
+
+        context = {
+            'screen_name': 'Loan Case Detail',
+            'case': case,
+            'assignment': assignment,
+            'documents': documents,
+            'timesheets': timesheets,
+        }
+        return render(request, 'loancase_detail.html', context)
+
 # edit function
 def loancase_edit(request,pk):
     user_token=request.session['user_token']
@@ -4472,28 +4504,30 @@ def timesheetentry_list(request):
 
 # edit function
 def timesheetentry_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint1='task/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         task = records_response2.json()
-    endpoint2='timesheet/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    endpoint2='tasktimesheet/'    
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         timesheet = records_response2.json()
-    timesheetentry = call_get_method_without_token(BASEURL, f'timesheetentry/{pk}/')
+    timesheetentry = call_get_method(BASEURL, f'timesheetentry/{pk}/',user_token)
     
     if timesheetentry.status_code in [200,201]:
         timesheetentry_data = timesheetentry.json()
     else:
         print('error------',timesheetentry)
         messages.error(request, 'Failed to retrieve data for timesheetentry. Please check your connection and try again.', extra_tags='warning')
-        return redirect('timesheetentry')
+        return redirect('timesheetentry_list')
 
     if request.method=="POST":
         form=TimesheetEntryForm(request.POST, initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
@@ -4510,7 +4544,7 @@ def timesheetentry_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('timesheetentry') 
+                return redirect('timesheetentry_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
