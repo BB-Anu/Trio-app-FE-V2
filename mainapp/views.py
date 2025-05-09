@@ -799,7 +799,6 @@ def loancase_list(request):
             return render(request, 'loancase_list.html', context)
     return render(request,'loancase_list.html',context)
 
-    
 def loancase_details(request, pk):
     user_token = request.session['user_token']
     endpoint = f'loancase_detail/{pk}'
@@ -821,6 +820,8 @@ def loancase_details(request, pk):
         print('documents', documents)
         timesheets = records.get('timesheet', [])
         print('timesheets', timesheets)
+        due_date = records.get('due_date', [])
+        print('due_date', due_date)
 
         context = {
             'screen_name': 'Loan Case Detail',
@@ -828,6 +829,7 @@ def loancase_details(request, pk):
             'assignment': assignment,
             'documents': documents,
             'timesheets': timesheets,
+            'due_date':due_date
         }
         return render(request, 'loancase_detail.html', context)
 
@@ -2018,6 +2020,44 @@ def document_approve(request, pk):
         messages.error(request, f'Error: {str(e)}', extra_tags='danger')
 
     return redirect('document_list')
+
+
+def timesheetentry_approve(request, pk):
+    try:
+        user_token = request.session.get('user_token')
+        json_data = json.dumps(pk)
+        document = call_put_method_without_token(BASEURL, f'timesheet_approve/{pk}/', json_data)
+        print('--',document)
+        print('--',document.status_code)
+        if document.status_code not in [200, 201]:
+            messages.error(request, 'Failed to approve timesheetentry. Please try again.', extra_tags='warning')
+        else:
+            messages.success(request, 'timesheetentry approved successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('timesheetentry_approval_list')
+
+
+def timesheetentry_reject(request):
+    try:
+        user_token = request.session.get('user_token')
+        if request.method == "POST":
+            pk = request.POST.get("customer_id")
+            reason = request.POST.get("rejection_reason")
+            print(pk,reason)
+            json_data = json.dumps({"pk": pk, "reason": reason})
+            print('json_data',json_data)
+            document = call_put_method_without_token(BASEURL, f'timesheet_reject/{pk}/{reason}/', json_data)
+            print('---document',document.status_code)
+            if document.status_code not in [200, 201]:
+                messages.error(request, 'Failed to reject timesheetentry. Please try again.', extra_tags='warning')
+            else:
+                messages.success(request, 'timesheetentry rejected successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('timesheetentry_approval_list') 
 
 def document_reject(request):
     try:
@@ -4479,6 +4519,7 @@ def timesheetentry(request):
             return render(request, 'timesheetentry.html', context)
     except Exception as e:
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    
     context={
         'form':form,
     }
@@ -4501,6 +4542,27 @@ def timesheetentry_list(request):
     except Exception as e:
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     return render(request,'timesheetentry_list.html')
+
+
+def timesheetentry_approval_list(request):
+    user_token=request.session['user_token']
+
+    endpoint = 'tasktimesheet_approval/'
+    try:
+        # getting data from backend
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'timesheetentry_approval_list.html', context)
+    except Exception as e:
+        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    return render(request,'timesheetentry_approval_list.html')
+
+
 
 # edit function
 def timesheetentry_edit(request,pk):
@@ -4563,10 +4625,10 @@ def timesheetentry_delete(request,pk):
     timesheetentry = call_delete_method_without_token(BASEURL, end_point)
     if timesheetentry.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for timesheetentry. Please try again.', extra_tags='warning')
-        return redirect('timesheetentry')
+        return redirect('timesheetentry_list')
     else:
         messages.success(request, 'Successfully deleted data for timesheetentry', extra_tags='success')
-        return redirect('timesheetentry')
+        return redirect('timesheetentry_list')
 
 # create and view table function
 def timesheetattachment(request):
