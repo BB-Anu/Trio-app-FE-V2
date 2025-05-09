@@ -617,36 +617,78 @@ class TaskTimesheetForm(forms.Form):
 		if selected_user_choices:
 			self.fields['employee'].initial = selected_user_choices
 	
+# class TimesheetEntryForm(forms.Form):
+# 	timesheet = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+# 	task = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+# 	given_hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}))
+# 	hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
+# 	work_done = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+# 	uploaded_at = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={"type": "date","class": "form-control"}))
+# 	filename = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+# 	file_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+# 	attachment_name = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+# 	attachment_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+# 	def __init__(self, *args, **kwargs):
+# 		user_choices_list = kwargs.pop('timesheet_choices', [])
+# 		entity_choices_list = kwargs.pop('task_choices', [])
+# 		initial_data = kwargs.get("initial", {})
+# 		selected_user_choices = initial_data.get('timesheet', '')
+# 		selected_entity_choices = initial_data.get('task', '')
+# 		super().__init__(*args, **kwargs)
+# 		self.fields['timesheet'].choices = [('', '---select---')] + [
+# 			(record.get('id', ''), f"{record.get('id', '')} - {record.get('task', '')[:70]}")
+# 			for record in user_choices_list
+# 		]
+# 		self.fields['task'].choices = [('', '---select---')] + [
+# 			(record.get('id', ''), f"{record.get('id', '')} - {record.get('template', {}).get('name', '')}")
+# 			for record in entity_choices_list
+# 		]
+# 		if selected_entity_choices:
+# 			self.fields['task'].initial = selected_entity_choices
+# 		if selected_user_choices:
+# 			self.fields['timesheet'].initial = selected_user_choices
+
 class TimesheetEntryForm(forms.Form):
-	timesheet = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	task = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	# given_hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}))
-	hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
-	work_done = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
-	uploaded_at = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={"type": "date","class": "form-control"}))
-	filename = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
-	file_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
-	attachment_name = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
-	attachment_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
-	def __init__(self, *args, **kwargs):
-		user_choices_list = kwargs.pop('timesheet_choices', [])
-		entity_choices_list = kwargs.pop('task_choices', [])
-		initial_data = kwargs.get("initial", {})
-		selected_user_choices = initial_data.get('timesheet', '')
-		selected_entity_choices = initial_data.get('task', '')
-		super().__init__(*args, **kwargs)
-		self.fields['timesheet'].choices = [('', '---select---')] + [
-			(record.get('id', ''), f"{record.get('id', '')} - {record.get('task', '')[:70]}")
-			for record in user_choices_list
-		]
-		self.fields['task'].choices = [('', '---select---')] + [
-			(record.get('id', ''), f"{record.get('id', '')} - {record.get('template', {}).get('name', '')}")
-			for record in entity_choices_list
-		]
-		if selected_entity_choices:
-			self.fields['task'].initial = selected_entity_choices
-		if selected_user_choices:
-			self.fields['timesheet'].initial = selected_user_choices
+    timesheet = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control"}))
+    task = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control"}))
+    given_hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}))
+    hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
+    work_done = forms.CharField(required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+    uploaded_at = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={"type": "date", "class": "form-control"}))
+    filename = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+    file_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+    attachment_name = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+    attachment_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+
+    def __init__(self, *args, **kwargs):
+        user_choices_list = kwargs.pop('timesheet_choices', [])
+        entity_choices_list = kwargs.pop('task_choices', [])
+        initial_data = kwargs.get("initial", {})
+        selected_user_choices = initial_data.get('timesheet', '')
+        selected_entity_choices = initial_data.get('task', '')
+        super().__init__(*args, **kwargs)
+        self.fields['timesheet'].choices = [('', '---select---')] + [
+            (record.get('id', ''), f"{record.get('id', '')} - {record.get('task', '')[:70]}")
+            for record in user_choices_list
+        ]
+        self.fields['task'].choices = [('', '---select---')] + [
+            (record.get('id', ''), f"{record.get('id', '')} - {record.get('template', {}).get('name', '')}")
+            for record in entity_choices_list
+        ]
+        if selected_entity_choices:
+            self.fields['task'].initial = selected_entity_choices
+        if selected_user_choices:
+            self.fields['timesheet'].initial = selected_user_choices
+
+    def clean(self):
+        cleaned_data = super().clean()
+        given_hours = cleaned_data.get('given_hours')
+        entered_hours = cleaned_data.get('hours')
+
+        if given_hours is not None and entered_hours is not None:
+            if entered_hours > given_hours:
+                raise forms.ValidationError(f"Entered hours ({entered_hours}) exceed the available given hours ({given_hours}).")
+
 
 class TimesheetAttachmentForm(forms.Form):
 	entry = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
