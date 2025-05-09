@@ -22,7 +22,7 @@
 <th>date</th>
 <th>total working hours</th>
 <th>hours spent</th>
-<th>remarks</th>
+<th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -37,11 +37,12 @@
 <td>{{data.date}}</td>
 <td>{{data.total_working_hours}}</td>
 <td>{{data.hours_spent}}</td>
-<td>{{data.remarks}}</td>
+<td>{{data.status}}</td>
                     <td>
                         <a href="{% url 'tasktimesheet_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
                         <a href="{% url 'tasktimesheet_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>
                     </td>
+                    
                 </tr>
                 {% endfor %}
             </tbody>

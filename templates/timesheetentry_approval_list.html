@@ -1,0 +1,97 @@
+{% extends 'base.html' %} 
+ {% block body_block %}
+ <div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'tasktimesheet' %}">
+                    <button type="button" class="btn btn-primary float-right">+ New</button>
+                </a>
+                {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
+                <h3>Task TimeSheet</h3>
+            </div>                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                                <tr>
+                                    <th>No.</th>
+<th>Trio User </th>
+<th>Case </th>
+<th>task</th>
+<th>date</th>
+<th>total working hours</th>
+<th>hours spent</th>
+<th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+<td>{{data.employee.name}}</td>
+<td>{{data.case.id}}-{{data.case.name}}</td>
+<td>{{data.task}}</td>
+<td>{{data.date}}</td>
+<td>{{data.total_working_hours}}</td>
+<td>{{data.hours_spent}}</td>
+<td>{{data.status}}</td>
+                <td>
+                        <a href="{% url 'timesheetentry_approve' data.id %}" class="btn btn-success btn-sm">Approve</a>
+                        <button type="button" class="btn btn-danger reject-btn btn-sm" 
+                        data-toggle="modal" data-target="#rejectModal"
+                        data-id="{{ data.id }}">
+                        Reject
+                        </button>                       
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject Supplier</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'timesheetentry_reject' %}">
+                {% comment %} <form method="post" action=""> {% endcomment %}
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Reason for Rejection</label>
+                            <textarea class="form-control" name="rejection_reason" required></textarea>
+                            <input type="hidden" id="customer_id" name="customer_id">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Confirm Rejection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".reject-btn").forEach(function (button) {
+            button.addEventListener("click", function () {
+                var supplierId = this.getAttribute("data-id");
+                document.getElementById("customer_id").value = supplierId;
+            });
+        });
+    });
+    
+</script>
+
+{% endblock  %}

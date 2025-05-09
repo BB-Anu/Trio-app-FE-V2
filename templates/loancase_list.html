@@ -47,10 +47,16 @@
                                         <button class="btn dropdown-toggle" type="button" id="dropdownMenuIconButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
+                                        
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton2">
                                             <a class="dropdown-item" href="{% url 'loancase_edit' data.id %}">
                                                 <button class="btn iconbg-yellow" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                     <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                            </a>
+                                            <a class="dropdown-item" href="{% url 'loancase_details' data.id %}">
+                                                <button class="btn iconbg-yellow" data-bs-toggle="tooltip" data-bs-placement="top" title="View Details">
+                                                    <i class="fas fa-eye"></i> View
                                                 </button>
                                             </a>
                                             <a class="dropdown-item" href="{% url 'loancase_delete' data.id %}">

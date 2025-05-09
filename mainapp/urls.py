@@ -164,6 +164,9 @@ urlpatterns = [
     
 	path("timesheetentry/", timesheetentry, name="timesheetentry"),
 	path("timesheetentry_list/", timesheetentry_list, name="timesheetentry_list"),
+	path("timesheetentry_approval_list/", timesheetentry_approval_list, name="timesheetentry_approval_list"),
+	path("timesheetentry_approve/<pk>/", timesheetentry_approve, name="timesheetentry_approve"),
+	path("timesheetentry_reject/", timesheetentry_reject, name="timesheetentry_reject"),
 	path("timesheetentry_edit/<pk>/", timesheetentry_edit, name="timesheetentry_edit"),
 	path("timesheetentry_delete/<pk>/", timesheetentry_delete, name="timesheetentry_delete"),
     
