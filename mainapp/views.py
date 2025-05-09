@@ -24,8 +24,33 @@ BASEURL = 'http://127.0.0.1:9000/'
 APP_BUILDER = 'http://127.0.0.1:8000/'
 
 def dashboard(request):
+    user_token=request.session['user_token']
+    endpoint = 'dashboard/'
+        # getting data from backend
+    records_response = call_get_method(BASEURL,endpoint,user_token)
+    if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'dashboard.html', context)
     return render(request, 'dashboard.html')
 
+
+def user_dashboard(request):
+    user_token=request.session['user_token']
+    endpoint = 'user_dashboard/'
+        # getting data from backend
+    records_response = call_get_method(BASEURL,endpoint,user_token)
+    if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'user_dashboard.html', context)
+    return render(request, 'user_dashboard.html')
 def setup(request):
     endpoint = 'project_setups/'
     endpoint1 = 'set_up'
@@ -89,8 +114,8 @@ def login(request):
                     permission_list.append(data['function_name'])
                 request.session['permission']=permission_list
                 print("user_id+++",user_id)
-                if request.session['user_data']['roles'] == 1:
-                    return redirect('dashboard')
+                if request.session['user_data']['roles'] == 'Auditor':
+                    return redirect('user_dashboard')
                 elif request.session['user_data']['is_superuser'] == True:
                     return redirect('select_company')
                 elif request.session['user_data']['is_admin']==True:
@@ -108,12 +133,12 @@ def login(request):
                     if company_id is not None:
                         return redirect('select_branch', pk=company_id)
                     else:
-                        return redirect('dashboard')   
+                        return redirect('user_dashboard')   
                 else:
                     print('===request.session',request.session['user_data']['roles'])
                     request.session['branch']=request.session['user_data']['branch']
 
-                    return redirect('dashboard')
+                    return redirect('user_dashboard')
 
             else:
                 login_tokes = login_response.json()
@@ -773,6 +798,38 @@ def loancase_list(request):
             context = {'records': records,'screen_name':'Loan Case List'}
             return render(request, 'loancase_list.html', context)
     return render(request,'loancase_list.html',context)
+
+    
+def loancase_details(request, pk):
+    user_token = request.session['user_token']
+    endpoint = f'loancase_detail/{pk}'
+
+    # Getting data from backend
+    records_response = call_get_method(BASEURL, endpoint, user_token)
+
+    if records_response.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        return render(request, 'loancase_detail.html', {'screen_name': 'Loan Case Detail'})
+    else:
+        records = records_response.json()
+
+        case = records.get('case', {})
+        print('case', case)
+        assignment = records.get('assignment', {})
+        print('assignment', assignment)
+        documents = records.get('docs', [])
+        print('documents', documents)
+        timesheets = records.get('timesheet', [])
+        print('timesheets', timesheets)
+
+        context = {
+            'screen_name': 'Loan Case Detail',
+            'case': case,
+            'assignment': assignment,
+            'documents': documents,
+            'timesheets': timesheets,
+        }
+        return render(request, 'loancase_detail.html', context)
 
 # edit function
 def loancase_edit(request,pk):
@@ -1654,65 +1711,73 @@ def compliancechecklist_delete(request,pk):
 
 # create and view table function
 def document(request):
-    user_token=request.session['user_token']
+    user_token = request.session.get('user_token')
+    branch = request.session.get('branch')
+    uploaded_by = request.session.get('user_data', {}).get('id')
 
-    endpoint1='loancase/'    
-    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
-    print('records_response.status_code',records_response2.status_code)
-    if records_response2.status_code not in [200,201]:
-        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    # Fetch loan cases for dropdown
+    endpoint1 = 'loancase/'    
+    records_response2 = call_get_method(BASEURL, endpoint1, user_token)
+    
+    if records_response2.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch loan cases. {records_response2.json()}", extra_tags="warning")
+        clients = []
     else:
         clients = records_response2.json()
-        print('---',clients)
-    form=DocumentForm()
+
+    form = DocumentForm(case_choices=clients)
     endpoint = 'document/'
-    if request.method=="POST":
-        form=DocumentForm(request.POST,files=request.FILES,)
+
+    if request.method == "POST":
+        form = DocumentForm(request.POST, files=request.FILES, case_choices=clients)
         if form.is_valid():
-            Output = form.cleaned_data
-            Output['branch']=request.session['branch']
-            Output['uploaded_by']=request.session['user_data']['id']
+            cleaned_data = form.cleaned_data
+            # Override or include additional session data
+            cleaned_data['branch'] = branch
+            cleaned_data['uploaded_by'] = uploaded_by
+
+            # Ensure correct date values from request.POST (if any DateInput fields)
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
-                    if Output[field_name]:
-                        del Output[field_name]
-                        Output[field_name] = request.POST.get(field_name)
-                cleaned_data = form.cleaned_data
-                files, cleaned_data = image_filescreate(cleaned_data)
-                json_data = cleaned_data if files else json.dumps(cleaned_data)
-                print('==json_data==,',json_data)
-                response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
+                    cleaned_data[field_name] = request.POST.get(field_name)
 
-                print('==response==',response)
-                if response['status_code'] == 1:
-                    print("error",response)
+            # Handle files if present
+            files, cleaned_data = image_filescreate(cleaned_data)
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+
+            print('==json_data==', json_data)
+            response = call_post_method_with_token_v2(BASEURL, endpoint, json_data, files)
+            print('==response==', response)
+
+            if response.get('status_code') == 1:
+                messages.error(request, f"Error: {response.get('message', 'Unknown error')}", extra_tags="danger")
             else:
-                messages.success(request,'Data Successfully Saved', extra_tags="success")
+                messages.success(request, 'Data Successfully Saved', extra_tags="success")
                 return redirect('document_list')
-    else:
-        print('errorss',form.errors)
+        else:
+            print('Form errors:', form.errors)
+
+    # Fetch existing documents for display
     try:
-        # getting data from backend
-        records_response = call_get_method(BASEURL,endpoint,user_token)
-        if records_response.status_code not in [200,201]:
-            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch document records. {records_response.json()}", extra_tags="warning")
+            records = []
         else:
             records = records_response.json()
-            # You can pass 'records' to your template for rendering
-            context = {'form': form, 'records': records}
-            return render(request, 'document.html', context)
     except Exception as e:
-        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
-    context={
-        'form':form,
-    }
-    return render(request,'document.html',context)
+        print("An error occurred while fetching records:", str(e))
+        records = []
 
+    context = {
+        'form': form,
+        'records': records,
+    }
+    return render(request, 'document.html', context)
 
 def document_list(request):
     try:
         user_token=request.session['user_token']
-
         endpoint = 'document/'
         records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
@@ -1726,6 +1791,25 @@ def document_list(request):
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     
     return render(request,'document_list.html',context)
+
+
+def client_documents(request):
+    try:
+        user_token=request.session['user_token']
+
+        endpoint = 'document/'
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+            records = records_response.json()
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'customer_documents.html', context)
+    except Exception as e:
+        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    
+    return render(request,'customer_documents.html',context)
 
 def client_document(request,case):
     user_token=request.session['user_token']
@@ -1850,30 +1934,65 @@ def document_edit(request,pk):
     
     if document.status_code in [200,201]:
         document_data = document.json()
+        print('---',document_data)
     else:
         print('error------',document)
         messages.error(request, 'Failed to retrieve data for document. Please check your connection and try again.', extra_tags='warning')
         return redirect('document_list')
 
-    if request.method=="POST":
-        form=DocumentForm(request.POST, initial=document_data,case_choices=clients)
+    # if request.method=="POST":
+    #     form=DocumentForm(request.POST,request.FILES, initial=document_data,case_choices=clients)
+    #     if form.is_valid():
+    #         updated_data = form.cleaned_data
+    #         for field_name, field in form.fields.items():
+    #             if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+    #                 if updated_data[field_name]:
+    #                     del updated_data[field_name]
+    #                     updated_data[field_name] = request.POST.get(field_name)
+    #         # Serialize the updated data as JSON
+    #         json_data = json.dumps(updated_data)
+    #         print('json_data',json_data)
+    #         response = call_put_method(BASEURL, f'document/{pk}/', json_data,user_token)
+
+    #         if response.status_code in [200,201]: 
+    #             messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+    #             return redirect('document_list') 
+    #         else:
+    #             error_message = response.json()
+    #             messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+    if request.method == "POST":
+        form = DocumentForm(request.POST, request.FILES, initial=document_data, case_choices=clients)
         if form.is_valid():
             updated_data = form.cleaned_data
+
+            # Remove file-type fields from cleaned_data before json.dumps
+            file_fields = []
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if updated_data[field_name]:
-                        del updated_data[field_name]
                         updated_data[field_name] = request.POST.get(field_name)
-            # Serialize the updated data as JSON
-            json_data = json.dumps(updated_data)
-            response = call_put_method_without_token(BASEURL, f'document/{pk}/', json_data)
+                if hasattr(updated_data[field_name], 'file'):  # File fields like TemporaryUploadedFile
+                    file_fields.append(field_name)
 
-            if response.status_code in [200,201]: 
+            for f in file_fields:
+                updated_data.pop(f)
+
+            # Serialize to JSON
+            json_data = json.dumps(updated_data)
+            print('json_data', json_data)
+
+            # Upload JSON data
+            response = call_put_method(BASEURL, f'document/{pk}/', json_data, user_token)
+
+            # Optionally: Handle file upload separately (depends on your API design)
+
+            if response.status_code in [200, 201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
                 return redirect('document_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
@@ -1906,10 +2025,11 @@ def document_reject(request):
         if request.method == "POST":
             pk = request.POST.get("customer_id")
             reason = request.POST.get("rejection_reason")
-            json_data = json.dumps(pk,reason)
+            print(pk,reason)
+            json_data = json.dumps({"pk": pk, "reason": reason})
             print('json_data',json_data)
-            document = call_put_method_without_token(BASEURL, f'document_reject/{pk}/', json_data)
-            
+            document = call_put_method_without_token(BASEURL, f'document_reject/{pk}/{reason}/', json_data)
+            print('---document',document.status_code)
             if document.status_code not in [200, 201]:
                 messages.error(request, 'Failed to reject document. Please try again.', extra_tags='warning')
             else:
@@ -4384,28 +4504,30 @@ def timesheetentry_list(request):
 
 # edit function
 def timesheetentry_edit(request,pk):
+    user_token=request.session['user_token']
+
     endpoint1='task/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         task = records_response2.json()
-    endpoint2='timesheet/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    endpoint2='tasktimesheet/'    
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         timesheet = records_response2.json()
-    timesheetentry = call_get_method_without_token(BASEURL, f'timesheetentry/{pk}/')
+    timesheetentry = call_get_method(BASEURL, f'timesheetentry/{pk}/',user_token)
     
     if timesheetentry.status_code in [200,201]:
         timesheetentry_data = timesheetentry.json()
     else:
         print('error------',timesheetentry)
         messages.error(request, 'Failed to retrieve data for timesheetentry. Please check your connection and try again.', extra_tags='warning')
-        return redirect('timesheetentry')
+        return redirect('timesheetentry_list')
 
     if request.method=="POST":
         form=TimesheetEntryForm(request.POST, initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
@@ -4422,7 +4544,7 @@ def timesheetentry_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('timesheetentry') 
+                return redirect('timesheetentry_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')

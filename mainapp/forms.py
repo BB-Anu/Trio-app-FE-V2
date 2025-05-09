@@ -184,7 +184,7 @@ class ComplianceChecklistForm(forms.Form):
 class DocumentForm(forms.Form):
 	case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	document_type = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
-	file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=True,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
+	file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
 	version = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
 	def __init__(self, *args, **kwargs):
 		entity_choices_list = kwargs.pop('case_choices', [])
@@ -688,6 +688,7 @@ class TimesheetEntryForm(forms.Form):
         if given_hours is not None and entered_hours is not None:
             if entered_hours > given_hours:
                 raise forms.ValidationError(f"Entered hours ({entered_hours}) exceed the available given hours ({given_hours}).")
+
 
 class TimesheetAttachmentForm(forms.Form):
 	entry = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))

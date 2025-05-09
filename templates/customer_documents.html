@@ -5,9 +5,9 @@
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                {% comment %} <a href="{% url 'document' %}">
+                <a href="{% url 'document' %}">
                     <button type="button" class="btn btn-primary float-right">+ New</button>
-                </a> {% endcomment %}
+                </a>
                 {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
                 <h3>Document</h3>
             </div>                <div class="card-body">
@@ -42,16 +42,16 @@
 <td>  <a href="http://127.0.0.1:9000/{{ data.file }}"  class="btn btn-primary btn-sm"  target="_blank">View </a>
     <td>{{data.status}}</td>
     <td>{{data.reject_reason}}</td>
-
                     <td>
-                        <a href="{% url 'document_approve' data.id %}" class="btn btn-success btn-sm">Approve</a>
+                        {% comment %} <a href="{% url 'document_approve' data.id %}" class="btn btn-success btn-sm">Approve</a>
                         <button type="button" class="btn btn-danger reject-btn btn-sm" 
                         data-toggle="modal" data-target="#rejectModal"
                         data-id="{{ data.id }}">
                     Reject
-                </button>                        {% comment %} <a href="{% url 'document_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'document_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a> {% endcomment %}
-                    </td>
+                </button>                        {% endcomment %}
+                 <a href="{% url 'document_edit' data.id %}"><span data-toggle="tooltip" title="Reupload" style="color: primary;"><i class='fa fa-upload'></i></a> 
+                        {% comment %} <a href="{% url 'document_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>  {% endcomment %}
+                    </td> 
                 </tr>
                 {% endfor %}
             </tbody>
