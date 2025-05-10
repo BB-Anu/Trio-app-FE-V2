@@ -163,6 +163,7 @@ urlpatterns = [
 	path("taskhours/<int:pk>/", taskhours, name="taskhours"),
     
 	path("timesheetentry/", timesheetentry, name="timesheetentry"),
+	path("get_task/<int:task_id>/", get_task, name="get_task"),
 	path("timesheetentry_list/", timesheetentry_list, name="timesheetentry_list"),
 	path("timesheetentry_approval_list/", timesheetentry_approval_list, name="timesheetentry_approval_list"),
 	path("timesheetentry_approve/<pk>/", timesheetentry_approve, name="timesheetentry_approve"),

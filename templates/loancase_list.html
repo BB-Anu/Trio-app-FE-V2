@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
-{% block body_block %}
-
 {% load static %}
 
+{% block body_block %}
 <div class="content-wrapper">
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
@@ -24,8 +23,6 @@
                                 <th>Case Reference</th>
                                 <th>Loan Amount</th>
                                 <th>Loan Purpose</th>
-                                {% comment %} <th>Created By</th> {% endcomment %}
-                                {% comment %} <th>Created At</th> {% endcomment %}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -39,30 +36,21 @@
                                 <td>{{ data.case_reference }}</td>
                                 <td>{{ data.loan_amount }}</td>
                                 <td>{{ data.loan_purpose }}</td>
-                                {% comment %} <td>{{ data.created_by }}</td> {% endcomment %}
-                                {% comment %} <td>{{ data.created_at|date:"Y-m-d H:i" }}</td> {% endcomment %}
                                 <td>{{ data.status }}</td>
                                 <td>
                                     <div class="dropdown">
-                                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuIconButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v"></i>
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Actions
                                         </button>
-                                        
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton2">
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
                                             <a class="dropdown-item" href="{% url 'loancase_edit' data.id %}">
-                                                <button class="btn iconbg-yellow" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </button>
+                                                <i class="fas fa-edit text-primary"></i> Edit
                                             </a>
                                             <a class="dropdown-item" href="{% url 'loancase_details' data.id %}">
-                                                <button class="btn iconbg-yellow" data-bs-toggle="tooltip" data-bs-placement="top" title="View Details">
-                                                    <i class="fas fa-eye"></i> View
-                                                </button>
+                                                <i class="fas fa-eye text-primary"></i> View
                                             </a>
-                                            <a class="dropdown-item" href="{% url 'loancase_delete' data.id %}">
-                                                <button class="btn iconbg-rose" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete" onclick="return confirm('Are you sure you want to delete this item?')">
-                                                    <i class="fas fa-trash-alt"></i> Delete
-                                                </button>
+                                            <a class="dropdown-item text-primary" href="{% url 'loancase_delete' data.id %}" onclick="return confirm('Are you sure you want to delete this item?');">
+                                                <i class="fas fa-trash-alt"></i> Delete
                                             </a>
                                         </div>
                                     </div>
@@ -77,5 +65,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}

@@ -25,9 +25,9 @@
 <th>file type</th>
 <th>attachment name</th>
 <th>attachment type</th>
-<th>is late hours</th>
+{% comment %} <th>is late hours</th>
 <th>is wfh hours</th>
-<th>payment status</th>
+<th>payment status</th> {% endcomment %}
 <th>approved by</th>
 <th>status</th>
 <th>created by</th>
@@ -49,10 +49,10 @@
 <td>{{data.file_type}}</td>
 <td>{{data.attachment_name}}</td>
 <td>{{data.attachment_type}}</td>
-<td>{{data.is_late_hours}}</td>
+{% comment %} <td>{{data.is_late_hours}}</td>
 <td>{{data.is_wfh_hours}}</td>
 <td>{{data.payment_status}}</td>
-<td>{{data.approved_by}}</td>
+<td>{{data.approved_by}}</td> {% endcomment %}
 <td>{{data.status}}</td>
 <td>{{data.created_by}}</td>
 <td>{{data.created_at}}</td>
