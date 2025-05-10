@@ -2026,7 +2026,7 @@ def timesheetentry_approve(request, pk):
     try:
         user_token = request.session.get('user_token')
         json_data = json.dumps(pk)
-        document = call_put_method_without_token(BASEURL, f'timesheet_approve/{pk}/', json_data)
+        document = call_put_method(BASEURL, f'timesheet_approve/{pk}/', json_data,user_token)
         print('--',document)
         print('--',document.status_code)
         if document.status_code not in [200, 201]:
@@ -4479,15 +4479,17 @@ def timesheetentry(request):
     else:
         timesheet = records_response2.json()
         print('timesheet',timesheet)
-    # hours = timesheet[0]  # or any index or filter logic
-    # given_hours = hours.get('total_working_hours')
-    # print('Given Hours:', given_hours)
 
-    # initial={'given_hours':given_hours}
-    form=TimesheetEntryForm(timesheet_choices=timesheet,task_choices=task,)
+        
+    hours = timesheet[0]  # or any index or filter logic
+    given_hours = hours.get('total_working_hours')
+    print('Given Hours:', given_hours)
+
+    initial={'given_hours':given_hours}
+    form=TimesheetEntryForm(timesheet_choices=timesheet,task_choices=task,initial=initial)
     endpoint = 'timesheetentry/'
     if request.method=="POST":
-        form=TimesheetEntryForm(request.POST,timesheet_choices=timesheet,task_choices=task,)
+        form=TimesheetEntryForm(request.POST,request.FILES,timesheet_choices=timesheet,task_choices=task,)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
@@ -4498,10 +4500,15 @@ def timesheetentry(request):
                     if Output[field_name]:
                         del Output[field_name]
                         Output[field_name] = request.POST.get(field_name)
-            json_data=json.dumps(Output)
-            response = call_post_with_method(BASEURL,endpoint,json_data,user_token)
-            if response.status_code not in [200,201]:
-                print("error",response)
+                cleaned_data = form.cleaned_data
+                files, cleaned_data = image_filescreate(cleaned_data)
+                json_data = cleaned_data if files else json.dumps(cleaned_data)
+                print('==json_data==,',json_data)
+                response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
+
+                print('==response==',response)
+                if response['status_code'] == 1:
+                    print("error",response)
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
                 return redirect('timesheetentry_list')
@@ -4542,6 +4549,45 @@ def timesheetentry_list(request):
     except Exception as e:
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     return render(request,'timesheetentry_list.html')
+
+# def get_task(request, task_id):
+#     user_token = request.session['user_token']
+#     endpoint = f'get_task/{task_id}/'
+#     try:
+#         # Call the backend API to fetch task data
+#         records_response = call_get_method(BASEURL, endpoint, user_token)
+#         if records_response.status_code in [200, 201]:
+#             records = records_response.json()
+#             return JsonResponse({'records': records})
+#         else:
+#             return JsonResponse({'error': 'Failed to fetch task data'}, status=400)
+#     except Exception as e:
+#         return JsonResponse({'error': 'An error occurred'}, status=500)
+
+def get_task(request, task_id):
+    user_token = request.session['user_token']
+    endpoint = f'get_task/{task_id}/'
+    try:
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code in [200, 201]:
+            all_tasks = records_response.json()  # still returning a list
+            print('--task', all_tasks)
+
+            # Filter the task with the given ID
+            task = next((t for t in all_tasks if t['id'] == int(task_id)), None)
+
+            if task:
+                return JsonResponse({
+                    'task': task['task'],
+                    'total_working_hours': task['total_working_hours']
+                })
+            else:
+                return JsonResponse({'error': 'Task not found'}, status=404)
+        else:
+            return JsonResponse({'error': 'Failed to fetch task data'}, status=400)
+    except Exception as e:
+        print('Error:', e)
+        return JsonResponse({'error': 'An error occurred'}, status=500)
 
 
 def timesheetentry_approval_list(request):
@@ -4592,7 +4638,7 @@ def timesheetentry_edit(request,pk):
         return redirect('timesheetentry_list')
 
     if request.method=="POST":
-        form=TimesheetEntryForm(request.POST, initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
+        form=TimesheetEntryForm(request.POST,request.FILES, initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
         if form.is_valid():
             updated_data = form.cleaned_data
             for field_name, field in form.fields.items():

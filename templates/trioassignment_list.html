@@ -20,6 +20,7 @@
 <th>group</th>
 <th>assigned by</th>
 <th>assigned To</th>
+<th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -32,6 +33,7 @@
 <td>{{data.group.name}}</td>
 <td>{{data.assigned_by.name}}</td>
 <td>{{data.assigned_to}}</td>
+<td>{{data.status}}</td>
                     <td>
                         <a href="{% url 'trioassignment_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
                         <a href="{% url 'trioassignment_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
