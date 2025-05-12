@@ -7,12 +7,12 @@
         <div class="row">
           <div class="col-12 col-xl-8 mb-4 mb-xl-0">
             <h3 class="font-weight-bold">Welcome Admin</h3>
-            {% comment %} <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary">3 unread alerts!</span></h6> {% endcomment %}
+            <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary">3 unread alerts!</span></h6>
           </div>
           <div class="col-12 col-xl-4">
            <div class="justify-content-end d-flex">
             <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
-              {% comment %} <button class="btn btn-sm btn-light bg-white dropdown-toggle" type="button" id="dropdownMenuDate2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <button class="btn btn-sm btn-light bg-white dropdown-toggle" type="button" id="dropdownMenuDate2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                <i class="mdi mdi-calendar"></i> Today (30 July 2024)
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuDate2">
@@ -20,14 +20,14 @@
                 <a class="dropdown-item" href="#">March - June</a>
                 <a class="dropdown-item" href="#">June - August</a>
                 <a class="dropdown-item" href="#">August - November</a>
-              </div> {% endcomment %}
+              </div>
             </div>
            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
+    {% comment %} <div class="row">
       <div class="col-md-6 grid-margin stretch-card">
         <div class="card tale-bg">
           <div class="card-people mt-auto">
@@ -45,35 +45,55 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> {% endcomment %}
       <div class="col-md-6 grid-margin transparent">
         <div class="row">
           <div class="col-md-6 mb-4 stretch-card transparent">
             <div class="card card-tale">
               <div class="card-body">
-                <p class="mb-4">No of Tasks</p>
+                <p class="mb-4">No Of Timehseet</p>
                 <p class="fs-30 mb-2">{{records.timesheet}}</p>
-                {% comment %} <p>10.00% (30 days)</p> {% endcomment %}
+                <p>22.00% (30 days)</p>
               </div>
             </div>
           </div>
           <div class="col-md-6 mb-4 stretch-card transparent">
             <div class="card card-dark-blue">
               <div class="card-body">
-                <p class="mb-4">No Of Pending Tasks</p>
-                <p class="fs-30 mb-2">{{records.pending_timesheet}}</p>
-                {% comment %} <p>22.00% (30 days)</p> {% endcomment %}
+                <p class="mb-4">Approved Timehseets</p>
+                <p class="fs-30 mb-2">{{records.approved_timesheet}}</p>
+                <p>22.00% (30 days)</p>
               </div>
             </div>
           </div>
         </div>
+       <div class="col-md-6 mb-4 stretch-card transparent">
+            <div class="card card-dark-blue">
+              <div class="card-body">
+                <p class="mb-4">Rejected Timehseets</p>
+                <p class="fs-30 mb-2">{{records.rejected_timesheet}}</p>
+                <p>22.00% (30 days)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-6 mb-4 stretch-card transparent">
+            <div class="card card-dark-blue">
+              <div class="card-body">
+                <p class="mb-4">Pending Timehseets</p>
+                <p class="fs-30 mb-2">{{records.pending_timesheet}}</p>
+                <p>22.00% (30 days)</p>
+              </div>
+            </div>
+          </div>
+        </div> 
         <div class="row">
           <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
             <div class="card card-light-blue">
               <div class="card-body">
-                <p class="mb-4">No of Approved Tasks</p>
-                <p class="fs-30 mb-2">{{records.approved_timesheet}}</p>
-                {% comment %} <p>2.00% (30 days)</p> {% endcomment %}
+                <p class="mb-4">Number of Assignments</p>
+                <p class="fs-30 mb-2">{{records.assignment}}</p>
+                <p>2.00% (30 days)</p>
               </div>
             </div>
           </div>
@@ -82,7 +102,7 @@
               <div class="card-body">
                 <p class="mb-4">Number of Tasks</p>
                 <p class="fs-30 mb-2">{{records.task}}</p>
-                {% comment %} <p>0.22% (30 days)</p> {% endcomment %}
+                <p>0.22% (30 days)</p>
               </div>
             </div>
           </div>
@@ -626,45 +646,18 @@
                 <div class="table-responsive">
                   <table id="example" class="display expandable-table" style="width:100%">
                     <thead>
-              <tr>
-                <th>Date</th>
-                <th>Case</th>
-                <th>Task</th>
-                {% comment %} <th>Loan Amount</th> {% endcomment %}
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for task in records.recent_task %}
-              <tr>
-                <td>{{ task.date }}</td>
-                <td>{{ task.case.name }}</td>
-                <td>{{ task.task }}</td>
-                {% comment %} <td>{{ task.loan_amount }}</td> {% endcomment %}
-                <td>
-                  <span class="badge 
-                    {% if task.status == 'new' %}badge-primary
-                    {% elif task.status == 'info_gathering' %}badge-info
-                    {% elif task.status == 'in_progress' %}badge-warning
-                    {% elif task.status == 'review' %}badge-secondary
-                    {% elif task.status == 'rework' %}badge-light
-                    {% elif task.status == 'approved' %}badge-success
-                    {% elif task.status == 'declined' %}badge-danger
-                    {% elif task.status == 'closed' %}badge-dark
-                    {% endif %}
-                  ">
-                    {{ task.status }}
-                  </span>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="6">No recent tasks found.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                      <tr>
+                        <th>Quote#</th>
+                        <th>Product</th>
+                        <th>Business type</th>
+                        <th>Policy holder</th>
+                        <th>Premium</th>
+                        <th>Status</th>
+                        <th>Updated at</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                </table>
                 </div>
               </div>
             </div>

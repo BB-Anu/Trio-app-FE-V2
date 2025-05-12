@@ -32,6 +32,7 @@ def dashboard(request):
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
             records = records_response.json()
+            print('records',records)
             # You can pass 'records' to your template for rendering
             context = {'records': records}
             return render(request, 'dashboard.html', context)
@@ -51,6 +52,8 @@ def user_dashboard(request):
             context = {'records': records}
             return render(request, 'user_dashboard.html', context)
     return render(request, 'user_dashboard.html')
+
+
 def setup(request):
     endpoint = 'project_setups/'
     endpoint1 = 'set_up'
@@ -895,6 +898,45 @@ def loancase_delete(request,pk):
     else:
         messages.success(request, 'Successfully deleted data for loancase', extra_tags='success')
         return redirect('loancase_list')
+
+
+
+def loancase_approve(request, pk):
+    try:
+        user_token = request.session.get('user_token')
+        json_data = json.dumps(pk)
+        document = call_put_method(BASEURL, f'loancase_approve/{pk}/', json_data,user_token)
+        print('--',document)
+        print('--',document.status_code)
+        if document.status_code not in [200, 201]:
+            messages.error(request, 'Failed to approve loancase. Please try again.', extra_tags='warning')
+        else:
+            messages.success(request, 'loancase approved successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('loancase_list')
+
+
+def loancase_reject(request):
+    try:
+        user_token = request.session.get('user_token')
+        if request.method == "POST":
+            pk = request.POST.get("customer_id")
+            reason = request.POST.get("rejection_reason")
+            print(pk,reason)
+            json_data = json.dumps({"pk": pk, "reason": reason})
+            print('json_data',json_data)
+            document = call_put_method_without_token(BASEURL, f'loancase_reject/{pk}/{reason}/', json_data)
+            print('---document',document.status_code)
+            if document.status_code not in [200, 201]:
+                messages.error(request, 'Failed to reject loancase. Please try again.', extra_tags='warning')
+            else:
+                messages.success(request, 'loancase rejected successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('loancase_list') 
 
 # create and view table function
 def projects(request):
