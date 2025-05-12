@@ -35,7 +35,9 @@ urlpatterns = [
     path("loancase_list/", loancase_list, name="loancase_list"),
 	path("loancase_edit/<pk>/", loancase_edit, name="loancase_edit"),
 	path("loancase_delete/<pk>/", loancase_delete, name="loancase_delete"),
-    
+    path("loancase_approve/<int:pk>/", loancase_approve, name="loancase_approve"),
+	path("loancase_reject/", loancase_reject, name="loancase_reject"),
+
 	path("projects/", projects, name="projects"),
     path("projects_list/", projects_list, name="projects_list"),
 	path("projects_edit/<pk>/", projects_edit, name="projects_edit"),

@@ -24,7 +24,7 @@
                                 <th>Loan Amount</th>
                                 <th>Loan Purpose</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th colspan='3'>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,10 +37,19 @@
                                 <td>{{ data.loan_amount }}</td>
                                 <td>{{ data.loan_purpose }}</td>
                                 <td>{{ data.status }}</td>
-                                <td>
+                                
+                                        <td>
+                                         <a href="{% url 'loancase_approve' data.id %}" class="btn btn-success btn-sm">Approve</a>
+                        <button type="button" class="btn btn-danger reject-btn btn-sm" 
+                        data-toggle="modal" data-target="#rejectModal"
+                        data-id="{{ data.id }}">
+                    Reject
+                                        </td>
+
+                                        <td>
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Actions
+                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
                                             <a class="dropdown-item" href="{% url 'loancase_edit' data.id %}">
@@ -53,8 +62,8 @@
                                                 <i class="fas fa-trash-alt"></i> Delete
                                             </a>
                                         </div>
-                                    </div>
                                 </td>
+                                    </div>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -65,4 +74,46 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject Supplier</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'loancase_reject' %}">
+                {% comment %} <form method="post" action=""> {% endcomment %}
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Reason for Rejection</label>
+                            <textarea class="form-control" name="rejection_reason" required></textarea>
+                            <input type="hidden" id="customer_id" name="customer_id">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Confirm Rejection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".reject-btn").forEach(function (button) {
+            button.addEventListener("click", function () {
+                var supplierId = this.getAttribute("data-id");
+                document.getElementById("customer_id").value = supplierId;
+            });
+        });
+    });
+    
+</script>
+
 {% endblock %}
