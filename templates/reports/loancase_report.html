@@ -1,0 +1,61 @@
+
+{% extends 'base.html' %} 
+ {% block body_block %}
+ {% load static %}
+
+<div class="content-wrapper">
+   
+<div class="text-end mb-3">
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">  <h2>LoanCase Report</h2>
+
+  <!-- Date Selector -->
+ <div class="col-12 grid-margin stretch-card">
+        <div class="container mt-5 col-md-6">
+            <div class="card card-body">
+                   <form method="post" enctype="multipart/form-data" id="myForm">
+    {% csrf_token %}
+    {% for form_field in form %}
+        <div class="form-group">
+            {{ form_field.label_tag }}
+            {{ form_field }}
+            <span class="text-danger">{{ form_field.errors }}</span>
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary mt-2">Search</button>
+</form>
+
+            </div>
+        </div>
+    </div>
+  <!-- Timesheet Table -->
+    <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tableID" class="display table table-hover">
+                            <thead class="bg-col">
+                              <tr>
+        <th>User</th>
+        <th>Case</th>
+        <th>Loan Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for case in loancases %}
+  <tr>
+    <td>{{ case.client }}</td>
+    <td>{{ case.case_id }}-{{ case.case }}</td>
+    <td>{{ case.loan_amount }}</td>
+    <td>{{ case.status }}</td>
+  </tr>
+{% empty %}
+  <tr><td colspan="5">No data available for the selected date.</td></tr>
+{% endfor %}
+
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

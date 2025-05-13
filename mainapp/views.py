@@ -6559,3 +6559,58 @@ def get_documents(request, entityId):
         messages.error(request, f"An unexpected error occurred: {e}", extra_tags="danger")
         return render(request, 'folder_list.html', {'records': []})
 
+def timesheets_report(request):
+    user_token = request.session.get('user_token')
+    form = TimesheetRepotForm(request.POST or None)
+    context = {'form': form, 'timesheets': []}
+
+    if request.method == "POST" and form.is_valid():
+        date = form.cleaned_data.get('date')
+        status = form.cleaned_data.get('status')
+
+        date_str = date.strftime('%Y-%m-%d') if date else ''
+        status_param = f'status={status}' if status else ''
+        
+        # Build URL dynamically depending on available filters
+        endpoint = 'timesheets_report/'
+        if date_str:
+            endpoint += f'{date_str}/'
+        if status_param:
+            endpoint += f'?{status_param}' if '?' not in endpoint else f'&{status_param}'
+
+        try:
+            response = call_get_method(BASEURL, endpoint, user_token)
+            print('response', response.json())
+
+            if response.status_code in [200, 201]:
+                context['timesheets'] = response.json()
+                messages.success(request, 'Timesheets retrieved successfully.', extra_tags='success')
+            else:
+                messages.error(request, 'Failed to retrieve timesheets.', extra_tags='danger')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return render(request, 'reports/timesheets_report.html', context)
+
+def loancase_report(request):
+    user_token = request.session.get('user_token')
+    form = LoanCaseRepotForm(request.POST or None)
+    context = {'form': form, 'loancases': []}
+
+    if request.method == "POST" and form.is_valid():
+        date = form.cleaned_data.get('date')
+        date_str = date.strftime('%Y-%m-%d') if date else ''
+        
+        endpoint = f'loancase_report/{date_str}/' if date_str else 'loancase_report/'
+
+        try:
+            response = call_get_method(BASEURL, endpoint, user_token)
+            if response.status_code in [200, 201]:
+                context['loancases'] = response.json()
+                messages.success(request, 'Loan cases retrieved successfully.', extra_tags='success')
+            else:
+                messages.error(request, 'Failed to retrieve loan cases.', extra_tags='danger')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return render(request, 'reports/loancase_report.html', context)

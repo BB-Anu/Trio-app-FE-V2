@@ -532,7 +532,57 @@ user-select: none;
       </ul>
   </div> 
 </li>
-<li class="nav-item {{ mainapp }}">
+
+<li class="nav-item {{ report }}">
+  <a class="nav-link" href="#report" aria-expanded="false" aria-controls="report">
+      <i class="icon-layout menu-icon"></i>
+      <span class="menu-title">Report</span>
+      <i class="menu-arrow"></i>
+  </a>
+  <div class="collapse {{ report }}" id="report">
+      <ul class="sub-menu">
+        {% comment %} {% if 'role-create' in request.session.permission or 'role-update' in request.session.permission %} {% endcomment %}
+
+        <a class="nav-link {{report}}" href="{% url 'timesheets_report' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Timehseet Report</span>
+        </a>
+        {% comment %} {%endif%}
+        {% if 'user-create' in request.session.permission or 'user-update' in request.session.permission %} {% endcomment %}
+
+        <a class="nav-link {{user_list}}" href="{% url 'user_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Users</span>
+        </a>
+        {% comment %} {%endif%}
+        {% if 'county-create' in request.session.permission or 'county-update' in request.session.permission %} {% endcomment %}
+
+        <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">County</span>
+        </a>
+        {% comment %} {%endif%}
+        {% if 'subcounty-create' in request.session.permission or 'subcounty-update' in request.session.permission %} {% endcomment %}
+
+        <a class="nav-link {{subcounty_list}}" href="{% url 'subcounty_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Sub County</span>
+        </a>
+        {% comment %} {%endif%}
+        {% if 'ward-create' in request.session.permission or 'ward-update' in request.session.permission %} {% endcomment %}
+
+        <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Ward</span>
+        </a>
+        {% comment %} {%endif%} {% endcomment %}
+      
+        
+
+      </ul>
+  </div> 
+</li>
+{% comment %} <li class="nav-item {{ mainapp }}">
   <a class="nav-link" href="#mainapp" aria-expanded="false" aria-controls="mainapp">
       <i class="icon-layout menu-icon"></i>
       <span class="menu-title">Mainapp</span>
@@ -550,7 +600,7 @@ user-select: none;
         {% comment %} <a class="nav-link {{template_list}}" href="{% url 'template_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Templates</span>
-        </a> {% endcomment %}
+        </a> 
         {% if 'issuereport-create' in request.session.permission or 'issuereport-update' in request.session.permission %}
 
         <a class="nav-link {{issuereport}}" href="{% url 'issuereport_list' %}">
@@ -569,7 +619,7 @@ user-select: none;
         {% comment %} <a class="nav-link {{auditlog}}" href="{% url 'auditlog_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">auditlog</span>
-        </a> {% endcomment %}
+        </a> 
         {% if 'compliancechecklist-create' in request.session.permission or 'compliancechecklist-update' in request.session.permission %}
 
         <a class="nav-link {{compliancechecklist_list}}" href="{% url 'compliancechecklist_list' %}">
@@ -610,7 +660,7 @@ user-select: none;
 
       </ul>
   </div> 
-</li>
+</li> {% endcomment %}
 
 <li class="nav-item {{ usermanagement }}">
   <a class="nav-link" href="#usermanagement" aria-expanded="false" aria-controls="usermanagement">
