@@ -926,3 +926,13 @@ class TaskAssignmentForm(forms.Form):
 			self.fields['assigned_to'].initial = selected_assigned_to_choices
 		if selected_issue_choices:
 			self.fields['assigned_to'].initial = selected_issue_choices
+
+
+class TimesheetRepotForm(forms.Form):
+	date = forms.DateField(input_formats=['%Y-%m-%d'],required=False, widget=forms.DateInput(attrs={"type": "date","class": "form-control"}))
+	status = forms.ChoiceField(choices=[('pending','pending'),('completed','completed'),('approved','approved'),('rejected','rejected')], required=False, widget=forms.Select(attrs={"class": "form-control"}))
+
+
+
+class LoanCaseRepotForm(forms.Form):
+	date = forms.DateField(input_formats=['%Y-%m-%d'],required=False, widget=forms.DateInput(attrs={"type": "date","class": "form-control"}))

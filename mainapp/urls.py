@@ -248,4 +248,7 @@ urlpatterns = [
 	path("get_documents/<str:entityId>/", get_documents, name="get_documents"),
 
 
+	path("timesheets_report/", timesheets_report, name="timesheets_report"),
+	path("loancase_report/", loancase_report, name="loancase_report"),
+
 ]
