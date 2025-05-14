@@ -38,7 +38,7 @@
 <td>{{data.is_active}}</td>
                     <td>
                         <a href="{% url 'trioprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'trioprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                        <a href="{% url 'trioprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
                     </td>
                 </tr>
                 {% endfor %}

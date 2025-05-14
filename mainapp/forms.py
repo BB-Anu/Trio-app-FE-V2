@@ -20,7 +20,13 @@ class ClientProfileForm(forms.Form):
 		initial_data = kwargs.get("initial", {})
 		selected_user_choices = initial_data.get('user', '')
 		super().__init__(*args, **kwargs)
-		self.fields['user'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('first_name', '')) for record in user_choices_list]
+		self.fields['user'].choices = [('', '---select---')] + [
+			(
+				record.get('id', ''),  
+				f"{record['user'].get('name', '')} ({record['user'].get('roles', '')})"
+			)
+			for record in user_choices_list
+		]		
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices
 
@@ -443,7 +449,7 @@ class CaseAssignmentForm(forms.Form):
 
 class TRIOGroupMemberForm(forms.Form):
 	group = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	profile = forms.MultipleChoiceField( required=True, widget=forms.SelectMultiple(attrs={"class": "form-control"}))
+	profile = forms.MultipleChoiceField( required=True, widget=forms.SelectMultiple(attrs={"class": "form-control",'rows':4}))
 	def __init__(self, *args, **kwargs):
 		user_choices_list = kwargs.pop('user_choices', [])
 		entity_choices_list = kwargs.pop('case_choices', [])
@@ -503,7 +509,7 @@ class TRIOProfileForm(forms.Form):
 		qualification = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
 		experience_years = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
 		phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
-		is_active = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+		is_active = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
 		def __init__(self, *args, **kwargs):
 			user_choices_list = kwargs.pop('user_choices', [])
 			entity_choices_list = kwargs.pop('task_template_choices', [])
@@ -513,13 +519,13 @@ class TRIOProfileForm(forms.Form):
 			super().__init__(*args, **kwargs)
 
 			self.fields['user'].choices = [('', '---select---')] + [
-				(
-					record['user']['id'],
-					f"{record['user']['name']} ({record['user']['roles']})"
-				)
-				for record in user_choices_list
-				if record.get('user') and record['user'].get('roles', '').lower() != 'customer'
-			]
+			(
+				record['id'],  # Use client ID here
+				f"{record['user']['name']} ({record['user']['roles']})"
+			)
+			for record in user_choices_list
+			if record.get('user') and record['user'].get('roles', '').lower() != 'customer'
+		]
 
 			self.fields['task_template'].choices = [('', '---select---')] + [
 				(record.get('id', ''), record.get('template', {}).get('name', '')) for record in entity_choices_list
@@ -795,16 +801,22 @@ class AuditorProfileForm(forms.Form):
 	contact_phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
 	contact_email = forms.EmailField(required=True, widget=forms.TextInput(attrs={"type": "email","class": "form-control"}))
 	address = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
-	is_internal = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
-	nda_signed = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
-	active = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	is_internal = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	nda_signed = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	active = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
 
 	def __init__(self, *args, **kwargs):
 		user_choices_list = kwargs.pop('user_choices', [])
 		initial_data = kwargs.get("initial", {})
 		selected_user_choices = initial_data.get('user', '')
 		super().__init__(*args, **kwargs)
-		self.fields['user'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('first_name', '')) for record in user_choices_list]
+		self.fields['user'].choices = [('', '---select---')] + [
+		(
+			record.get('id', ''), 
+			f"{record['user'].get('name', '')} ({record['user'].get('roles', '')})"
+		)
+		for record in user_choices_list
+		]
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices
 
@@ -819,14 +831,20 @@ class MarketingAgentProfileForm(forms.Form):
 	contact_phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
 	contact_email = forms.EmailField(required=True, widget=forms.TextInput(attrs={"type": "email","class": "form-control"}))
 	address = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
-	has_ndasigned = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
-	available_for_assignment = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	has_ndasigned = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	available_for_assignment = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
 	def __init__(self, *args, **kwargs):
 		user_choices_list = kwargs.pop('user_choices', [])
 		initial_data = kwargs.get("initial", {})
 		selected_user_choices = initial_data.get('user', '')
 		super().__init__(*args, **kwargs)
-		self.fields['user'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('first_name', '')) for record in user_choices_list]
+		self.fields['user'].choices = [('', '---select---')] + [
+			(
+				record.get('id', ''),  
+				f"{record['user'].get('name', '')} ({record['user'].get('roles', '')})"
+			)
+			for record in user_choices_list
+		]
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices
 
@@ -862,15 +880,23 @@ class LawyerProfileForm(forms.Form):
 	contact_phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
 	contact_email = forms.EmailField(required=True, widget=forms.TextInput(attrs={"type": "email","class": "form-control"}))
 	address = forms.CharField( required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
-	licensed = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
-	nda_signed = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
-	active = forms.BooleanField(required=True,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	licensed = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	nda_signed = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+	active = forms.BooleanField(required=False,widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
 	def __init__(self, *args, **kwargs):
 		user_choices_list = kwargs.pop('user_choices', [])
 		initial_data = kwargs.get("initial", {})
 		selected_user_choices = initial_data.get('user', '')
 		super().__init__(*args, **kwargs)
-		self.fields['user'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('first_name', '')) for record in user_choices_list]
+		self.fields['user'].choices = [('', '---select---')] + [
+			(
+				record.get('id', ''),  # Lawyer ID, not User ID
+				f"{record['user'].get('name', '')} ({record['user'].get('roles', '')})"
+			)
+			for record in user_choices_list
+		]
+
+				
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices
 

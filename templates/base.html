@@ -547,29 +547,30 @@ user-select: none;
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Timehseet Report</span>
         </a>
-        {% comment %} {%endif%}
-        {% if 'user-create' in request.session.permission or 'user-update' in request.session.permission %} {% endcomment %}
+        {% comment %} {%endif%} {% endcomment %}
+        {% comment %} {% if 'user-create' in request.session.permission or 'user-update' in request.session.permission %}  {% endcomment %}
 
-        <a class="nav-link {{user_list}}" href="{% url 'user_list' %}">
+        <a class="nav-link {{loancase_report}}" href="{% url 'loancase_report' %}">
           <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">Users</span>
+          <span class="menu-title">Case Report</span>
         </a>
-        {% comment %} {%endif%}
-        {% if 'county-create' in request.session.permission or 'county-update' in request.session.permission %} {% endcomment %}
+        {% comment %} 
+                {%endif%}
+        {% if 'county-create' in request.session.permission or 'county-update' in request.session.permission %} 
 
         <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">County</span>
         </a>
         {% comment %} {%endif%}
-        {% if 'subcounty-create' in request.session.permission or 'subcounty-update' in request.session.permission %} {% endcomment %}
+        {% if 'subcounty-create' in request.session.permission or 'subcounty-update' in request.session.permission %} 
 
         <a class="nav-link {{subcounty_list}}" href="{% url 'subcounty_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Sub County</span>
         </a>
         {% comment %} {%endif%}
-        {% if 'ward-create' in request.session.permission or 'ward-update' in request.session.permission %} {% endcomment %}
+        {% if 'ward-create' in request.session.permission or 'ward-update' in request.session.permission %} 
 
         <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
           <i class="icon-grid menu-icon"></i>
@@ -670,41 +671,41 @@ user-select: none;
   </a>
   <div class="collapse {{ usermanagement }}" id="usermanagement">
       <ul class="sub-menu">
-        {% if 'role-create' in request.session.permission or 'role-update' in request.session.permission %}
+        {% comment %} {% if 'role-create' in request.session.permission or 'role-update' in request.session.permission %} {% endcomment %}
 
         <a class="nav-link {{roles}}" href="{% url 'roles_page' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Roles</span>
         </a>
-        {%endif%}
-        {% if 'user-create' in request.session.permission or 'user-update' in request.session.permission %}
+        {% comment %} {%endif%} {% endcomment %}
+        {% comment %} {% if 'user-create' in request.session.permission or 'user-update' in request.session.permission %} {% endcomment %}
 
         <a class="nav-link {{user_list}}" href="{% url 'user_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Users</span>
         </a>
-        {%endif%}
-        {% if 'county-create' in request.session.permission or 'county-update' in request.session.permission %}
+        {% comment %} {%endif%}
+        {% if 'county-create' in request.session.permission or 'county-update' in request.session.permission %} {% endcomment %}
 
         <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">County</span>
         </a>
-        {%endif%}
-        {% if 'subcounty-create' in request.session.permission or 'subcounty-update' in request.session.permission %}
+        {% comment %} {%endif%}
+        {% if 'subcounty-create' in request.session.permission or 'subcounty-update' in request.session.permission %} {% endcomment %}
 
         <a class="nav-link {{subcounty_list}}" href="{% url 'subcounty_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Sub County</span>
         </a>
-        {%endif%}
-        {% if 'ward-create' in request.session.permission or 'ward-update' in request.session.permission %}
+        {% comment %} {%endif%}
+        {% if 'ward-create' in request.session.permission or 'ward-update' in request.session.permission %} {% endcomment %}
 
         <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Ward</span>
         </a>
-        {%endif%}
+        {% comment %} {%endif%} {% endcomment %}
       
 
         {% comment %} <a class="nav-link {{ function_list }}" href="{% url 'function_list' %}">

@@ -3073,7 +3073,7 @@ def userprofile_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('userprofile') 
+                return redirect('userprofile_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -3092,10 +3092,10 @@ def userprofile_delete(request,pk):
     userprofile = call_delete_method_without_token(BASEURL, end_point)
     if userprofile.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for userprofile. Please try again.', extra_tags='warning')
-        return redirect('userprofile')
+        return redirect('userprofile_list')
     else:
         messages.success(request, 'Successfully deleted data for userprofile', extra_tags='success')
-        return redirect('userprofile')
+        return redirect('userprofile_list')
 
 
 # create and view table function
@@ -3671,7 +3671,7 @@ def trioprofile(request):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
-        print('----',clients)
+        print('--clients--',clients)
     endpoint3='tasktemplate/'    
     records_response2 = call_get_method(BASEURL,endpoint3,user_token)
     print('records_response.status_code',records_response2.status_code)
@@ -5304,7 +5304,7 @@ def meetings_delete(request,pk):
 def auditorprofile(request):
     user_token=request.session['user_token']
     endpoint2='audit_user/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -5335,7 +5335,7 @@ def auditorprofile(request):
         print('errorss',form.errors)
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -5351,10 +5351,11 @@ def auditorprofile(request):
     return render(request,'auditorprofile.html',context)
 
 def auditorprofile_list(request):
+    user_token=request.session['user_token']
     endpoint = 'auditorprofile/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -5475,10 +5476,12 @@ def marketingagentprofile(request):
     return render(request,'marketingagentprofile.html',context)
 
 def marketingagentprofile_list(request):
+    user_token=request.session['user_token']
+
     endpoint = 'marketingagentprofile/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -5494,14 +5497,14 @@ def marketingagentprofile_list(request):
 def marketingagentprofile_edit(request,pk):
     user_token=request.session['user_token']
 
-    endpoint1='UserManagement/user/'    
+    endpoint1='agent_user/'    
     records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         employee = records_response2.json()
-    marketingagentprofile = call_get_method_without_token(BASEURL, f'marketingagentprofile/{pk}/')
+    marketingagentprofile = call_get_method(BASEURL, f'marketingagentprofile/{pk}/',user_token)
     
     if marketingagentprofile.status_code in [200,201]:
         marketingagentprofile_data = marketingagentprofile.json()
@@ -5525,7 +5528,7 @@ def marketingagentprofile_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('marketingagentprofile') 
+                return redirect('marketingagentprofile_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -5544,10 +5547,10 @@ def marketingagentprofile_delete(request,pk):
     marketingagentprofile = call_delete_method_without_token(BASEURL, end_point)
     if marketingagentprofile.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for marketingagentprofile. Please try again.', extra_tags='warning')
-        return redirect('marketingagentprofile')
+        return redirect('marketingagentprofile_list')
     else:
         messages.success(request, 'Successfully deleted data for marketingagentprofile', extra_tags='success')
-        return redirect('marketingagentprofile')
+        return redirect('marketingagentprofile_list')
 
 # create and view table function
 def issuereport(request):
@@ -5788,6 +5791,7 @@ def lawyerprofile(request):
     endpoint2='lawyer_user/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
+    print('lawyers',records_response2.json())
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
@@ -5817,11 +5821,12 @@ def lawyerprofile(request):
         print('errorss',form.errors)
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
             records = records_response.json()
+            print('---',records)
             # You can pass 'records' to your template for rendering
             context = {'form': form, 'records': records}
             return render(request, 'lawyerprofile.html', context)
@@ -5833,10 +5838,11 @@ def lawyerprofile(request):
     return render(request,'lawyerprofile.html',context)
 
 def lawyerprofile_list(request):
+    user_token=request.session['user_token']
     endpoint = 'lawyerprofile/'
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -5850,21 +5856,25 @@ def lawyerprofile_list(request):
 
 # edit function
 def lawyerprofile_edit(request,pk):
-    endpoint1='UserManagement/user/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    user_token=request.session['user_token']
+    endpoint1='lawyer_user/'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         employee = records_response2.json()
-    lawyerprofile = call_get_method_without_token(BASEURL, f'lawyerprofile/{pk}/')
+        print('----',employee)
+    lawyerprofile = call_get_method(BASEURL, f'lawyerprofile/{pk}/',user_token)
     
     if lawyerprofile.status_code in [200,201]:
         lawyerprofile_data = lawyerprofile.json()
+        print('data-----',lawyerprofile_data)
+
     else:
-        print('error------',lawyerprofile)
+        print('error------',lawyerprofile.status_code)
         messages.error(request, 'Failed to retrieve data for lawyerprofile. Please check your connection and try again.', extra_tags='warning')
-        return redirect('lawyerprofile')
+        return redirect('lawyerprofile_list')
 
     if request.method=="POST":
         form=LawyerProfileForm(request.POST, initial=lawyerprofile_data,user_choices=employee)
@@ -5881,7 +5891,7 @@ def lawyerprofile_edit(request,pk):
 
             if response.status_code in [200,201]: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('lawyerprofile') 
+                return redirect('lawyerprofile_list') 
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
@@ -5900,10 +5910,10 @@ def lawyerprofile_delete(request,pk):
     lawyerprofile = call_delete_method_without_token(BASEURL, end_point)
     if lawyerprofile.status_code not in [200,201]:
         messages.error(request, 'Failed to delete data for lawyerprofile. Please try again.', extra_tags='warning')
-        return redirect('lawyerprofile')
+        return redirect('lawyerprofile_list')
     else:
         messages.success(request, 'Successfully deleted data for lawyerprofile', extra_tags='success')
-        return redirect('lawyerprofile')
+        return redirect('lawyerprofile_list')
 
 # create and view table function
 def members(request):

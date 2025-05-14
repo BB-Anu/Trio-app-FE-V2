@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% block body_block %}
-
 {% load static %}
 
 <div class="content-wrapper">
@@ -10,9 +9,8 @@
                 <a href="{% url 'marketingagentprofile' %}">
                     <button type="button" class="btn btn-primary float-right">+ New</button>
                 </a>
-                <h3>{{ screen_name }}</h3>
+                <h3>Marketing Agent Profile</h3>
             </div>
-
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="tableID" class="display table table-hover">
@@ -22,13 +20,13 @@
 <th>user</th>
 <th>agency name</th>
 <th>expertise area</th>
-<th>years of experience</th>
-<th>market sector focus</th>
-<th>contact phone</th>
+<th>Experience</th>
+<th>market sector</th>
+<th> phone</th>
 <th>contact email</th>
-<th>address</th>
+{% comment %} <th>address</th>
 <th>has ndasigned</th>
-<th>available for assignment</th>
+<th>available for assignment</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -44,12 +42,12 @@
 <td>{{data.market_sector_focus}}</td>
 <td>{{data.contact_phone}}</td>
 <td>{{data.contact_email}}</td>
-<td>{{data.address}}</td>
+{% comment %} <td>{{data.address}}</td>
 <td>{{data.has_ndasigned}}</td>
-<td>{{data.available_for_assignment}}</td>
+<td>{{data.available_for_assignment}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'marketingagentprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'marketingagentprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                        <a href="{% url 'marketingagentprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -57,4 +55,4 @@
         </table>
     </div>
 </div>
-{% endblock  %}
+{% endblock %}
