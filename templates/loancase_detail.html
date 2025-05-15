@@ -1,163 +1,204 @@
-{% extends 'base.html' %} 
- {% block body_block %}
- <div class="text-end mb-3">
-<div class="content-wrapper">
+{% extends 'base.html' %}
+
+{% block body_block %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="content-wrapper mt-4">
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <h1 style="text-align: center;">Case Project Plan</h1>
-                <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-            margin: 40px;
-            color: #333;
-        }
-        h1, h2 {
-            border-bottom: 2px solid #444;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 6px 10px;
-            text-align: left;
-            vertical-align: top;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .section {
-            margin-bottom: 30px;
-        }
-        .noborder-table td {
-            border: none;
-            padding: 4px 8px;
-        }
-        a {
-            color: #0066cc;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
+                <h1 class="text-center mb-4">Case Project Plan</h1>
 
+                <div class="accordion" id="caseAccordion">
 
-    <div class="section">
-        <h2>Case Details</h2>
-        <table class="noborder-table">
-            <tr>
-                <td><strong>Client:</strong></td><td>{{ case.client }}</td>
-                <td><strong>Case ID:</strong></td><td>{{ case.case_id }}</td>
-            </tr>
-            <tr>
-                <td><strong>Case Reference:</strong></td><td>{{ case.case_reference }}</td>
-                <td><strong>Status:</strong></td><td>{{ case.status }}</td>
-            </tr>
-            <tr>
-                <td><strong>Loan Amount:</strong></td><td>{{ case.loan_amount }}</td>
-                <td><strong>Loan Purpose:</strong></td><td>{{ case.loan_purpose }}</td>
-            </tr>
-            <tr>
-                <td><strong>Start Date:</strong></td><td>{{ case.start_date|slice:":10" }}</td>
-                <td><strong>End Date:</strong></td><td>{{ due_date }}</td>
-                
-                {% comment %} <td><strong>Created At:</strong></td><td>{{ case.created_at|slice:":10" }}
-                </td> {% endcomment %}
-            </tr>
-        </table>
+                    <!-- Client Details -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingClient">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClient" aria-expanded="true" aria-controls="collapseClient">
+                                Client Details
+                            </button>
+                        </h2>
+                        <div id="collapseClient" class="accordion-collapse collapse show" aria-labelledby="headingClient" data-bs-parent="#caseAccordion">
+                            <div class="accordion-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Client:</strong></td><td>{{ client.user.name }}</td>
+                                        <td><strong>Business Name:</strong></td><td>{{ client.business_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Business Type:</strong></td><td>{{ client.business_type }}</td>
+                                        <td><strong>Certificate:</strong></td><td><a href="http://127.0.0.1:9000/{{client.tax_compliance_cert }}">Document</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Employees:</strong></td><td>{{ client.number_of_employees }}</td>
+                                        <td><strong>Annual Turnover:</strong></td><td>{{ client.annual_turnover }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Enterprise Size:</strong></td><td>{{ client.enterprise_size }}</td>
+                                        <td><strong>Existing Loan:</strong></td><td>{{ client.has_existing_loan }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Case Details -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingCase">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCase" aria-expanded="false" aria-controls="collapseCase">
+                                Case Details
+                            </button>
+                        </h2>
+                        <div id="collapseCase" class="accordion-collapse collapse" aria-labelledby="headingCase" data-bs-parent="#caseAccordion">
+                            <div class="accordion-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Client:</strong></td><td>{{ case.client }}</td>
+                                        <td><strong>Case ID:</strong></td><td>{{ case.case_id }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Case Reference:</strong></td><td>{{ case.case_reference }}</td>
+                                        <td><strong>Status:</strong></td><td>{{ case.status }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Loan Amount:</strong></td><td>{{ case.loan_amount }}</td>
+                                        <td><strong>Loan Purpose:</strong></td><td>{{ case.loan_purpose }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Start Date:</strong></td><td>{{ case.start_date|slice:":10" }}</td>
+                                        <td><strong>End Date:</strong></td><td>{{ due_date }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assignment Details -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingAssignment">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAssignment" aria-expanded="false" aria-controls="collapseAssignment">
+                                Assignment Details
+                            </button>
+                        </h2>
+                        <div id="collapseAssignment" class="accordion-collapse collapse" aria-labelledby="headingAssignment" data-bs-parent="#caseAccordion">
+                            <div class="accordion-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>Group:</strong></td><td>{{ assignment.group.name }}</td>
+                                        <td><strong>Assigned By:</strong></td><td>{{ assignment.assigned_by.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Assigned To:</strong></td>
+                                        <td colspan="3">
+                                            <ul>
+                                                {% for assignee in assignment.assigned_to %}
+                                                    <li>User ID: {{ assignee }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Uploaded Documents -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingDocuments">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="false" aria-controls="collapseDocuments">
+                                Uploaded Documents
+                            </button>
+                        </h2>
+                        <div id="collapseDocuments" class="accordion-collapse collapse" aria-labelledby="headingDocuments" data-bs-parent="#caseAccordion">
+                            <div class="accordion-body">
+                                {% if documents %}
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Uploaded By</th>
+                                            <th>Status</th>
+                                            <th>Uploaded At</th>
+                                            <th>File</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for doc in documents %}
+                                        <tr>
+                                            <td>{{ doc.document_type }}</td>
+                                            <td>{{ doc.uploaded_by }}</td>
+                                            <td>{{ doc.status }}</td>
+                                            <td>{{ doc.uploaded_at|slice:":10" }}</td>
+                                            <td><a href="http://127.0.0.1:9000/{{ doc.file }}">View</a></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                    <p>No documents uploaded.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timesheet Tasks -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTimesheet">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTimesheet" aria-expanded="false" aria-controls="collapseTimesheet">
+                                Timesheet Tasks
+                            </button>
+                        </h2>
+                        <div id="collapseTimesheet" class="accordion-collapse collapse" aria-labelledby="headingTimesheet" data-bs-parent="#caseAccordion">
+                            <div class="accordion-body">
+                                {% if timesheets %}
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Employee</th>
+                                            <th>Task</th>
+                                            <th>Total Hours</th>
+                                            <th>Hours Spent</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for t in timesheets %}
+                                        <tr>
+                                            <td>{{ t.date }}</td>
+                                            <td>{{ t.employee.name }}</td>
+                                            <td>{{ t.task }}</td>
+                                            <td>{{ t.total_working_hours }}</td>
+                                            <td>{{ t.hours_spent }}</td>
+                                            <td>
+                                                {% if t.status == "pending" %}
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                {% elif t.status == "completed" %}
+                                                    <span class="badge bg-success">Completed</span>
+                                                {% elif t.status == "approved" %}
+                                                    <span class="badge bg-primary">Approved</span>
+                                                {% elif t.status == "rejected" %}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ t.status|capfirst }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                    <p>No timesheet tasks found.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- End accordion -->
+
+            </div>
+        </div>
     </div>
-
-    <div class="section">
-        <h2>Assignment Details</h2>
-        <table class="noborder-table">
-            <tr>
-                <td><strong>Group:</strong></td><td>{{ assignment.group.name }}</td>
-                <td><strong>Assigned By:</strong></td><td>{{ assignment.assigned_by.name }}</td>
-            </tr>
-            {% comment %} <tr>
-                <td><strong>Assigned On:</strong></td><td colspan="3">{{ assignment.assigned_on }}</td>
-            </tr> {% endcomment %}
-            <tr>
-                <td><strong>Assigned To:</strong></td>
-                <td colspan="3">
-                    <ul>
-                        {% for assignee in assignment.assigned_to %}
-                            <li>User ID: {{ assignee }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="section">
-        <h2>Uploaded Documents</h2>
-        {% if documents %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Uploaded By</th>
-                    <th>Status</th>
-                    <th>Uploaded At</th>
-                    <th>File</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for doc in documents %}
-                <tr>
-                    <td>{{ doc.document_type }}</td>
-                    <td>{{ doc.uploaded_by }}</td>
-                    <td>{{ doc.status }}</td>
-                    <td>{{ doc.uploaded_at|slice:":10" }}</td>
-                    <td><a href="http://127.0.0.1:9000/{{ doc.file }}">View</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p>No documents uploaded.</p>
-        {% endif %}
-    </div>
-
-    <div class="section">
-        <h2>Timesheet Tasks</h2>
-        {% if timesheets %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Employee</th>
-                    <th>Task</th>
-                    <th>Total Hours</th>
-                    <th>Hours Spent</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for t in timesheets %}
-                <tr>
-                    <td>{{ t.date }}</td>
-                    <td>{{ t.employee.name }}</td>
-                    <td>{{ t.task }}</td>
-                    <td>{{ t.total_working_hours }}</td>
-                    <td>{{ t.hours_spent }}</td>
-                    <td>{{ t.status }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p>No timesheet tasks found.</p>
-        {% endif %}
-    </div>
-
-</body>
-</html>
-{% endblock  %}
+</div>
+{% endblock %}

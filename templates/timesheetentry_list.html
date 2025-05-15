@@ -20,18 +20,18 @@
 <th>task</th>
 <th>hours</th>
 <th>work done</th>
-<th>uploaded at</th>
+{% comment %} <th>uploaded at</th> {% endcomment %}
 <th>filename</th>
-<th>file type</th>
+{% comment %} <th>file type</th> {% endcomment %}
 <th>attachment name</th>
-<th>attachment type</th>
+{% comment %} <th>attachment type</th> {% endcomment %}
 {% comment %} <th>is late hours</th>
 <th>is wfh hours</th>
 <th>payment status</th> {% endcomment %}
 <th>approved by</th>
 <th>status</th>
-<th>created by</th>
-<th>created at</th>
+{% comment %} <th>created by</th>
+<th>created at</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -44,18 +44,18 @@
 <td>{{data.task}}</td>
 <td>{{data.hours}}</td>
 <td>{{data.work_done}}</td>
-<td>{{data.uploaded_at}}</td>
+{% comment %} <td>{{data.uploaded_at}}</td> {% endcomment %}
 <td>{{data.filename}}</td>
-<td>{{data.file_type}}</td>
+{% comment %} <td>{{data.file_type}}</td> {% endcomment %}
 <td>{{data.attachment_name}}</td>
-<td>{{data.attachment_type}}</td>
+{% comment %} <td>{{data.attachment_type}}</td> {% endcomment %}
 {% comment %} <td>{{data.is_late_hours}}</td>
 <td>{{data.is_wfh_hours}}</td>
-<td>{{data.payment_status}}</td>
-<td>{{data.approved_by}}</td> {% endcomment %}
+<td>{{data.payment_status}}</td> {% endcomment %}
+<td>{{data.approved_by}}</td>
 <td>{{data.status}}</td>
-<td>{{data.created_by}}</td>
-<td>{{data.created_at}}</td>
+{% comment %} <td>{{data.created_by}}</td>
+<td>{{data.created_at}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'timesheetentry_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
                         <a href="{% url 'timesheetentry_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>
