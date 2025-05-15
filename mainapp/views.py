@@ -797,6 +797,7 @@ def loancase_list(request):
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
             records = records_response.json()
+            print('rec---',records)
             # You can pass 'records' to your template for rendering
             context = {'records': records,'screen_name':'Loan Case List'}
             return render(request, 'loancase_list.html', context)
@@ -825,10 +826,13 @@ def loancase_details(request, pk):
         print('timesheets', timesheets)
         due_date = records.get('due_date', [])
         print('due_date', due_date)
+        client=records.get('client',{})
+        print('client',client)
 
         context = {
             'screen_name': 'Loan Case Detail',
             'case': case,
+            'client':client,
             'assignment': assignment,
             'documents': documents,
             'timesheets': timesheets,
@@ -1760,7 +1764,7 @@ def document(request):
     uploaded_by = request.session.get('user_data', {}).get('id')
 
     # Fetch loan cases for dropdown
-    endpoint1 = 'loancase/'    
+    endpoint1 = 'case_dcoument/'    
     records_response2 = call_get_method(BASEURL, endpoint1, user_token)
     
     if records_response2.status_code not in [200, 201]:
@@ -4546,11 +4550,11 @@ def timesheetentry(request):
                 files, cleaned_data = image_filescreate(cleaned_data)
                 json_data = cleaned_data if files else json.dumps(cleaned_data)
                 print('==json_data==,',json_data)
-                response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
+            response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
 
-                print('==response==',response)
-                if response['status_code'] == 1:
-                    print("error",response)
+            print('==response==',response)
+            if response['status_code'] == 1:
+                print("error",response)
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
                 return redirect('timesheetentry_list')
@@ -4670,6 +4674,11 @@ def timesheetentry_edit(request,pk):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         timesheet = records_response2.json()
+    hours = timesheet[0]  # or any index or filter logic
+    given_hours = hours.get('total_working_hours')
+    print('Given Hours:', given_hours)
+
+    initial={'given_hours':given_hours}
     timesheetentry = call_get_method(BASEURL, f'timesheetentry/{pk}/',user_token)
     
     if timesheetentry.status_code in [200,201]:
