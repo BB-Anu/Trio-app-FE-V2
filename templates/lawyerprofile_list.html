@@ -18,16 +18,16 @@
                                     <th>No.</th>
 <th>user</th>
 <th>law firm</th>
-<th>bar registration number</th>
-<th>specialization area</th>
-<th>years of practice</th>
+{% comment %} <th>bar registration number</th> {% endcomment %}
+<th>specialization </th>
+<th>Experience</th>
 <th>qualifications</th>
-<th>contact phone</th>
-<th>contact email</th>
-<th>address</th>
-<th>licensed</th>
+<th>phone</th>
+<th>email</th>
+{% comment %} <th>address</th> {% endcomment %}
+{% comment %} <th>licensed</th>
 <th>nda signed</th>
-<th>active</th>
+<th>active</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -38,19 +38,19 @@
 
 <td>{{data.user}}</td>
 <td>{{data.law_firm}}</td>
-<td>{{data.bar_registration_number}}</td>
+{% comment %} <td>{{data.bar_registration_number}}</td> {% endcomment %}
 <td>{{data.specialization_area}}</td>
 <td>{{data.years_of_practice}}</td>
 <td>{{data.qualifications}}</td>
 <td>{{data.contact_phone}}</td>
 <td>{{data.contact_email}}</td>
-<td>{{data.address}}</td>
+{% comment %} <td>{{data.address}}</td>
 <td>{{data.licensed}}</td>
 <td>{{data.nda_signed}}</td>
-<td>{{data.active}}</td>
+<td>{{data.active}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'lawyerprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'lawyerprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                        <a href="{% url 'lawyerprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
                     </td>
                 </tr>
                 {% endfor %}

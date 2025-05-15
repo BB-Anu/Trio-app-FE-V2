@@ -21,13 +21,13 @@
 <th>license number</th>
 <th>years of experience</th>
 <th>qualifications</th>
-<th>accreditation body</th>
+{% comment %} <th>accreditation body</th> {% endcomment %}
 <th>contact phone</th>
 <th>contact email</th>
-<th>address</th>
-<th>is internal</th>
+{% comment %} <th>address</th> {% endcomment %}
+{% comment %} <th>is internal</th>
 <th>nda signed</th>
-<th>active</th>
+<th>active</th> {% endcomment %}
                     <th>Action</th>
                 </tr>
             </thead>
@@ -41,16 +41,16 @@
 <td>{{data.license_number}}</td>
 <td>{{data.years_of_experience}}</td>
 <td>{{data.qualifications}}</td>
-<td>{{data.accreditation_body}}</td>
+{% comment %} <td>{{data.accreditation_body}}</td> {% endcomment %}
 <td>{{data.contact_phone}}</td>
 <td>{{data.contact_email}}</td>
-<td>{{data.address}}</td>
-<td>{{data.is_internal}}</td>
+{% comment %} <td>{{data.address}}</td> {% endcomment %}
+{% comment %} <td>{{data.is_internal}}</td>
 <td>{{data.nda_signed}}</td>
-<td>{{data.active}}</td>
+<td>{{data.active}}</td> {% endcomment %}
                     <td>
                         <a href="{% url 'auditorprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'auditorprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
+                        <a href="{% url 'auditorprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
                     </td>
                 </tr>
                 {% endfor %}

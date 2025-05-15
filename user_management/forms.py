@@ -70,7 +70,7 @@ class UserForm(forms.Form):
 	last_name = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
 	address = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
 	email = forms.EmailField(required=True, widget=forms.TextInput(attrs={"type": "email","class": "form-control"}))
-	contact_number = forms.IntegerField(required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+	phone_number = forms.IntegerField(required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
 	password=forms.CharField(max_length=20, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
 	roles=forms.ChoiceField( required=False, widget=forms.Select(attrs={"class": "form-control"}))
 	def __init__(self, *args, **kwargs):

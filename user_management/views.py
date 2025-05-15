@@ -708,55 +708,66 @@ def user_list(request):
     return render(request, 'user_list.html', context)
 
 # edit function
-def user_edit(request,pk):
-    user_token=request.session['user_token']
+def user_edit(request, pk):
+    user_token = request.session['user_token']
 
-    user = call_get_method(BASEURL, f'UserManagement/user/{pk}/',user_token)
-    
-    if user.status_code in [200,201]:
+    # Get user data
+    user = call_get_method(BASEURL, f'UserManagement/user/{pk}/', user_token)
+    if user.status_code in [200, 201]:
         user_data = user.json()
+        print('data', user_data)
+
+        # Extract role ID from nested dictionary
+        if 'roles' in user_data and isinstance(user_data['roles'], dict):
+            user_data['roles'] = user_data['roles'].get('id')  # Set to role ID (e.g. '2')
     else:
-        print('error------',user)
+        print('error------', user)
         messages.error(request, 'Failed to retrieve data for user. Please check your connection and try again.', extra_tags='warning')
         return redirect('user_list')
-   
-    endpoint2='UserManagement/role/'    
-    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
-    print('records_response.status_code',records_response2.status_code)
-    if records_response2.status_code not in [200,201]:
+
+    # Get roles list for dropdown
+    endpoint2 = 'UserManagement/role/'
+    records_response2 = call_get_method(BASEURL, endpoint2, user_token)
+    print('records_response.status_code', records_response2.status_code)
+    if records_response2.status_code not in [200, 201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+        roles = []
     else:
         roles = records_response2.json()
 
-    if request.method=="POST":
-        form=UserForm(request.POST, initial=user_data,roles_choices=roles)
+    if request.method == "POST":
+        form = UserForm(request.POST, initial=user_data, roles_choices=roles)
         if form.is_valid():
             updated_data = form.cleaned_data
 
+            # Handle DateField or DateTimeField manually
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
-                    if updated_data[field_name]:
-                        del updated_data[field_name]
+                    if updated_data.get(field_name):
                         updated_data[field_name] = request.POST.get(field_name)
-            # Serialize the updated data as JSON
+
+            # Serialize and send the data to API
             json_data = json.dumps(updated_data)
             response = call_put_method_without_token(BASEURL, f'UserManagement/user/{pk}/', json_data)
 
-            if response.status_code in [200,201]: 
+            if response.status_code in [200, 201]:
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('user_list') 
+                return redirect('user_list')
             else:
-                error_message = response.json()
+                try:
+                    error_message = response.json()
+                except Exception as e:
+                    error_message = str(e)
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
-        form = UserForm(initial=user_data,roles_choices=roles)
+        form = UserForm(initial=user_data, roles_choices=roles)
 
-    context={
-        'form':form,
+    context = {
+        'form': form,
     }
-    return render(request,'user_edit.html',context)
+    return render(request, 'user_edit.html', context)
 
 def user_delete(request,pk):
     end_point = f'UserManagement/user/{pk}/'
