@@ -135,9 +135,9 @@ def login(request):
                     permission_list.append(data['function_name'])
                 request.session['permission']=permission_list
                 print("user_id+++",user_id)
-                if request.session['user_data']['roles']['name'] == 'customer':
-                    return redirect('customer_Screen')
-                elif request.session['user_data']['is_superuser'] == True:
+                # if request.session['user_data']['roles']['name'] == 'customer':
+                #     return redirect('customer_Screen')
+                if request.session['user_data']['is_superuser'] == True:
                     return redirect('select_company')
                 elif request.session['user_data']['is_admin']==True:
                     company_id=request.session['user_data']['branch']
