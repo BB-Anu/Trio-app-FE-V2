@@ -204,7 +204,7 @@
                 <td>{{ assignment.assigned_by.name }}</td>
                 <td>
                   <span class="badge 
-                    {% if assignment.status == 'Pending' %}badge-primary
+                    {% if assignment.status == 'pending' %}badge-primary
                     {% elif assignment.status == 'in_progress' %}badge-warning
                     {% elif assignment.status == 'completed' %}badge-success
                     {% endif %}

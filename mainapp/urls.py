@@ -3,6 +3,7 @@ from .views import *
 urlpatterns = [
     path("",login, name="login"),
     path("dashboard/",dashboard, name="dashboard"),
+    path("customer_Screen/",customer_Screen, name="customer_Screen"),
     path("user_dashboard/",user_dashboard, name="user_dashboard"),
     path('setup', setup, name='setup'),
 	path("clientprofile/", clientprofile, name="clientprofile"),
@@ -31,6 +32,7 @@ urlpatterns = [
 	path("triogroup_delete/<pk>/", triogroup_delete, name="triogroup_delete"),
     
 	path("loancase/", loancase, name="loancase"),
+	path("appproved_loancase_list/", appproved_loancase_list, name="appproved_loancase_list"),
 	path("loancase_details/<int:pk>/", loancase_details, name="loancase_details"),
     path("loancase_list/", loancase_list, name="loancase_list"),
 	path("loancase_edit/<pk>/", loancase_edit, name="loancase_edit"),
@@ -89,6 +91,8 @@ urlpatterns = [
 	path("clientquery_delete/<pk>/", clientquery_delete, name="clientquery_delete"),
     
 	path("timesheet/", timesheet, name="timesheet"),
+	path("timesheet_entry_view/<pk>/", timesheetentry_view, name="timesheet_entry_view"),
+	path("timesheet_entry_view1/<pk>/", timesheetentry_view1, name="timesheet_entry_view1"),
 	path("timesheet_list/", timesheet_list, name="timesheet_list"),
 	path("timesheet_edit/<pk>/", timesheet_edit, name="timesheet_edit"),
 	path("timesheet_delete/<pk>/", timesheet_delete, name="timesheet_delete"),
@@ -168,11 +172,14 @@ urlpatterns = [
 	path("get_task/<int:task_id>/", get_task, name="get_task"),
 	path("timesheetentry_list/", timesheetentry_list, name="timesheetentry_list"),
 	path("timesheetentry_approval_list/", timesheetentry_approval_list, name="timesheetentry_approval_list"),
+    path("tasktimesheet_approval_list/",tasktimesheet_approval_list,name="tasktimesheet_approval_list"),
+	path("timesheet_approve/<pk>/", timesheet_approve, name="timesheet_approve"),
+	path("timesheet_reject/", timesheet_reject, name="timesheet_reject"),
 	path("timesheetentry_approve/<pk>/", timesheetentry_approve, name="timesheetentry_approve"),
 	path("timesheetentry_reject/", timesheetentry_reject, name="timesheetentry_reject"),
 	path("timesheetentry_edit/<pk>/", timesheetentry_edit, name="timesheetentry_edit"),
 	path("timesheetentry_delete/<pk>/", timesheetentry_delete, name="timesheetentry_delete"),
-    
+
 	path("timesheetattachment/", timesheetattachment, name="timesheetattachment"),
 	path("timesheetattachment_list/", timesheetattachment_list, name="timesheetattachment_list"),
 	path("timesheetattachment_edit/<pk>/", timesheetattachment_edit, name="timesheetattachment_edit"),

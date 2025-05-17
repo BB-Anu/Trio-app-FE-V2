@@ -24,6 +24,23 @@
                     {% for form_field in form %}
                     <div class="form-group">
                         {{ form_field.label_tag }}
+                        <br>
+                        {% if view %}
+                        {% if form_field.name == 'document' %}
+                        <br>
+                            {% if form.initial.document %}
+
+                         File    <a href="http://127.0.0.1:9000/{{ form.initial.document }}" target="_blank">{{form.initial.document}}</a><br><br>
+                        {% endif %}
+                        {% endif %}
+                        {% if form_field.name == 'attachment' %}
+                        <br>
+                            {% if form.initial.attachment %}
+
+                         Attachment    <a href="http://127.0.0.1:9000/{{ form.initial.attachment }}" target="_blank">{{form.initial.attachment}}</a><br><br>
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
                         {{ form_field }}
                         <span class="text-danger">{{ form_field.errors }}</span>
                     </div>

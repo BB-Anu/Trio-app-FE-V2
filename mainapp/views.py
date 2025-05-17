@@ -36,7 +36,25 @@ def dashboard(request):
             # You can pass 'records' to your template for rendering
             context = {'records': records}
             return render(request, 'dashboard.html', context)
+    
     return render(request, 'dashboard.html')
+
+def customer_Screen(request):
+    user_token = request.session.get('user_token')
+    pk=request.session['user_data']['id']
+    print(request.session['user_data'])
+    print('pk',pk)
+    endpoint = f'customer_screen/{pk}/'
+    records_response = call_get_method(BASEURL, endpoint, user_token)
+    print('-records_response-',records_response)
+    if records_response.status_code in [200, 201]:
+        records = records_response.json()
+        return render(request, 'customer_Screen.html', {'records': records})
+    else:
+        messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        return render(request, 'customer_Screen.html')
+
+
 
 
 def user_dashboard(request):
@@ -117,8 +135,8 @@ def login(request):
                     permission_list.append(data['function_name'])
                 request.session['permission']=permission_list
                 print("user_id+++",user_id)
-                if request.session['user_data']['roles'] == 'Auditor':
-                    return redirect('user_dashboard')
+                if request.session['user_data']['roles']['name'] == 'customer':
+                    return redirect('customer_Screen')
                 elif request.session['user_data']['is_superuser'] == True:
                     return redirect('select_company')
                 elif request.session['user_data']['is_admin']==True:
@@ -261,7 +279,10 @@ def clientprofile_edit(request,pk):
                         del updated_data[field_name]
                         updated_data[field_name] = request.POST.get(field_name)
             # Serialize the updated data as JSON
-            json_data = json.dumps(updated_data)
+                cleaned_data = form.cleaned_data
+                files, cleaned_data = image_filescreate(cleaned_data)
+                json_data = cleaned_data if files else json.dumps(cleaned_data)
+                print('==json_data==,',json_data)
             response = call_put_method_without_token(BASEURL, f'clientprofile/{pk}/', json_data)
 
             if response.status_code in [200,201]: 
@@ -788,6 +809,23 @@ def loancase(request):
     }
     return render(request,'loancase.html',context)
 
+def appproved_loancase_list(request):
+    user_token=request.session['user_token']
+    endpoint = 'approved_loancase/'
+        # getting data from backend
+    records_response = call_get_method(BASEURL,endpoint,user_token)
+    if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    else:
+            records = records_response.json()
+            print('rec---',records)
+            # You can pass 'records' to your template for rendering
+            context = {'records': records,'screen_name':'Approved Loans List'}
+            return render(request, 'approved_loancase_list.html', context)
+    return render(request,'approved_loancase_list.html',context)
+
+
+
 def loancase_list(request):
     user_token=request.session['user_token']
     endpoint = 'loancase/'
@@ -815,7 +853,7 @@ def loancase_details(request, pk):
         return render(request, 'loancase_detail.html', {'screen_name': 'Loan Case Detail'})
     else:
         records = records_response.json()
-
+        print('---records',records)
         case = records.get('case', {})
         print('case', case)
         assignment = records.get('assignment', {})
@@ -2068,11 +2106,50 @@ def document_approve(request, pk):
     return redirect('document_list')
 
 
-def timesheetentry_approve(request, pk):
+def timesheet_approve(request, pk):
     try:
         user_token = request.session.get('user_token')
         json_data = json.dumps(pk)
         document = call_put_method(BASEURL, f'timesheet_approve/{pk}/', json_data,user_token)
+        print('--',document)
+        print('--',document.status_code)
+        if document.status_code not in [200, 201]:
+            messages.error(request, 'Failed to approve timesheetentry. Please try again.', extra_tags='warning')
+        else:
+            messages.success(request, 'timesheetentry approved successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('tasktimesheet_approval_list')
+
+
+def timesheet_reject(request):
+    try:
+        user_token = request.session.get('user_token')
+        if request.method == "POST":
+            pk = request.POST.get("customer_id")
+            reason = request.POST.get("rejection_reason")
+            print(pk,reason)
+            json_data = json.dumps({"pk": pk, "reason": reason})
+            print('json_data',json_data)
+            document = call_put_method_without_token(BASEURL, f'timesheet_reject/{pk}/{reason}/', json_data)
+            print('---document',document.status_code)
+            if document.status_code not in [200, 201]:
+                messages.error(request, 'Failed to reject timesheet. Please try again.', extra_tags='warning')
+            else:
+                messages.success(request, 'timesheet rejected successfully.', extra_tags='success')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}', extra_tags='danger')
+
+    return redirect('tasktimesheet_approval_list') 
+
+
+def timesheetentry_approve(request, pk):
+    try:
+        print('entry approval')
+        user_token = request.session.get('user_token')
+        json_data = json.dumps(pk)
+        document = call_put_method(BASEURL, f'timesheetentry_approve/{pk}/', json_data,user_token)
         print('--',document)
         print('--',document.status_code)
         if document.status_code not in [200, 201]:
@@ -2094,7 +2171,7 @@ def timesheetentry_reject(request):
             print(pk,reason)
             json_data = json.dumps({"pk": pk, "reason": reason})
             print('json_data',json_data)
-            document = call_put_method_without_token(BASEURL, f'timesheet_reject/{pk}/{reason}/', json_data)
+            document = call_put_method_without_token(BASEURL, f'timesheetentry_reject/{pk}/{reason}/', json_data)
             print('---document',document.status_code)
             if document.status_code not in [200, 201]:
                 messages.error(request, 'Failed to reject timesheetentry. Please try again.', extra_tags='warning')
@@ -2104,6 +2181,7 @@ def timesheetentry_reject(request):
         messages.error(request, f'Error: {str(e)}', extra_tags='danger')
 
     return redirect('timesheetentry_approval_list') 
+
 
 def document_reject(request):
     try:
@@ -2455,6 +2533,8 @@ def timesheet(request):
         'form':form,
     }
     return render(request,'timesheet.html',context)
+
+
 
 def timesheet_list(request):
     user_token=request.session['user_token']
@@ -4023,28 +4103,29 @@ def task_list(request):
 
 # edit function
 def task_edit(request,pk):
+    user_token=request.session['user_token']
     endpoint1='trioassignment/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         clients = records_response2.json()
     endpoint1='tasktemplate/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         tasktemplate = records_response2.json()
     endpoint1='trioprofile/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint1)
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         trioprofile = records_response2.json()
-    task = call_get_method_without_token(BASEURL, f'task/{pk}/')
+    task = call_get_method(BASEURL, f'task/{pk}/',user_token)
     
     if task.status_code in [200,201]:
         task_data = task.json()
@@ -4540,16 +4621,17 @@ def timesheetentry(request):
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
             Output['created_by']=request.session['user_data']['id']
-
+            print('Output',Output)
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if Output[field_name]:
                         del Output[field_name]
                         Output[field_name] = request.POST.get(field_name)
-                cleaned_data = form.cleaned_data
-                files, cleaned_data = image_filescreate(cleaned_data)
-                json_data = cleaned_data if files else json.dumps(cleaned_data)
-                print('==json_data==,',json_data)
+            cleaned_data = form.cleaned_data
+            print('cleaned_data',cleaned_data)
+            files, cleaned_data = image_filescreate(cleaned_data)
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+            print('==json_data==,',json_data)
             response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
 
             print('==response==',response)
@@ -4567,6 +4649,7 @@ def timesheetentry(request):
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
             records = records_response.json()
+            print('records',records)
             # You can pass 'records' to your template for rendering
             context = {'form': form, 'records': records}
             return render(request, 'timesheetentry.html', context)
@@ -4577,6 +4660,88 @@ def timesheetentry(request):
         'form':form,
     }
     return render(request,'timesheetentry.html',context)
+
+
+def timesheetentry_view(request, pk):
+    user_token = request.session.get('user_token')
+
+    # Fetch timesheet entry details
+    entry_endpoint = f'timesheetentry_view/{pk}/'
+    entry_response = call_get_method(BASEURL, entry_endpoint, user_token)
+    if entry_response.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch timesheet entry. {entry_response.json()}", extra_tags="warning")
+        return render(request, 'timesheetentry.html', {'form': None, 'view': True})
+
+    record_data = entry_response.json()
+    print('record_data',record_data)
+    # Create form instance with initial data and dynamic choices
+    for record in record_data:
+        if isinstance(record.get("timesheet"), dict):
+            record["timesheet"] = record["timesheet"]["id"]
+
+    print('record_data', record_data)
+
+    context = {
+        "record_data": record_data,
+    }
+
+    return render(request, 'timesheetentry_view.html', context)
+
+
+def timesheetentry_view1(request, pk):
+    user_token = request.session.get('user_token')
+    if not user_token:
+        messages.error(request, "Session expired or user token missing.", extra_tags="danger")
+        return redirect('login')  # or your appropriate fallback
+
+    # Fetch tasks
+    task_response = call_get_method(BASEURL, 'task/', user_token)
+    if task_response.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch tasks. {task_response.json()}", extra_tags="warning")
+        task = []
+    else:
+        task = task_response.json()
+
+    # Fetch timesheets
+    timesheet_response = call_get_method(BASEURL, 'tasktimesheet/', user_token)
+    if timesheet_response.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch timesheets. {timesheet_response.json()}", extra_tags="warning")
+        timesheet = []
+    else:
+        timesheet = timesheet_response.json()
+        print('timesheet',timesheet)
+    # Handle total working hours extraction safely
+    given_hours = None
+    if timesheet:
+        given_hours = timesheet[0].get('total_working_hours', None)
+        print('Given Hours:', given_hours)
+
+    # Fetch timesheet entry details
+    entry_endpoint = f'timesheetentry_view1/{pk}/'
+    entry_response = call_get_method(BASEURL, entry_endpoint, user_token)
+    if entry_response.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch timesheet entry. {entry_response.json()}", extra_tags="warning")
+        return render(request, 'timesheetentry.html', {'form': None, 'view': True})
+
+    record_data = entry_response.json()
+    print('record_data',record_data)
+    if isinstance(record_data.get("timesheet"), dict):
+        record_data["timesheet"] = record_data["timesheet"]["id"]
+
+    # Create form instance with initial data and dynamic choices
+    form = TimesheetEntryForm(
+        initial=record_data,
+        timesheet_choices=timesheet if timesheet else [],
+        task_choices=task if task else []
+    )
+
+    context = {
+        "form": form,
+        "view": True,
+        "given_hours": given_hours,  # Optionally pass it to template
+    }
+
+    return render(request, 'timesheetentry.html', context)
 
 def timesheetentry_list(request):
     user_token=request.session['user_token']
@@ -4636,7 +4801,7 @@ def get_task(request, task_id):
         return JsonResponse({'error': 'An error occurred'}, status=500)
 
 
-def timesheetentry_approval_list(request):
+def tasktimesheet_approval_list(request):
     user_token=request.session['user_token']
 
     endpoint = 'tasktimesheet_approval/'
@@ -4647,19 +4812,37 @@ def timesheetentry_approval_list(request):
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
             records = records_response.json()
+            print('Timesheetrecords',records)
             # You can pass 'records' to your template for rendering
-            context = {'records': records}
+            context = {'records': records, 'screen_name' :'Task Timesheet'}
+            return render(request, 'tasktimesheet_approval_list.html', context)
+    except Exception as e:
+        print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    return render(request,'tasktimesheet_approval_list.html')
+
+
+def timesheetentry_approval_list(request):
+    user_token=request.session['user_token']
+
+    endpoint = 'timesheetentry_approval/'
+    try:
+        # getting data from backend
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+            records = records_response.json()
+            print('entryrecords',records)
+            # You can pass 'records' to your template for rendering
+            context = {'records': records ,'screen_name' :'Timesheet Entry'}
             return render(request, 'timesheetentry_approval_list.html', context)
     except Exception as e:
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     return render(request,'timesheetentry_approval_list.html')
 
-
-
 # edit function
 def timesheetentry_edit(request,pk):
     user_token=request.session['user_token']
-
     endpoint1='task/'    
     records_response2 = call_get_method(BASEURL,endpoint1,user_token)
     print('records_response.status_code',records_response2.status_code)

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h3>Timesheet Entries</h3>
+
+                <div class="table-responsive">
+                    <table id="recordTable" class="table table-hover">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>No.</th>
+                                <th>Hours</th>
+                                <th>Work Done</th>
+                                <th>Status</th>
+                                <th>Document</th>
+                                <th>Timesheet</th>
+                                <th>Task</th>
+                                <th>Attachment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in record_data %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ data.hours }}</td>
+                                <td>{{ data.work_done }}</td>
+                                <td>{{ data.status }}</td>
+                        <td>    <a href="http://127.0.0.1:9000/{{ data.document }}" target="_blank">{{data.document}}</a><br><br></td>
+
+                                <td>{{ data.timesheet }}</td>
+                                <td>{{ data.task }}</td>
+                         <td>    <a href="http://127.0.0.1:9000/{{ data.attachment }}" target="_blank">{{data.attachment}}</a><br><br></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
