@@ -663,7 +663,7 @@ class TimesheetEntryForm(forms.Form):
 	document=forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
 	filename = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
 	file_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
-	attchemnt=forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
+	attachment=forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
 	attachment_name = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
 	attachment_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
 

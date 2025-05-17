@@ -419,12 +419,31 @@ user-select: none;
             <span class="menu-title">tasktimesheet</span>
         </a>
       {%endif%}
-      {% if 'timesheetentry-create' in request.session.permission or 'timesheetentry-update' in request.session.permission %}
+      {% if 'document-create' in request.session.permission  %}
+        <a class="nav-link {{timesheetentry}}" href="{% url 'timesheetentry_approval_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">timesheet Approval</span>
+        </a>
+      {%endif%}
+      {% if 'document-create' in request.session.permission  %}
+        <a class="nav-link {{tasktimesheet}}" href="{% url 'tasktimesheet_approval_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Task Approval</span>
+        </a>
+      {%endif%}
+       {% if 'timesheetentry-create' in request.session.permission or 'timesheetentry-update' in request.session.permission %}
         <a class="nav-link {{timesheetentry}}" href="{% url 'timesheetentry_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">timesheetentry</span>
         </a>
       {%endif%}
+       {% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
+
+        <a class="nav-link {{document}}" href="{% url 'document_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">document approval</span>
+        </a>
+        {% endif%}
         {% comment %} <a class="nav-link {{timesheetattachment}}" href="{% url 'timesheetattachment' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">timesheetattachment</span>
@@ -468,13 +487,13 @@ user-select: none;
           <span class="menu-title">Document Entity</span>
         </a>
       {% endif %}
-      {% if 'documenttype-create' in request.session.permission or 'documenttype-update' in request.session.permission %}
+      {% comment %} {% if 'documenttype-create' in request.session.permission or 'documenttype-update' in request.session.permission %}
 
         <a class="nav-link {{documenttype_list}}" href="{% url 'documenttype_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Document Type </span>
         </a> 
-      {% endif %}
+      {% endif %} {% endcomment %}
       {% if 'foldermaster-create' in request.session.permission or 'foldermaster-update' in request.session.permission %}
 
         <a class="nav-link {{foldermaster_list}}" href="{% url 'foldermaster_list' %}">
@@ -483,13 +502,7 @@ user-select: none;
         </a>
         {% endif %}
     
-        {% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
-
-        <a class="nav-link {{document}}" href="{% url 'document_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">document</span>
-        </a>
-        {% endif%}
+       
 
         {% if 'client_documents' in request.session.permission or 'client_documents' in request.session.permission %}
 
@@ -499,7 +512,7 @@ user-select: none;
         </a>
         {% endif%}
 
-        {% if 'documentupload-create' in request.session.permission or 'documentupload-update' in request.session.permission %}
+        {% comment %} {% if 'documentupload-create' in request.session.permission or 'documentupload-update' in request.session.permission %}
 
         <a class="nav-link {{documentupload_list}}" href="{% url 'documentupload_list' %}">
           <i class="icon-grid menu-icon"></i>
@@ -528,7 +541,7 @@ user-select: none;
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">documentaccess</span>
         </a>
-        {% endif%}
+        {% endif%} {% endcomment %}
       </ul>
   </div> 
 </li>

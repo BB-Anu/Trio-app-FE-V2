@@ -9,17 +9,17 @@
                     <button type="button" class="btn btn-primary float-right">+ New</button>
                 </a>
                 <h3>{{ screen_name }}</h3>
-                {% comment %} <h3>TimeSheet Entry</h3> {% endcomment %}
+                {% comment %} <h3>Task TimeSheet</h3> {% endcomment %}
             </div>                <div class="card-body">
                     <div class="table-responsive">
                         <table id="tableID" class="display table table-hover">
                             <thead class="bg-col">
                                 <tr>
                                     <th>No.</th>
-<th>TimeSheet </th>
-{% comment %} <th>Case </th> {% endcomment %}
+<th>Trio User </th>
+<th>Case </th>
 {% comment %} <th>task</th> {% endcomment %}
-<th>Hours</th>
+<th>date</th>
 {% comment %} <th>total working hours</th>
 <th>hours spent</th> {% endcomment %}
 <th>Status</th>
@@ -30,16 +30,16 @@
                 {% for data in records %}
                 <tr>
                     <td>{{forloop.counter}}</td>
-<td> <a href="{% url 'timesheet_entry_view1' data.id %}">{{data.timesheet.id}} - {{data.timesheet.name}}</a></td>
 
-{% comment %} <td>{{data.case.id}}-{{data.case.name}}</td> {% endcomment %}
-<td>{{data.hours}}</td>
-{% comment %} <td> <a href="{% url 'timesheet_entry_view' data.id %}">{{data.date}}</a></td> {% endcomment %}
+<td>{{data.employee.name}}</td>
+<td>{{data.case.id}}-{{data.case.name}}</td>
+{% comment %} <td>{{data.task}}</td> {% endcomment %}
+<td> <a href="{% url 'timesheet_entry_view' data.id %}">{{data.date}}</a></td>
 {% comment %} <td>{{data.total_working_hours}}</td>
 <td>{{data.hours_spent}}</td> {% endcomment %}
 <td>{{data.status}}</td>
                 <td>
-<a href="{% url 'timesheetentry_approve' data.id %}" class="btn btn-success btn-sm">Approve</a>
+                        <a href="{% url 'timesheet_approve' data.id %}" class="btn btn-success btn-sm">Approve</a>
                         <button type="button" class="btn btn-danger reject-btn btn-sm" 
                         data-toggle="modal" data-target="#rejectModal"
                         data-id="{{ data.id }}">
@@ -62,7 +62,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post" action="{% url 'timesheetentry_reject' %}">
+            <form method="post" action="{% url 'timesheet_reject' %}">
                 {% comment %} <form method="post" action=""> {% endcomment %}
                 {% csrf_token %}
                 <div class="modal-body">
