@@ -189,17 +189,22 @@ class ComplianceChecklistForm(forms.Form):
 
 class DocumentForm(forms.Form):
 	case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	document_type = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+	document_type = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
 	version = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
 	def __init__(self, *args, **kwargs):
 		entity_choices_list = kwargs.pop('case_choices', [])
+		doc_choices_list = kwargs.pop('docs_choices', [])
 		initial_data = kwargs.get("initial", {})
 		selected_entity_choices = initial_data.get('case', '')
+		selected_doc_choices = initial_data.get('document_type', '')
 		super().__init__(*args, **kwargs)
 		self.fields['case'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
+		self.fields['document_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('type', '')) for record in doc_choices_list]
 		if selected_entity_choices:
-			self.fields['case'].initial = selected_entity_choices
+			self.fields['case'].initial = selected_entity_choices	
+		if selected_doc_choices:
+			self.fields['document_type'].initial = selected_doc_choices
 
 class ClientDocumentForm(forms.Form):
 	# case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
@@ -962,3 +967,15 @@ class TimesheetRepotForm(forms.Form):
 
 class LoanCaseRepotForm(forms.Form):
 	date = forms.DateField(input_formats=['%Y-%m-%d'],required=False, widget=forms.DateInput(attrs={"type": "date","class": "form-control"}))
+
+
+class DocumentRequestForm(forms.Form):
+	document_type = forms.MultipleChoiceField( required=True, widget=forms.SelectMultiple(attrs={"class": "form-control"}))
+	def __init__(self, *args, **kwargs):
+		user_choices_list = kwargs.pop('document_type_choices', [])
+		initial_data = kwargs.get("initial", {})
+		selected_user_choices = initial_data.get('document_type', '')
+		super().__init__(*args, **kwargs)
+		self.fields['document_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('type', '')) for record in user_choices_list]
+		if selected_user_choices:
+			self.fields['document_type'].initial = selected_user_choices

@@ -1811,11 +1811,20 @@ def document(request):
     else:
         clients = records_response2.json()
 
-    form = DocumentForm(case_choices=clients)
+    endpoint2 = 'documenttype/'    
+    records_response2 = call_get_method(BASEURL, endpoint2, user_token)
+    
+    if records_response2.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch loan cases. {records_response2.json()}", extra_tags="warning")
+        docs = []
+    else:
+        docs = records_response2.json()
+        print('--docs',docs)
+    form = DocumentForm(case_choices=clients,docs_choices=docs)
     endpoint = 'document/'
 
     if request.method == "POST":
-        form = DocumentForm(request.POST, files=request.FILES, case_choices=clients)
+        form = DocumentForm(request.POST, files=request.FILES, case_choices=clients,docs_choices=docs)
         if form.is_valid():
             cleaned_data = form.cleaned_data
             # Override or include additional session data
@@ -1925,7 +1934,7 @@ def client_document(request,case):
                     print("error",response)
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
-                return redirect('document_list')
+                return redirect('client_documents')
     else:
         print('errorss',form.errors)
     try:
@@ -2092,8 +2101,8 @@ def document_edit(request,pk):
 def document_approve(request, pk):
     try:
         user_token = request.session.get('user_token')
-        json_data = json.dumps(pk)
-        document = call_put_method_without_token(BASEURL, f'document_approve/{pk}/', json_data)
+        json_data = json.dumps({})
+        document = call_put_method(BASEURL, f'document_approve/{pk}/', json_data,user_token)
         print('--',document)
         print('--',document.status_code)
         if document.status_code not in [200, 201]:
@@ -2109,7 +2118,7 @@ def document_approve(request, pk):
 def timesheet_approve(request, pk):
     try:
         user_token = request.session.get('user_token')
-        json_data = json.dumps(pk)
+        json_data = json.dumps({})
         document = call_put_method(BASEURL, f'timesheet_approve/{pk}/', json_data,user_token)
         print('--',document)
         print('--',document.status_code)
@@ -6816,3 +6825,75 @@ def loancase_report(request):
             messages.error(request, f'Error: {str(e)}', extra_tags='danger')
 
     return render(request, 'reports/loancase_report.html', context)
+
+
+def request_document(request,loan_id):
+    user_token=request.session['user_token']
+    endpoint1=f'loancase/{loan_id}'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        loancase = records_response2.json()
+        print('----',loancase)
+
+    documenttype = call_get_method(BASEURL, 'documenttype',user_token)
+    
+    if documenttype.status_code in [200,201]:
+        documenttype = documenttype.json()
+
+    else:
+        print('error------',documenttype.status_code)
+        messages.error(request, 'Failed to retrieve data for lawyerprofile. Please check your connection and try again.', extra_tags='warning')
+        return redirect('client_documents')
+
+    form=DocumentRequestForm(document_type_choices=documenttype)
+    endpoint = 'request_document/'
+    if request.method=="POST":
+        form=DocumentRequestForm(request.POST,files=request.FILES,document_type_choices=documenttype)
+        if form.is_valid():
+            Output = form.cleaned_data
+            Output['branch']=request.session['branch']
+            Output['case'] = loancase.get('id')
+            Output['requested_to'] = loancase.get('client', {}).get('id')
+            Output['requested_by']=request.session['user_data']['id']
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if Output[field_name]:
+                        del Output[field_name]
+                        Output[field_name] = request.POST.get(field_name)
+                cleaned_data = form.cleaned_data
+                files, cleaned_data = image_filescreate(cleaned_data)
+                json_data = cleaned_data if files else json.dumps(cleaned_data)
+                print('==json_data==,',json_data)
+                response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
+
+                print('==response==',response)
+                if response['status_code'] == 1:
+                    print("error",response)
+            else:
+                messages.success(request,'Data Successfully Saved', extra_tags="success")
+                return redirect('client_documents')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+  
+
+    context={
+        'form':form,
+    }
+    return render(request,'request_document.html',context)
+
+def requested_doc_upload(request):
+        user_token = request.session['user_token']
+        endpoint = 'requested_documents/'
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+            return render(request, 'requested_document_list.html', {'records': []})  # Render with empty list
+        else:
+            records = records_response.json()
+            print('--records',records)
+            context = {'records': records}
+            return render(request, 'requested_document_list.html', context)
+    

@@ -33,7 +33,7 @@
                 <tr>
                     <td>{{forloop.counter}}</td>
 
-<td>{{data.case}}</td>
+<td>{{data.case.id}}-{{data.case.name}}</td>
 <td>{{data.uploaded_by}}</td>
 <td>{{data.document_type}}</td>
 {% comment %} <td>{{data.file}}</td> {% endcomment %}
@@ -49,8 +49,10 @@
                         data-id="{{ data.id }}">
                     Reject
                 </button>                        {% endcomment %}
-                 <a href="{% url 'document_edit' data.id %}"><span data-toggle="tooltip" title="Reupload" style="color: primary;"><i class='fa fa-upload'></i></a> 
+                 <a href="{% url 'document_edit' data.id %}"><span data-toggle="tooltip" title="Reupload" style="color: primary;"><i class='fa fa-upload'></i></a> &nbsp; &nbsp; &nbsp; &nbsp;
+                 <a href="{% url 'request_document' data.case.id %}"><span data-toggle="tooltip" title="Request" style="color: primary;"><i class='fa fa-user-plus'></i></a> 
                         {% comment %} <a href="{% url 'document_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')">Delete</i></a>  {% endcomment %}
+                    
                     </td> 
                 </tr>
                 {% endfor %}
