@@ -368,7 +368,52 @@ user-select: none;
   </div> 
 </li>
 
+  <li class="nav-item {{ approval }}">
+      <a class="nav-link" href="#approval" aria-expanded="false" aria-controls="approval">
+        <i class="icon-layout menu-icon"></i>
+            <span class="menu-title">Approvals</span>
+            <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ approval }}" id="approval">
+            <ul class="sub-menu">
+                 {% if 'document-create' in request.session.permission  %}
+        <a class="nav-link {{timesheetentry}}" href="{% url 'timesheetentry_approval_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">timesheet Approval</span>
+        </a>
+      {%endif%}
+      {% if 'document-create' in request.session.permission  %}
+        <a class="nav-link {{tasktimesheet}}" href="{% url 'tasktimesheet_approval_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Task Approval</span>
+        </a>
+      {%endif%}
+    
+              {% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
 
+        <a class="nav-link {{document}}" href="{% url 'document_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Document Approval</span>
+        </a>
+        {% endif%}
+    
+                {% comment %} {% if 'marketingagentprofile-create' in request.session.permission or 'marketingagentprofile-update' in request.session.permission %}
+                  <a class="nav-link {{marketingagentprofile_list}}" href="{% url 'marketingagentprofile_list' %}">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">marketingagentprofile</span>
+                  </a>
+                {% endif %}
+    
+                {% if 'lawyerprofile-create' in request.session.permission or 'lawyerprofile-update' in request.session.permission %}
+                  <a class="nav-link {{lawyerprofile_list}}" href="{% url 'lawyerprofile_list' %}">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">lawyerprofile</span>
+                  </a>
+                {% endif %} {% endcomment %}
+            </ul>
+        </div>
+    </li>
+        
   <li class="nav-item {{ task }}">
     <a class="nav-link" href="#task" aria-expanded="false" aria-controls="task">
         <i class="icon-layout menu-icon"></i>
@@ -419,31 +464,14 @@ user-select: none;
             <span class="menu-title">tasktimesheet</span>
         </a>
       {%endif%}
-      {% if 'document-create' in request.session.permission  %}
-        <a class="nav-link {{timesheetentry}}" href="{% url 'timesheetentry_approval_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">timesheet Approval</span>
-        </a>
-      {%endif%}
-      {% if 'document-create' in request.session.permission  %}
-        <a class="nav-link {{tasktimesheet}}" href="{% url 'tasktimesheet_approval_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">Task Approval</span>
-        </a>
-      {%endif%}
+     
        {% if 'timesheetentry-create' in request.session.permission or 'timesheetentry-update' in request.session.permission %}
         <a class="nav-link {{timesheetentry}}" href="{% url 'timesheetentry_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">timesheetentry</span>
         </a>
       {%endif%}
-       {% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
-
-        <a class="nav-link {{document}}" href="{% url 'document_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">document approval</span>
-        </a>
-        {% endif%}
+       
         {% comment %} <a class="nav-link {{timesheetattachment}}" href="{% url 'timesheetattachment' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">timesheetattachment</span>
@@ -475,11 +503,7 @@ user-select: none;
   <div class="collapse {{ document }}" id="document">
       <ul class="sub-menu">
 
-        {% comment %} <a class="nav-link {{documentgroup_list}}" href="{% url 'documentgroup_list' %}">
-          <i class="icon-grid menu-icon"></i>
-          <span class="menu-title">documentgroup</span>
-        </a>
-      {% endcomment %}
+     
       {% if 'customdocumententity-create' in request.session.permission or 'customdocumententity-update' in request.session.permission %}
 
         <a class="nav-link {{customdocumententity_list}}" href="{% url 'customdocumententity_list' %}">
@@ -487,13 +511,13 @@ user-select: none;
           <span class="menu-title">Document Entity</span>
         </a>
       {% endif %}
-      {% comment %} {% if 'documenttype-create' in request.session.permission or 'documenttype-update' in request.session.permission %}
+     {% if 'documenttype-create' in request.session.permission or 'documenttype-update' in request.session.permission %}
 
         <a class="nav-link {{documenttype_list}}" href="{% url 'documenttype_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Document Type </span>
         </a> 
-      {% endif %} {% endcomment %}
+      {% endif %} 
       {% if 'foldermaster-create' in request.session.permission or 'foldermaster-update' in request.session.permission %}
 
         <a class="nav-link {{foldermaster_list}}" href="{% url 'foldermaster_list' %}">
@@ -501,8 +525,13 @@ user-select: none;
           <span class="menu-title">folder master</span>
         </a>
         {% endif %}
-    
-       
+        {% if 'requested_documents_list' in request.session.permission %}
+
+          <a class="nav-link {{requested_documents_list}}" href="{% url 'requested_documents_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Requested Documents</span>
+        </a>
+        {% endif %}
 
         {% if 'client_documents' in request.session.permission or 'client_documents' in request.session.permission %}
 

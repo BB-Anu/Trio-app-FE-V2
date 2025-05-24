@@ -188,24 +188,49 @@ class ComplianceChecklistForm(forms.Form):
 			self.fields['case'].initial = selected_entity_choices
 
 class DocumentForm(forms.Form):
-	case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	document_type = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
-	file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
-	version = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
-	def __init__(self, *args, **kwargs):
-		entity_choices_list = kwargs.pop('case_choices', [])
-		doc_choices_list = kwargs.pop('docs_choices', [])
-		initial_data = kwargs.get("initial", {})
-		selected_entity_choices = initial_data.get('case', '')
-		selected_doc_choices = initial_data.get('document_type', '')
-		super().__init__(*args, **kwargs)
-		self.fields['case'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('id', '')) for record in entity_choices_list]
-		self.fields['document_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('type', '')) for record in doc_choices_list]
-		if selected_entity_choices:
-			self.fields['case'].initial = selected_entity_choices	
-		if selected_doc_choices:
-			self.fields['document_type'].initial = selected_doc_choices
+    case = forms.ChoiceField(
+        required=True,
+        widget=forms.Select(attrs={"class": "form-control"})
+    )
+    document_type = forms.ChoiceField(
+        required=True,
+        widget=forms.Select(attrs={"class": "form-control"})
+    )
+    file = forms.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],
+        required=False,
+        widget=forms.ClearableFileInput(attrs={"class": "form-control-file"})
+    )
+    version = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(attrs={"class": "form-control"})
+    )
 
+    def __init__(self, *args, **kwargs):
+        entity_choices_list = kwargs.pop('case_choices', [])
+        doc_choices_list = kwargs.pop('docs_choices', [])
+        initial_data = kwargs.get("initial", {})
+
+        selected_entity_id = str(initial_data.get('case', ''))
+        selected_doc_id = str(initial_data.get('document_type', ''))
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['case'].choices = [('', '---select---')] + [
+            (str(record.get('id', '')), str(record.get('name', record.get('id', ''))))
+            for record in entity_choices_list
+        ]
+        self.fields['document_type'].choices = [('', '---select---')] + [
+            (str(record.get('id', '')), str(record.get('type', '')))
+            for record in doc_choices_list
+        ]
+
+        if selected_entity_id:
+            self.fields['case'].initial = selected_entity_id
+        if selected_doc_id:
+            self.fields['document_type'].initial = selected_doc_id
+
+			
 class ClientDocumentForm(forms.Form):
 	# case = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	document_type = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
@@ -979,3 +1004,18 @@ class DocumentRequestForm(forms.Form):
 		self.fields['document_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('type', '')) for record in user_choices_list]
 		if selected_user_choices:
 			self.fields['document_type'].initial = selected_user_choices
+
+
+
+class CustomerDocumentForm(forms.Form):
+	document_type = forms.ChoiceField( required=True, widget=forms.Select(attrs={"class": "form-control"}))
+	file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
+	version = forms.IntegerField(required=True,widget=forms.NumberInput(attrs={"class": "form-control"}))
+	def __init__(self, *args, **kwargs):
+		doc_choices_list = kwargs.pop('docs_choices', [])
+		initial_data = kwargs.get("initial", {})
+		selected_doc_choices = initial_data.get('document_type', '')
+		super().__init__(*args, **kwargs)
+		self.fields['document_type'].choices = [('', '---select---')] + [(record.get('id', ''), record.get('type', '')) for record in doc_choices_list]
+		if selected_doc_choices:
+			self.fields['document_type'].initial = selected_doc_choices
