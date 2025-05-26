@@ -259,6 +259,7 @@ urlpatterns = [
 	path("loancase_report/", loancase_report, name="loancase_report"),
     
 	path("request_document/<int:loan_id>/", request_document, name="request_document"),
-	path('requested_doc_upload/',requested_doc_upload,name='requested_doc_upload')
+	path("request_document_upload/<int:loan_id>/", request_document_upload, name="request_document_upload"),
+	path('requested_documents_list/',requested_documents_list,name='requested_documents_list'),
 
 ]

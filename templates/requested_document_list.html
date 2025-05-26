@@ -6,9 +6,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="text-end mb-3">
-                    <a href="{% url 'document' %}">
-                        <button type="button" class="btn btn-primary">+ New</button>
-                    </a>
+                   
                 </div>
                 <h3>Requested Documents</h3>
                 <div class="table-responsive">
@@ -23,13 +21,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for data in records %}
+                            {% for data in records%}
                             <tr>
-                                <td>{{ forloop.counter }}</td>
+                                <td>{{ data.id }}</td>
+                                <td>{{ data.case.id }}- {{data.case.name}}</td>
                                 <td>{{ data.requested_by }}</td>
-                                <td>{{ data.case }}</td>
                                 <td>{{ data.document_type }}</td>
                                 <td>
+                                     <a href="{% url 'request_document_upload' data.case.id %}" data-toggle="tooltip" title="upload">
+                                        <i class="fa fa-upload" style="color: black;"></i>
+                    </a>
                                     {% comment %} <a href="{% url 'auditlog_edit' data.id %}" data-toggle="tooltip" title="Edit">
                                         <i class="fa fa-edit" style="color: black;"></i>
                                     </a>

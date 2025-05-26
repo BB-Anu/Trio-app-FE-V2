@@ -1126,6 +1126,7 @@ def documenttype(request):
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
+            Output['created_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
@@ -1174,15 +1175,16 @@ def documenttype_list(request):
 
 # edit function
 def documenttype_edit(request,pk):
+    user_token=request.session['user_token']
     endpoint2='documentgroup/'    
-    records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
     print('records_response.status_code',records_response2.status_code)
     if records_response2.status_code not in [200,201]:
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         groups = records_response2.json()
         print('client_choices',groups)
-    documenttype = call_get_method_without_token(BASEURL, f'documenttype/{pk}/')
+    documenttype = call_get_method(BASEURL, f'documenttype/{pk}/',user_token)
     
     if documenttype.status_code in [200,201]:
         documenttype_data = documenttype.json()
@@ -1196,6 +1198,7 @@ def documenttype_edit(request,pk):
         if form.is_valid():
             updated_data = form.cleaned_data
             updated_data['branch']=request.session['branch']
+            updated_data['updated_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
@@ -1415,6 +1418,7 @@ def trioassignment(request):
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
+            Output['created_by']=request.session['user_data']['id']
 
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
@@ -1464,6 +1468,7 @@ def trioassignment_list(request):
 
 # edit function
 def trioassignment_edit(request,pk):
+
     endpoint1='clientprofile/'    
     records_response2 = call_get_method_without_token(BASEURL,endpoint1)
     print('records_response.status_code',records_response2.status_code)
@@ -1830,6 +1835,7 @@ def document(request):
             # Override or include additional session data
             cleaned_data['branch'] = branch
             cleaned_data['uploaded_by'] = uploaded_by
+            cleaned_data['created_by']=request.session['user_data']['id']
 
             # Ensure correct date values from request.POST (if any DateInput fields)
             for field_name, field in form.fields.items():
@@ -2016,87 +2022,81 @@ def client_document_list(request, case):
     return render(request, 'customer_document_list.html', context)
 
 # edit function
-def document_edit(request,pk):
-    user_token=request.session['user_token']
-    endpoint1='loancase/'    
-    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
-    print('records_response.status_code',records_response2.status_code)
-    if records_response2.status_code not in [200,201]:
-        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
-    else:
-        clients = records_response2.json()
-    document = call_get_method_without_token(BASEURL, f'document/{pk}/')
+def document_edit(request, pk):
+    user_token = request.session['user_token']
     
-    if document.status_code in [200,201]:
-        document_data = document.json()
-        print('---',document_data)
+    # Get loan cases
+    endpoint1 = 'loancase/'    
+    records_response1 = call_get_method(BASEURL, endpoint1, user_token)
+    if records_response1.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch records. {records_response1.json()}", extra_tags="warning")
+        clients = []
     else:
-        print('error------',document)
+        clients = records_response1.json()
+
+    # Get document types
+    endpoint2 = 'documenttype/'    
+    records_response2 = call_get_method(BASEURL, endpoint2, user_token)
+    if records_response2.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch document types. {records_response2.json()}", extra_tags="warning")
+        docs = []
+    else:
+        docs = records_response2.json()
+
+    # Get existing document
+    document_response = call_get_method_without_token(BASEURL, f'document/{pk}/')
+    if document_response.status_code in [200, 201]:
+        document_data = document_response.json()
+        print('--document_data--', document_data)
+
+        # Normalize `case` and `document_type` for form initial values
+        document_data['case'] = document_data['case']['id'] if isinstance(document_data.get('case'), dict) else document_data.get('case')
+        for doc in docs:
+            if doc.get('type') == document_data.get('document_type'):
+                document_data['document_type'] = doc['id']
+                break
+    else:
         messages.error(request, 'Failed to retrieve data for document. Please check your connection and try again.', extra_tags='warning')
         return redirect('document_list')
 
-    # if request.method=="POST":
-    #     form=DocumentForm(request.POST,request.FILES, initial=document_data,case_choices=clients)
-    #     if form.is_valid():
-    #         updated_data = form.cleaned_data
-    #         for field_name, field in form.fields.items():
-    #             if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
-    #                 if updated_data[field_name]:
-    #                     del updated_data[field_name]
-    #                     updated_data[field_name] = request.POST.get(field_name)
-    #         # Serialize the updated data as JSON
-    #         json_data = json.dumps(updated_data)
-    #         print('json_data',json_data)
-    #         response = call_put_method(BASEURL, f'document/{pk}/', json_data,user_token)
-
-    #         if response.status_code in [200,201]: 
-    #             messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-    #             return redirect('document_list') 
-    #         else:
-    #             error_message = response.json()
-    #             messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
     if request.method == "POST":
-        form = DocumentForm(request.POST, request.FILES, initial=document_data, case_choices=clients)
+        form = DocumentForm(request.POST, request.FILES, initial=document_data, case_choices=clients, docs_choices=docs)
         if form.is_valid():
             updated_data = form.cleaned_data
+            updated_data['updated_by']=request.session['user_data']['id']
+            updated_data['branch']=request.session['branch']
 
-            # Remove file-type fields from cleaned_data before json.dumps
+            # Remove file-type fields before JSON serialization
             file_fields = []
             for field_name, field in form.fields.items():
                 if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
                     if updated_data[field_name]:
                         updated_data[field_name] = request.POST.get(field_name)
-                if hasattr(updated_data[field_name], 'file'):  # File fields like TemporaryUploadedFile
+                if hasattr(updated_data[field_name], 'file'):  # It's a file field
                     file_fields.append(field_name)
 
             for f in file_fields:
                 updated_data.pop(f)
 
-            # Serialize to JSON
             json_data = json.dumps(updated_data)
             print('json_data', json_data)
 
-            # Upload JSON data
+            # PUT update
             response = call_put_method(BASEURL, f'document/{pk}/', json_data, user_token)
 
-            # Optionally: Handle file upload separately (depends on your API design)
-
-            if response.status_code in [200, 201]: 
+            if response.status_code in [200, 201]:
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('document_list') 
+                return redirect('document_list')
             else:
                 error_message = response.json()
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
-
         else:
-            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+            print("Form is not valid:", form.errors)
     else:
-        form = DocumentForm(initial=document_data,case_choices=clients)
+        form = DocumentForm(initial=document_data, case_choices=clients, docs_choices=docs)
 
-    context={
-        'form':form,
-    }
-    return render(request,'document_edit.html',context)
+    return render(request, 'document_edit.html', {'form': form})
+
 
 def document_approve(request, pk):
     try:
@@ -6884,16 +6884,78 @@ def request_document(request,loan_id):
     }
     return render(request,'request_document.html',context)
 
-def requested_doc_upload(request):
+def requested_documents_list(request):
         user_token = request.session['user_token']
         endpoint = 'requested_documents/'
         records_response = call_get_method(BASEURL, endpoint, user_token)
         if records_response.status_code not in [200, 201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
-            return render(request, 'requested_document_list.html', {'records': []})  # Render with empty list
+            return render(request, 'requested_document_list.html', {'records': []}) 
         else:
             records = records_response.json()
             print('--records',records)
             context = {'records': records}
             return render(request, 'requested_document_list.html', context)
     
+
+def request_document_upload(request,loan_id):
+    user_token = request.session.get('user_token')
+    endpoint2 = 'documenttype/'    
+    records_response2 = call_get_method(BASEURL, endpoint2, user_token)
+    
+    if records_response2.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch loan cases. {records_response2.json()}", extra_tags="warning")
+        docs = []
+    else:
+        docs = records_response2.json()
+        print('--docs',docs)
+    form = CustomerDocumentForm(docs_choices=docs)
+    endpoint = 'document/'
+
+    if request.method == "POST":
+        form = CustomerDocumentForm(request.POST, files=request.FILES,docs_choices=docs)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            # Override or include additional session data
+            cleaned_data['branch']=request.session['branch']
+            cleaned_data['case']=loan_id
+            cleaned_data['uploaded_by'] = request.session['user_data']['id']
+
+            # Ensure correct date values from request.POST (if any DateInput fields)
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    cleaned_data[field_name] = request.POST.get(field_name)
+
+            # Handle files if present
+            files, cleaned_data = image_filescreate(cleaned_data)
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+
+            print('==json_data==', json_data)
+            response = call_post_method_with_token_v2(BASEURL, endpoint, json_data, files)
+            print('==response==', response)
+
+            if response.get('status_code') == 1:
+                messages.error(request, f"Error: {response.get('message', 'Unknown error')}", extra_tags="danger")
+            else:
+                messages.success(request, 'Data Successfully Saved', extra_tags="success")
+                return redirect('requested_documents_list')
+        else:
+            print('Form errors:', form.errors)
+
+    # Fetch existing documents for display
+    try:
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch document records. {records_response.json()}", extra_tags="warning")
+            records = []
+        else:
+            records = records_response.json()
+    except Exception as e:
+        print("An error occurred while fetching records:", str(e))
+        records = []
+
+    context = {
+        'form': form,
+        'records': records,
+    }
+    return render(request, 'requested_document_upload.html', context)
