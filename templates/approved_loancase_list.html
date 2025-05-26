@@ -31,7 +31,7 @@
                             {% for data in records %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ data.client }}</td>
+                                <td>{{ data.client.name }}</td>
                                 <td>{{ data.case_id }}</td>
                                 <td>{{ data.case_reference }}</td>
                                 <td>{{ data.loan_amount }}</td>

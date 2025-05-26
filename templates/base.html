@@ -389,7 +389,7 @@ user-select: none;
         </a>
       {%endif%}
     
-              {% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
+          {% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
 
         <a class="nav-link {{document}}" href="{% url 'document_list' %}">
           <i class="icon-grid menu-icon"></i>
@@ -540,7 +540,18 @@ user-select: none;
           <span class="menu-title">Document</span>
         </a>
         {% endif%}
+{% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
 
+        <a class="nav-link {{document}}" href="{% url 'document_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Document Approval</span>
+        </a>
+
+          <a class="nav-link {{document}}" href="{% url 'trio_requested_documents_list' %}">
+          <i class="icon-grid menu-icon"></i>
+          <span class="menu-title">Requested Document List</span>
+        </a>
+        {% endif%}
         {% comment %} {% if 'documentupload-create' in request.session.permission or 'documentupload-update' in request.session.permission %}
 
         <a class="nav-link {{documentupload_list}}" href="{% url 'documentupload_list' %}">

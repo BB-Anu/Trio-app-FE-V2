@@ -37,10 +37,26 @@
 <td>{{data.is_available}}</td>
 
 {% comment %} <td>{{data.created_at}}</td> {% endcomment %}
-                    <td>
-                        <a href="{% url 'triogroup_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'triogroup_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-remove' onclick="alert('You want to Delete this Item..?')"></i></a>
-                    </td>
+                   <td>
+    <div class="dropdown">
+        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-ellipsis-v"></i>
+        </button>
+        <div class="dropdown-menu">
+             <a class="dropdown-item" href="{% url 'triogroup_member_list' data.id %}">
+                <i class="fa fa-tachometer-alt text-primary"></i> Performance
+            </a>
+            <a class="dropdown-item" href="{% url 'triogroup_edit' data.id %}">
+                <i class="fa fa-edit text-primary"></i> Edit
+            </a>
+           
+            <a class="dropdown-item" href="{% url 'triogroup_delete' data.id %}" onclick="return confirm('You want to Delete this Item..?')">
+                <i class="fa fa-trash text-primary"></i> Delete
+            </a>
+        </div>
+    </div>
+</td>
+
                 </tr>
                 {% endfor %}
             </tbody>
