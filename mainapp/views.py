@@ -25,19 +25,34 @@ APP_BUILDER = 'http://127.0.0.1:8000/'
 
 def dashboard(request):
     user_token=request.session['user_token']
-    endpoint = 'dashboard/'
-        # getting data from backend
-    records_response = call_get_method(BASEURL,endpoint,user_token)
-    if records_response.status_code not in [200,201]:
-            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    if request.user.is_superuser:
+        endpoint = 'dashboard/'
+            # getting data from backend
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+                messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+                records = records_response.json()
+                print('records',records)
+                # You can pass 'records' to your template for rendering
+                context = {'records': records}
+                return render(request, 'dashboard.html', context)
+        
+        return render(request, 'dashboard.html')
     else:
-            records = records_response.json()
-            print('records',records)
-            # You can pass 'records' to your template for rendering
-            context = {'records': records}
-            return render(request, 'dashboard.html', context)
-    
-    return render(request, 'dashboard.html')
+        endpoint = 'user_dashboard/'
+            # getting data from backend
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+                messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+                records = records_response.json()
+                print('records',records)
+                # You can pass 'records' to your template for rendering
+                context = {'records': records}
+                return render(request, 'user_dashboard.html', context)
+        
+        return render(request, 'user_dashboard.html')
 
 def customer_Screen(request):
     user_token = request.session.get('user_token')
@@ -703,6 +718,64 @@ def triogroup_list(request):
             return render(request, 'triogroup_list.html', context)
     return render(request,'triogroup_list.html',context)
 
+# def triogroup_member(request, pk):
+#     user_token = request.session['user_token']
+#     endpoint = f'triogroup_member_list/{pk}/'
+#     records_response = call_get_method(BASEURL, endpoint, user_token)
+
+#     if records_response.status_code not in [200, 201]:
+#         messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+#         return render(request, 'triogroup_member.html', {})
+
+#     else:
+#         response_data = records_response.json()
+#         print('---response_data',response_data)
+#         group_member_data = response_data.get("group_member", {})
+
+#         expanded_records = []
+
+#         # Handle the case where profile is a list
+#         if 'profile' in group_member_data and group_member_data['profile']:
+#             profiles = group_member_data['profile']
+#             for profile in profiles:
+#                 expanded_record = group_member_data.copy()
+#                 expanded_record['profile'] = profile
+#                 expanded_records.append(expanded_record)
+#         else:
+#             expanded_records.append(group_member_data)
+
+#         context = {
+#             'records': expanded_records,
+#             'trio_profiles': response_data.get('trio_profiles', []),
+#             'task_count': response_data.get('task_count', 0)
+#         }
+#         return render(request, 'triogroup_member_list.html', context)
+def triogroup_member(request, pk):
+    user_token = request.session['user_token']
+    endpoint = f'triogroup_member_list/{pk}/'
+    records_response = call_get_method(BASEURL, endpoint, user_token)
+
+    if records_response.status_code not in [200, 201]:
+        messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        return render(request, 'triogroup_member.html', {})
+
+    response_data = records_response.json()
+    group_member_data = response_data.get("group_member", {})
+    
+    # Split the comma-separated string into a list and remove extra spaces
+    profile_list = [p.strip() for p in group_member_data.get('profile', '').split(',') if p.strip()]
+    
+    # Replace the single string with list version in the data
+    group_member_data['profile_list'] = profile_list
+
+    context = {
+        'group_member': group_member_data,
+        'trio_profiles': response_data.get('trio_profiles', []),
+        'task_count': response_data.get('task_count', 0),
+        'members_with_tasks': response_data.get('members_with_tasks', []),
+    }
+    print('context',context)
+    return render(request, 'triogroup_member_list.html', context)
 
 # edit function
 def triogroup_edit(request,pk):
@@ -6896,6 +6969,21 @@ def requested_documents_list(request):
             print('--records',records)
             context = {'records': records}
             return render(request, 'requested_document_list.html', context)
+    
+
+
+def trio_requested_documents_list(request):
+        user_token = request.session['user_token']
+        endpoint = 'trio_requested_documents/'
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code not in [200, 201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+            return render(request, 'trio_requested_document_list.html', {'records': []}) 
+        else:
+            records = records_response.json()
+            print('--records',records)
+            context = {'records': records}
+            return render(request, 'trio_requested_document_list.html', context)
     
 
 def request_document_upload(request,loan_id):

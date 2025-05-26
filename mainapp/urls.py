@@ -27,6 +27,7 @@ urlpatterns = [
 	path("tasktemplate_delete/<pk>/", tasktemplate_delete, name="tasktemplate_delete"),
     
 	path("triogroup/", triogroup, name="triogroup"),
+	path("triogroup_member_list/<int:pk>/", triogroup_member, name="triogroup_member_list"),
 	path("triogroup_list/", triogroup_list, name="triogroup_list"),
 	path("triogroup_edit/<pk>/", triogroup_edit, name="triogroup_edit"),
 	path("triogroup_delete/<pk>/", triogroup_delete, name="triogroup_delete"),
@@ -261,5 +262,6 @@ urlpatterns = [
 	path("request_document/<int:loan_id>/", request_document, name="request_document"),
 	path("request_document_upload/<int:loan_id>/", request_document_upload, name="request_document_upload"),
 	path('requested_documents_list/',requested_documents_list,name='requested_documents_list'),
+	path('trio_requested_documents_list/',trio_requested_documents_list,name='trio_requested_documents_list'),
 
 ]
