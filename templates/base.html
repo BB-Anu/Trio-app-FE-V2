@@ -265,7 +265,7 @@ user-select: none;
             </a>
           </li>
           {%endif%}
-                 {% if 'user_dashboard' in request.session.permission %}
+                 {% comment %} {% if 'user_dashboard' in request.session.permission %}
 
         <li class="nav-item {{user_dashboard}}">
             <a class="nav-link" href="{% url 'user_dashboard' %}">
@@ -273,7 +273,7 @@ user-select: none;
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-          {% endif%}
+          {% endif%} {% endcomment %}
           {% comment %} {% if 'clientprofile-create' in request.session.permission or 'clientprofile-update' in request.session.permission or
           'userprofile-create' in request.session.permission or 'userprofile-update' in request.session.permission or
           'auditorprofile-create' in request.session.permission or 'auditorprofile-update' in request.session.permission or
