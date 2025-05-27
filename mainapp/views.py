@@ -23,36 +23,38 @@ from .api_call import *
 BASEURL = 'http://127.0.0.1:9000/'
 APP_BUILDER = 'http://127.0.0.1:8000/'
 
+
 def dashboard(request):
     user_token=request.session['user_token']
-    if request.user.is_superuser:
-        endpoint = 'dashboard/'
-            # getting data from backend
-        records_response = call_get_method(BASEURL,endpoint,user_token)
-        if records_response.status_code not in [200,201]:
-                messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
-        else:
-                records = records_response.json()
-                print('records',records)
-                # You can pass 'records' to your template for rendering
-                context = {'records': records}
-                return render(request, 'dashboard.html', context)
-        
-        return render(request, 'dashboard.html')
+    # print('request.user.is_superuser',request.user.is_superuser)
+    # if request.user.is_superuser:
+    endpoint = 'dashboard/'
+        # getting data from backend
+    records_response = call_get_method(BASEURL,endpoint,user_token)
+    if records_response.status_code not in [200,201]:
+            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
-        endpoint = 'user_dashboard/'
-            # getting data from backend
-        records_response = call_get_method(BASEURL,endpoint,user_token)
-        if records_response.status_code not in [200,201]:
-                messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
-        else:
-                records = records_response.json()
-                print('records',records)
-                # You can pass 'records' to your template for rendering
-                context = {'records': records}
-                return render(request, 'user_dashboard.html', context)
+            records = records_response.json()
+            print('records',records)
+            # You can pass 'records' to your template for rendering
+            context = {'records': records}
+            return render(request, 'dashboard.html', context)
+    
+    return render(request, 'dashboard.html')
+    # else:
+    #     endpoint = 'user_dashboard/'
+    #         # getting data from backend
+    #     records_response = call_get_method(BASEURL,endpoint,user_token)
+    #     if records_response.status_code not in [200,201]:
+    #             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+    #     else:
+    #             records = records_response.json()
+    #             print('records',records)
+    #             # You can pass 'records' to your template for rendering
+    #             context = {'records': records}
+    #             return render(request, 'user_dashboard.html', context)
         
-        return render(request, 'user_dashboard.html')
+    #     return render(request, 'user_dashboard.html')
 
 def customer_Screen(request):
     user_token = request.session.get('user_token')
@@ -4744,6 +4746,20 @@ def timesheetentry(request):
     return render(request,'timesheetentry.html',context)
 
 
+def get_task(request, task_id):
+    user_token = request.session.get('user_token')
+    endpoint = f'get_task/{task_id}/'
+    try:
+        records_response = call_get_method(BASEURL, endpoint, user_token)
+        if records_response.status_code in [200, 201]:
+            task_data = records_response.json()
+            print('Timesheets',task_data)
+            return JsonResponse(task_data, safe=False)  # because it's a list
+        else:
+            return JsonResponse({'error': 'Failed to fetch task data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 def timesheetentry_view(request, pk):
     user_token = request.session.get('user_token')
 
@@ -4851,36 +4867,31 @@ def timesheetentry_list(request):
 #         records_response = call_get_method(BASEURL, endpoint, user_token)
 #         if records_response.status_code in [200, 201]:
 #             records = records_response.json()
+#             print('rec',records)
 #             return JsonResponse({'records': records})
 #         else:
 #             return JsonResponse({'error': 'Failed to fetch task data'}, status=400)
 #     except Exception as e:
 #         return JsonResponse({'error': 'An error occurred'}, status=500)
 
-def get_task(request, task_id):
-    user_token = request.session['user_token']
-    endpoint = f'get_task/{task_id}/'
-    try:
-        records_response = call_get_method(BASEURL, endpoint, user_token)
-        if records_response.status_code in [200, 201]:
-            all_tasks = records_response.json()  # still returning a list
-            print('--task', all_tasks)
 
-            # Filter the task with the given ID
-            task = next((t for t in all_tasks if t['id'] == int(task_id)), None)
+# def get_task(request, task_id):
+#     user_token = request.session.get('user_token')
+#     endpoint = f'get_task/{task_id}/'
 
-            if task:
-                return JsonResponse({
-                    'task': task['task'],
-                    'total_working_hours': task['total_working_hours']
-                })
-            else:
-                return JsonResponse({'error': 'Task not found'}, status=404)
-        else:
-            return JsonResponse({'error': 'Failed to fetch task data'}, status=400)
-    except Exception as e:
-        print('Error:', e)
-        return JsonResponse({'error': 'An error occurred'}, status=500)
+#     try:
+#         records_response = call_get_method(BASEURL, endpoint, user_token)
+#         if records_response.status_code in [200, 201]:
+#             task_data = records_response.json()
+#             print('Task data:', task_data)
+
+#             # If task_data is a list, return with safe=False
+#             return JsonResponse(task_data, safe=False)
+#         else:
+#             return JsonResponse({'error': 'Failed to fetch task data'}, status=400)
+#     except Exception as e:
+#         print('Error:', str(e))
+#         return JsonResponse({'error': 'An error occurred'}, status=500)
 
 
 def tasktimesheet_approval_list(request):
