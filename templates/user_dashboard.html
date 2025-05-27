@@ -152,14 +152,10 @@
                   <td>{{ task.task }}</td>
                   <td>
                     <span class="badge 
-                      {% if task.status == 'new' %}badge-primary
-                      {% elif task.status == 'info_gathering' %}badge-info
-                      {% elif task.status == 'in_progress' %}badge-warning
-                      {% elif task.status == 'review' %}badge-secondary
-                      {% elif task.status == 'rework' %}badge-light
+                      {% if task.status == 'completed' %}badge-info
+                      {% elif task.status == 'pending' %}badge-warning
                       {% elif task.status == 'approved' %}badge-success
-                      {% elif task.status == 'declined' %}badge-danger
-                      {% elif task.status == 'closed' %}badge-dark
+                      {% elif task.status == 'rejected' %}badge-danger
                       {% endif %}">
                       {{ task.status }}
                     </span>

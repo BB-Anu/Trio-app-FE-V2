@@ -256,13 +256,24 @@ user-select: none;
 
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
+                 {% if 'dashboard' in request.session.permission %}
+
           <li class="nav-item {{dashboard}}">
             <a class="nav-link" href="{% url 'dashboard' %}">
               <i class="icon-grid menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
+          {%endif%}
+                 {% if 'user_dashboard' in request.session.permission %}
 
+        <li class="nav-item {{user_dashboard}}">
+            <a class="nav-link" href="{% url 'user_dashboard' %}">
+              <i class="icon-grid menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          {% endif%}
           {% comment %} {% if 'clientprofile-create' in request.session.permission or 'clientprofile-update' in request.session.permission or
           'userprofile-create' in request.session.permission or 'userprofile-update' in request.session.permission or
           'auditorprofile-create' in request.session.permission or 'auditorprofile-update' in request.session.permission or

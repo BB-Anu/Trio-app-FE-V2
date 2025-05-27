@@ -705,7 +705,7 @@ class TimesheetEntryForm(forms.Form):
 		selected_entity_choices = initial_data.get('task', '')
 		super().__init__(*args, **kwargs)
 		self.fields['timesheet'].choices = [('', '---select---')] + [
-			(record.get('id', ''), f"{record.get('id', '')} - {record.get('task', '')[:70]}")
+			(record.get('id', ''), f"{record.get('id', '')} - {record.get('task', '')[:100]}")
 			for record in user_choices_list
 		]
 		self.fields['task'].choices = [('', '---select---')] + [
