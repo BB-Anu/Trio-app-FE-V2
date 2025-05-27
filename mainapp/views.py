@@ -26,35 +26,36 @@ APP_BUILDER = 'http://127.0.0.1:8000/'
 
 def dashboard(request):
     user_token=request.session['user_token']
-    # print('request.user.is_superuser',request.user.is_superuser)
-    # if request.user.is_superuser:
-    endpoint = 'dashboard/'
-        # getting data from backend
-    records_response = call_get_method(BASEURL,endpoint,user_token)
-    if records_response.status_code not in [200,201]:
+    print("test===",request.user)
+    if request.session['user_data']['is_superuser'] == True:
+        endpoint = 'dashboard/'
+            # getting data from backend
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
-    else:
+        else:
             records = records_response.json()
             print('records',records)
             # You can pass 'records' to your template for rendering
             context = {'records': records}
             return render(request, 'dashboard.html', context)
     
-    return render(request, 'dashboard.html')
-    # else:
-    #     endpoint = 'user_dashboard/'
-    #         # getting data from backend
-    #     records_response = call_get_method(BASEURL,endpoint,user_token)
-    #     if records_response.status_code not in [200,201]:
-    #             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
-    #     else:
-    #             records = records_response.json()
-    #             print('records',records)
-    #             # You can pass 'records' to your template for rendering
-    #             context = {'records': records}
-    #             return render(request, 'user_dashboard.html', context)
+        return render(request, 'dashboard.html')
+    else:
+        endpoint = 'user_dashboard/'
+            # getting data from backend
+        records_response = call_get_method(BASEURL,endpoint,user_token)
+        if records_response.status_code not in [200,201]:
+                messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        else:
+                records = records_response.json()
+                print('records',records)
+                # You can pass 'records' to your template for rendering
+                context = {'records': records}
+                return render(request, 'user_dashboard.html', context)
         
-    #     return render(request, 'user_dashboard.html')
+        return render(request, 'user_dashboard.html')
+
 
 def customer_Screen(request):
     user_token = request.session.get('user_token')
@@ -137,8 +138,7 @@ def login(request):
             print('json_payload',json_payload)
             ENDPOINT = 'api/token/'
             login_response = call_post_method_for_without_token(BASEURL,ENDPOINT,json_payload)
-            print('login_response',login_response)
-            print('login_response',login_response.json())
+            print('login_response====',login_response.json())
             if login_response.status_code == 200:
                 login_tokes = login_response.json()
                 print('-----',login_tokes)
@@ -6684,8 +6684,10 @@ def image_filescreate(cleaned_data):
 
 def select_company(request):
     try:
+        user_token=request.session['user_token']
+        print('user',request.user)
         endpoint2='UserManagement/company/'    
-        records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+        records_response2 = call_get_method(BASEURL,endpoint2,user_token)
         print('records_response.status_code',records_response2.status_code)
         if records_response2.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
@@ -6723,10 +6725,10 @@ def select_company(request):
 def select_branch(request,pk):
     try:
         user_token=request.session['user_token']
-        print('---user_token',user_token)
+        print('---user_token',request.user)
         print('==',pk)
         endpoint2=f'UserManagement/select_branch/{pk}'    
-        records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+        records_response2 = call_get_method(BASEURL,endpoint2,user_token)
         print('records_response.status_code',records_response2.status_code)
         branch_list1=[]
         if records_response2.status_code not in [200,201]:
@@ -6736,7 +6738,7 @@ def select_branch(request,pk):
             print('----',branch_list )
             # branch_list1.append(branch_list)
         endpoint2=f'UserManagement/company/{pk}'    
-        records_response2 = call_get_method_without_token(BASEURL,endpoint2)
+        records_response2 = call_get_method(BASEURL,endpoint2,user_token)
         print('records_response.status_code',records_response2.status_code)
         if records_response2.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
