@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.views.generic import ListView, UpdateView, CreateView, DetailView
-
 from user_management.forms import BranchForm, CompanyForm
 from .api_call import call_post_method_without_token_app_builder,call_get_method,call_get_method_without_token,call_post_with_method,call_post_method_for_without_token,call_delete_method,call_delete_method_without_token, call_put_method,call_put_method_without_token
 import requests
@@ -10,7 +9,6 @@ from django.contrib import messages
 from django.urls import resolve, reverse
 import jwt
 from django.contrib.auth import logout
-from django.http.request import HttpRequest
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from .forms import *
@@ -22,7 +20,6 @@ from .api_call import *
 
 BASEURL = 'http://127.0.0.1:9000/'
 APP_BUILDER = 'http://127.0.0.1:8000/'
-
 
 def dashboard(request):
     user_token=request.session['user_token']
@@ -38,8 +35,7 @@ def dashboard(request):
             print('records',records)
             # You can pass 'records' to your template for rendering
             context = {'records': records}
-            return render(request, 'dashboard.html', context)
-    
+            return render(request, 'dashboard.html', context)    
         return render(request, 'dashboard.html')
     else:
         endpoint = 'user_dashboard/'
@@ -52,8 +48,7 @@ def dashboard(request):
                 print('records',records)
                 # You can pass 'records' to your template for rendering
                 context = {'records': records}
-                return render(request, 'user_dashboard.html', context)
-        
+                return render(request, 'user_dashboard.html', context)       
         return render(request, 'user_dashboard.html')
 
 
@@ -774,6 +769,10 @@ def triogroup_member(request, pk):
         'group_member': group_member_data,
         'trio_profiles': response_data.get('trio_profiles', []),
         'task_count': response_data.get('task_count', 0),
+        'completed_tasks_count': response_data.get('completed_tasks_count', 0),
+        'approved_tasks_count': response_data.get('approved_tasks_count', 0),
+        'rejected_tasks_count': response_data.get('rejected_tasks_count', 0),
+        'total_pending': response_data.get('total_pending', 0),
         'members_with_tasks': response_data.get('members_with_tasks', []),
     }
     print('context',context)
@@ -1934,20 +1933,9 @@ def document(request):
             print('Form errors:', form.errors)
 
     # Fetch existing documents for display
-    try:
-        records_response = call_get_method(BASEURL, endpoint, user_token)
-        if records_response.status_code not in [200, 201]:
-            messages.error(request, f"Failed to fetch document records. {records_response.json()}", extra_tags="warning")
-            records = []
-        else:
-            records = records_response.json()
-    except Exception as e:
-        print("An error occurred while fetching records:", str(e))
-        records = []
-
+    
     context = {
         'form': form,
-        'records': records,
     }
     return render(request, 'document.html', context)
 

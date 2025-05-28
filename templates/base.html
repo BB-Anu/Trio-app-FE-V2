@@ -551,7 +551,7 @@ user-select: none;
           <span class="menu-title">Document</span>
         </a>
         {% endif%}
-{% if 'document-create' in request.session.permission or 'document-update' in request.session.permission %}
+{% if 'document_list' in request.session.permission %}
 
         <a class="nav-link {{document}}" href="{% url 'document_list' %}">
           <i class="icon-grid menu-icon"></i>
