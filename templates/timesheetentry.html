@@ -39,9 +39,13 @@
     </div>
 </div>
 
+
+
+
+
 {% if view %}
 <script>
-    // Disable all form elements in view-only mode
+    // Disable all form elements in view-only modes
     const form = document.getElementById('myForm');
     Array.from(form.elements).forEach(el => el.disabled = true);
 </script>
@@ -51,23 +55,52 @@
 <script>
 $('#id_task').change(function () {
     const selectedTaskId = $(this).val();
-    if (selectedTaskId) {
-        $.ajax({
-            url: '{% url "get_task" 0 %}'.replace("0", selectedTaskId),
-            type: 'GET',
-            success: function (response) {
-                if (response.length > 0 && response[0].total_working_hours !== undefined) {
-                    $('#id_given_hours').val(response[0].total_working_hours);
-                    $('#id_timesheet').val(response.task);
-                } else {
-                    alert("Task details not found.");
-                }
-            },
-            error: function () {
-                alert("Error fetching task details.");
-            }
-        });
+    
+    if (!selectedTaskId) {
+        $('#id_timesheet').empty().append('<option value="">Select Task</option>');
+        $('#id_given_hours').val('');
+        return;
     }
+    
+    $.ajax({
+        url: '{% url "get_task" 0 %}'.replace("0", selectedTaskId),
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+            $('#id_timesheet').empty().append('<option value="">Select Timesheet</option>');
+            
+            // Check if data is an array and has elements
+            if (Array.isArray(data) && data.length > 0) {
+                $.each(data, function (index, task) {
+                    $('#id_timesheet').append(
+                        $('<option>', {
+                            value: task.id,
+                            text: task.task,
+                            'data-hours': task.total_working_hours  
+                        })
+                    );
+                });
+                
+                // Set the hours from the first task
+                $('#id_given_hours').val(data[0].total_working_hours);
+            } else if (data.total_working_hours) {
+                // Handle case where single task object is returned
+                $('#id_given_hours').val(data.total_working_hours);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching tasks:", error);
+        }
+    });
 });
-</script>
-{% endblock %}
+
+// Update hours when timesheet selection changes
+$('#id_timesheet').change(function() {
+    const selectedHours = $(this).find(':selected').data('hours');
+    if (selectedHours) {
+        $('#id_given_hours').val(selectedHours);
+    }
+});</script>
+
+
+    {% endblock %}

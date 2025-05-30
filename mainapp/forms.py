@@ -701,7 +701,7 @@ class TimesheetEntryForm(forms.Form):
 		user_choices_list = kwargs.pop('timesheet_choices', [])
 		entity_choices_list = kwargs.pop('task_choices', [])
 		initial_data = kwargs.get("initial", {})
-		selected_user_choices = initial_data.get('timesheet', '')
+		# selected_user_choices = initial_data.get('timesheet', '')
 		selected_entity_choices = initial_data.get('task', '')
 		super().__init__(*args, **kwargs)
 		self.fields['timesheet'].choices = [('', '---select---')] + [
@@ -714,8 +714,8 @@ class TimesheetEntryForm(forms.Form):
 		]
 		if selected_entity_choices:
 			self.fields['task'].initial = selected_entity_choices
-		if selected_user_choices:
-			self.fields['timesheet'].initial = selected_user_choices
+		# if selected_user_choices:
+		# 	self.fields['timesheet'].initial = selected_user_choices
 
 	def clean(self):
 		cleaned_data = super().clean()
