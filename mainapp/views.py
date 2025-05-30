@@ -4685,10 +4685,10 @@ def timesheetentry(request):
     print('Given Hours:', given_hours)
 
     initial={'given_hours':given_hours}
-    form=TimesheetEntryForm(timesheet_choices=timesheet,task_choices=task,initial=initial)
+    form=TimesheetEntryForm(task_choices=task,timesheet_choices=timesheet)
     endpoint = 'timesheetentry/'
     if request.method=="POST":
-        form=TimesheetEntryForm(request.POST,request.FILES,timesheet_choices=timesheet,task_choices=task,)
+        form=TimesheetEntryForm(request.POST,request.FILES,task_choices=task,timesheet_choices=timesheet)
         if form.is_valid():
             Output = form.cleaned_data
             Output['branch']=request.session['branch']
@@ -4705,15 +4705,16 @@ def timesheetentry(request):
             json_data = cleaned_data if files else json.dumps(cleaned_data)
             print('==json_data==,',json_data)
             response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
-
             print('==response==',response)
             if response['status_code'] == 1:
                 print("error",response)
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
                 return redirect('timesheetentry_list')
+        else:
+            print('errorss',form.errors)
     else:
-        print('errorss',form.errors)
+        print('errorss')
     try:
         # getting data from backend
         records_response = call_get_method(BASEURL,endpoint,user_token)
@@ -4735,6 +4736,7 @@ def timesheetentry(request):
 
 
 def get_task(request, task_id):
+    print("---",task_id)
     user_token = request.session.get('user_token')
     endpoint = f'get_task/{task_id}/'
     try:
@@ -4742,7 +4744,7 @@ def get_task(request, task_id):
         if records_response.status_code in [200, 201]:
             task_data = records_response.json()
             print('Timesheets',task_data)
-            return JsonResponse(task_data, safe=False)  # because it's a list
+            return JsonResponse(task_data, safe=False) 
         else:
             return JsonResponse({'error': 'Failed to fetch task data'}, status=400)
     except Exception as e:
