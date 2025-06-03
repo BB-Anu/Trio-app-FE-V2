@@ -5,7 +5,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>Documents</h3>
         <a href="{% url 'client_document' case %}">
-            <button class="btn btn-primary">+ Upload</button>
+            {% comment %} <button class="btn btn-primary">+ Upload</button> {% endcomment %}
         </a>
     </div>
 
@@ -13,12 +13,12 @@
 
     {% for group in case_groups %}
     <div class="mb-4">
-        <h5><i class="fa fa-folder text-warning"></i> {{ group.grouper }}</h5>
+        <h5><i class="fa fa-folder text-warning"></i> {{ group.grouper.name }}</h5>
         <ul class="list-group">
             {% for item in group.list %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>{{ case}} - {{item.case }}</strong> 
+                    <strong>{{ case}} - {{item.case.name }}</strong> 
                     <br>
                     <small class="text-muted">{{ item.document_type }}</small>
                 </div>

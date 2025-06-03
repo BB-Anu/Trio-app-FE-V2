@@ -751,24 +751,24 @@ user-select: none;
         {% comment %} {%endif%}
         {% if 'county-create' in request.session.permission or 'county-update' in request.session.permission %} {% endcomment %}
 
-        <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
+        {% comment %} <a class="nav-link {{county_list}}" href="{% url 'county_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">County</span>
-        </a>
+        </a> {% endcomment %}
         {% comment %} {%endif%}
         {% if 'subcounty-create' in request.session.permission or 'subcounty-update' in request.session.permission %} {% endcomment %}
 
-        <a class="nav-link {{subcounty_list}}" href="{% url 'subcounty_list' %}">
+        {% comment %} <a class="nav-link {{subcounty_list}}" href="{% url 'subcounty_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Sub County</span>
-        </a>
+        </a> {% endcomment %}
         {% comment %} {%endif%}
         {% if 'ward-create' in request.session.permission or 'ward-update' in request.session.permission %} {% endcomment %}
 
-        <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
+        {% comment %} <a class="nav-link {{ward_list}}" href="{% url 'ward_list' %}">
           <i class="icon-grid menu-icon"></i>
           <span class="menu-title">Ward</span>
-        </a>
+        </a> {% endcomment %}
         {% comment %} {%endif%} {% endcomment %}
       
 
