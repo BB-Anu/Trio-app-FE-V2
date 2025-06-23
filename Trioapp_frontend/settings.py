@@ -17,8 +17,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 STATIC_DIR = BASE_DIR / 'static'
 MEDIA_ROOT = BASE_DIR / 'media'
-BASEURL = 'http://127.0.0.1:9000/'
+# BASEURL = 'http://127.0.0.1:9000/'
 
+BASEURL='https://trioappbe.pythonanywhere.com/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/

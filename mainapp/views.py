@@ -18,7 +18,9 @@ from django.contrib import messages
 from django.conf import settings
 from .api_call import *
 
-BASEURL = 'http://127.0.0.1:9000/'
+# BASEURL = 'http://127.0.0.1:9000/'
+
+BASEURL='https://trioappbe.pythonanywhere.com/'
 APP_BUILDER = 'http://127.0.0.1:8000/'
 
 def dashboard(request):
@@ -1953,7 +1955,7 @@ def document(request):
         clients = []
     else:
         clients = records_response1.json()
-
+        print('clients',clients)
     # --- Fetch document types for dropdown ---
     endpoint2 = 'documenttype/'    
     records_response2 = call_get_method(BASEURL, endpoint2, user_token)

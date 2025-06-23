@@ -7,7 +7,10 @@ from django.conf import settings
 from mainapp.api_call import *
 from django.contrib import messages
 
-BASEURL = 'http://127.0.0.1:9000/'
+BASEURL='https://trioappbe.pythonanywhere.com/'
+
+# BASEURL = 'http://127.0.0.1:9000/'
+
 APP_BUILDER = 'http://127.0.0.1:8000/'
 
 def functions(request):
