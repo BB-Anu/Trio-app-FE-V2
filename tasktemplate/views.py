@@ -13,7 +13,8 @@ from django.views.generic import DetailView
 from django.utils.html import escape
 from django.conf import settings
 
-BASEURL = 'http://127.0.0.1:9000/'
+BASEURL='https://trioappbe.pythonanywhere.com/'
+# BASEURL = 'http://127.0.0.1:9000/'
 
 def create_template_view(request):
     form=TemplateForm()

@@ -217,7 +217,7 @@ class DocumentForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.fields['case'].choices = [('', '---select---')] + [
-            (str(record.get('id', '')), str(record.get('name', record.get('id', ''))))
+    (str(record.get('id', '')), f"{record.get('id', '')} - {record.get('case', '')}")
             for record in entity_choices_list
         ]
         self.fields['document_type'].choices = [('', '---select---')] + [
