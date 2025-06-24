@@ -950,7 +950,8 @@ def loancase_details(request, pk):
             'assignment': assignment,
             'documents': documents,
             'timesheets': timesheets,
-            'due_date':due_date
+            'due_date':due_date,
+            "BASEURL":BASEURL
         }
         return render(request, 'loancase_detail.html', context)
 

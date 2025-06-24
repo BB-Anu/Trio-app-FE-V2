@@ -28,7 +28,7 @@
                                     </tr>
                                     <tr>
                                         <td><strong>Business Type:</strong></td><td>{{ client.business_type }}</td>
-                                        <td><strong>Certificate:</strong></td><td><a href="http://127.0.0.1:9000/{{client.tax_compliance_cert }}">Document</a></td>
+                                        <td><strong>Certificate:</strong></td><td><a href="{{BASEURL}}{{client.tax_compliance_cert }}">Document</a></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Employees:</strong></td><td>{{ client.number_of_employees }}</td>
@@ -130,7 +130,7 @@
                                             <td>{{ doc.uploaded_by }}</td>
                                             <td>{{ doc.status }}</td>
                                             <td>{{ doc.uploaded_at|slice:":10" }}</td>
-                                            <td><a href="http://127.0.0.1:9000/{{ doc.file }}">View</a></td>
+                                            <td><a href="{{BASEURL}}{{ doc.file }}">View</a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
