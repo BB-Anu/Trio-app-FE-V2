@@ -39,7 +39,7 @@
 {% comment %} <td>{{data.file}}</td> {% endcomment %}
 {% comment %} <td>{{data.version}}</td> {% endcomment %}
 {% comment %} <td>{{data.uploaded_at}}</td> {% endcomment %}
-<td>  <a href="http://127.0.0.1:9000/{{ data.file }}"  class="btn btn-primary btn-sm"  target="_blank">View </a>
+<td>  <a href="{{BASEURL}}{{ data.file }}"  class="btn btn-primary btn-sm"  target="_blank">View </a>
     <td>{{data.status}}</td>
     <td>{{data.reject_reason}}</td>
 
