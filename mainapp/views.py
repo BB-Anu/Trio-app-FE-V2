@@ -756,7 +756,7 @@ def triogroup_member(request, pk):
 
     if records_response.status_code not in [200, 201]:
         messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
-        return render(request, 'triogroup_member.html', {})
+        return render(request, 'triogroup_member_list.html', {})
 
     response_data = records_response.json()
     group_member_data = response_data.get("group_member", {})
@@ -7122,3 +7122,10 @@ def request_document_upload(request,loan_id):
         'records': records,
     }
     return render(request, 'requested_document_upload.html', context)
+
+
+def user_logout(request):
+    # Clear all session data
+    request.session.flush()
+
+    return redirect('login')
