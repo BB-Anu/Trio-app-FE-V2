@@ -2040,7 +2040,7 @@ def client_documents(request):
         else:
             records = records_response.json()
             # You can pass 'records' to your template for rendering
-            context = {'records': records}
+            context = {'records': records,'BASEURL':BASEURL}
             return render(request, 'customer_documents.html', context)
     except Exception as e:
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
