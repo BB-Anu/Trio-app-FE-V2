@@ -1,11 +1,6 @@
 import json
 from pyexpat.errors import messages
-from django.shortcuts import render
-
-# Create your views here.
-
 from django.shortcuts import render, redirect, get_object_or_404
-
 from mainapp.api_call import *
 from .forms import *
 import re
@@ -13,7 +8,11 @@ from django.views.generic import DetailView
 from django.utils.html import escape
 from django.conf import settings
 
-BASEURL='https://trioappbe.pythonanywhere.com/'
+
+BASEURL=settings.BASEURL
+
+
+# BASEURL='https://trioappbe.pythonanywhere.com/'
 # BASEURL = 'http://127.0.0.1:9000/'
 
 def create_template_view(request):

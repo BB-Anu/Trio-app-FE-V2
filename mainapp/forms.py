@@ -18,7 +18,7 @@ class ClientProfileForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		user_choices_list = kwargs.pop('user_choices', [])
 		initial_data = kwargs.get("initial", {})
-		selected_user_choices = initial_data.get('user', '')
+		selected_user_choices = initial_data.get('user_id', '')
 		super().__init__(*args, **kwargs)
 		self.fields['user'].choices = [('', '---select---')] + [
 			(
@@ -26,9 +26,92 @@ class ClientProfileForm(forms.Form):
 				f"{record['user'].get('name', '')} ({record['user'].get('roles', '')})"
 			)
 			for record in user_choices_list
-		]		
+		]	
+			
 		if selected_user_choices:
 			self.fields['user'].initial = selected_user_choices
+
+
+class ClientProfileEditForm(forms.Form):
+    user = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control"}))
+    business_name = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    business_type = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    registration_number = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    kra_pin = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    contact_email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={"class": "form-control"}))
+    contact_phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    address = forms.CharField(required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+    tax_compliance_cert = forms.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],
+        required=False,
+        widget=forms.ClearableFileInput(attrs={"class": "form-control-file"})
+    )
+    number_of_employees = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
+    annual_turnover = forms.DecimalField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
+
+    def __init__(self, *args, **kwargs):
+        user_choices_list = kwargs.pop('user_choices', [])
+        initial_data = kwargs.get("initial", {})
+        form_data = kwargs.get("data", None)
+
+        super().__init__(*args, **kwargs)
+
+        # Build correct choices using outer 'id' (e.g., 1, 3, 4)
+        self.fields['user'].choices = [('', '---select---')] + [
+            (
+                str(record.get('id')),  # must match profile["user_id"]
+                f"{record['user'].get('name', '')} ({record['user'].get('roles', '')})"
+            )
+            for record in user_choices_list
+        ]
+
+        # Set initial only if not bound
+        if not form_data:
+            selected_user_id = None
+            if "user_id" in initial_data:
+                selected_user_id = str(initial_data["user_id"])
+            elif "user" in initial_data:
+                selected_user_id = str(initial_data["user"])
+		
+            if selected_user_id:
+                print('===selected_user_id==',selected_user_id)
+                self.fields['user'].initial = str(selected_user_id)
+
+class ClientProfileEditForm(forms.Form):
+    # user = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control"}))
+    business_name = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    business_type = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    registration_number = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    kra_pin = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    contact_email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={"class": "form-control"}))
+    contact_phone = forms.CharField(max_length=250, required=True, widget=forms.TextInput(attrs={"class": "form-control"}))
+    address = forms.CharField(required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+    tax_compliance_cert = forms.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],
+        required=False,
+        widget=forms.ClearableFileInput(attrs={"class": "form-control-file"})
+    )
+    number_of_employees = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
+    annual_turnover = forms.DecimalField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
+
+    def __init__(self, *args, **kwargs):
+        user_choices_list = kwargs.pop('user_choices', [])
+        initial_data = kwargs.get("initial", {})
+        selected_user_id=initial_data.get('user_id')
+        print('=selected_user_id=',selected_user_id)
+        super().__init__(*args, **kwargs)
+
+        # Build choices based on inner 'user.id' since that's what your 'user_id' matches
+        # self.fields['user'].choices = [('', '---select---')] + [
+        #     (str(record['user'].get('id')), f"{record['user'].get('name', '')}-{record['user'].get('id')}")
+        #     for record in user_choices_list
+        # ]
+        
+    
+        # if selected_user_id:
+        #     print(type(user_choices_list[0]['user'].get('id')))
+        #     print('==selected_user_id=',type(selected_user_id))
+        #     self.fields['user'].initial = str(selected_user_id)
 
 
 class DocumentGroupForm(forms.Form):

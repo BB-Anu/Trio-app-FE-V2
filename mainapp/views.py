@@ -19,8 +19,9 @@ from django.conf import settings
 from .api_call import *
 
 # BASEURL = 'http://127.0.0.1:9000/'
+BASEURL=settings.BASEURL
 
-BASEURL='https://trioappbe.pythonanywhere.com/'
+# BASEURL='https://trioappbe.pythonanywhere.com/'
 APP_BUILDER = 'http://127.0.0.1:8000/'
 
 def dashboard(request):
@@ -211,20 +212,21 @@ def clientprofile(request):
                     if Output[field_name]:
                         del Output[field_name]
                         Output[field_name] = request.POST.get(field_name)
-                cleaned_data = form.cleaned_data
-                files, cleaned_data = image_filescreate(cleaned_data)
-                json_data = cleaned_data if files else json.dumps(cleaned_data)
-                print('==json_data==,',json_data)
-                response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
 
-                print('==response==',response)
-                if response['status_code'] == 1:
-                    print("error",response)
-                    return redirect('clientprofile_list')
+            cleaned_data = form.cleaned_data
+            files, cleaned_data = image_filescreate(cleaned_data)
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+            print('==json_data==,',json_data)
+            response = call_post_method_with_token_v2(BASEURL,endpoint,json_data,files)
 
-                else:
-                    messages.success(request,'Data Successfully Saved', extra_tags="success")
-                    return redirect('clientprofile_list')
+            print('==response==',response)
+            if response['status_code'] == 1:
+                print("error",response)
+                return redirect('clientprofile_list')
+
+            else:
+                messages.success(request,'Data Successfully Saved', extra_tags="success")
+                return redirect('clientprofile_list')
     else:
         print('errorss',form.errors)
     try:
@@ -258,8 +260,9 @@ def clientprofile_list(request):
             return render(request, 'clientprofile_list.html', context)
     return render(request,'clientprofile_list.html',context)
 
-# edit function
-def clientprofile_edit(request,pk):
+
+
+def clientprofile_view(request,pk):
     user_token=request.session['user_token']
     endpoint2='customer_user/'    
     records_response2 = call_get_method(BASEURL,endpoint2,user_token)
@@ -281,7 +284,7 @@ def clientprofile_edit(request,pk):
         return redirect('clientprofile')
 
     if request.method=="POST":
-        form=ClientProfileForm(request.POST,request.FILES,user_choices=users, initial=clientprofile_data)
+        form=ClientProfileEditForm(request.POST,request.FILES,user_choices=users, initial=clientprofile_data)
         if form.is_valid():
             updated_data = form.cleaned_data
             updated_data['branch']=request.session['branch']
@@ -308,7 +311,64 @@ def clientprofile_edit(request,pk):
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
-        form = ClientProfileForm(initial=clientprofile_data,user_choices=users)
+        form = ClientProfileEditForm(initial=clientprofile_data,user_choices=users)
+
+    context={
+        'form':form,'view':True,'user_id':clientprofile_data['user_id'],'user_list':users
+    }
+    return render(request,'clientprofile_edit.html',context)
+
+# edit function
+def clientprofile_edit(request,pk):
+    user_token=request.session['user_token']
+    endpoint2='customer_user/'    
+    records_response2 = call_get_method(BASEURL,endpoint2,user_token)
+
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        users = records_response2.json()
+    clientprofile = call_get_method(BASEURL, f'clientprofile/{pk}/',user_token)
+    
+    if clientprofile.status_code in [200,201]:
+        clientprofile_data = clientprofile.json()
+        print('------',clientprofile)
+
+    else:
+        print('error------',clientprofile)
+        messages.error(request, 'Failed to retrieve data for clientprofile. Please check your connection and try again.', extra_tags='warning')
+        return redirect('clientprofile')
+
+    if request.method=="POST":
+        form=ClientProfileEditForm(request.POST,request.FILES,user_choices=users, initial=clientprofile_data)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            updated_data['branch']=request.session['branch']
+            updated_data['updated_by']=request.session['user_data']['id']
+
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField) or isinstance(field, forms.DecimalField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+                cleaned_data = form.cleaned_data
+                files, cleaned_data = image_filescreate(cleaned_data)
+                json_data = cleaned_data if files else json.dumps(cleaned_data)
+                print('==json_data==,',json_data)
+            response = call_put_method_without_token(BASEURL, f'clientprofile/{pk}/', json_data)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('clientprofile') 
+            else:
+                error_message = response.json()
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = ClientProfileEditForm(initial=clientprofile_data,user_choices=users)
 
     context={
         'form':form,
