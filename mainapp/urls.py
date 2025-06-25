@@ -10,6 +10,7 @@ urlpatterns = [
 	path("clientprofile/", clientprofile, name="clientprofile"),
 	path("clientprofile_list/", clientprofile_list, name="clientprofile_list"),
 	path("clientprofile_edit/<pk>/", clientprofile_edit, name="clientprofile_edit"),
+	path("clientprofile_view/<pk>/", clientprofile_view, name="clientprofile_view"),
 	path("clientprofile_delete/<pk>/", clientprofile_delete, name="clientprofile_delete"),
     
 	path("documentgroup/", documentgroup, name="documentgroup"),

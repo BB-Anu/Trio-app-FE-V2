@@ -54,7 +54,7 @@
                             <div class="accordion-body">
                                 <table class="table table-borderless">
                                     <tr>
-                                        <td><strong>Client:</strong></td><td>{{ case.client }}</td>
+                                        <td><strong>Client:</strong></td><td>{{ case.client.name }}</td>
                                         <td><strong>Case ID:</strong></td><td>{{ case.case_id }}</td>
                                     </tr>
                                     <tr>
@@ -91,12 +91,34 @@
                                     <tr>
                                         <td><strong>Assigned To:</strong></td>
                                         <td colspan="3">
-                                            <ul>
-                                                {% for assignee in assignment.assigned_to %}
-                                                    <li>User ID: {{ assignee }}</li>
-                                                {% endfor %}
-                                            </ul>
-                                        </td>
+    <ul>
+        {% for assignee in assignment.assigned_to %}
+            <li>
+                <a href="javascript:void(0);" onclick="toggleUserDetails('user-details-{{ forloop.counter }}')" style="text-decoration: none;">
+                    User: {{ assignee.first_name }}                 </a>
+                <div id="user-details-{{ forloop.counter }}" style="display: none; margin-top: 5px; padding-left: 20px;">
+                    <strong>Name:</strong> {{ assignee.first_name }} {{ assignee.last_name }}<br>
+                    <strong>Email:</strong> {{ assignee.email }}<br>
+                    <strong>Phone:</strong> {{ assignee.phone_number }}<br>
+                    <strong>Address:</strong> {{ assignee.address }}<br>
+                    <strong>Role:</strong> {{ assignee.roles.name }}<br>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</td>
+
+<script>
+function toggleUserDetails(id) {
+    var el = document.getElementById(id);
+    if (el.style.display === "none") {
+        el.style.display = "block";
+    } else {
+        el.style.display = "none";
+    }
+}
+</script>
+
                                     </tr>
                                 </table>
                             </div>
