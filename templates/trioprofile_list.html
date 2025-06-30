@@ -16,30 +16,32 @@
                             <thead class="bg-col">
                                 <tr>
                                     <th>No.</th>
+                    <th>Action</th>
+
 <th>user</th>
 <th>Template</th>
 <th>qualification</th>
 <th>experience years</th>
 <th>phone</th>
 <th>is active</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for data in records %}
                 <tr>
                     <td>{{forloop.counter}}</td>
-
+ <td>
+                        <a href="{% url 'trioprofile_view' data.id %}"><span data-toggle="tooltip" title="View" style="color: black;"><i class='fa fa-eye'></i></a>
+                        {% comment %} <a href="{% url 'trioprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a> {% endcomment %}
+                        <a href="{% url 'trioprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
 <td>{{data.user.name}}</td>
 <td>{{data.task_template.name}}</td>
 <td>{{data.qualification}}</td>
 <td>{{data.experience_years}}</td>
 <td>{{data.phone}}</td>
 <td>{{data.is_active}}</td>
-                    <td>
-                        <a href="{% url 'trioprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'trioprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
-                    </td>
+                   
                 </tr>
                 {% endfor %}
             </tbody>

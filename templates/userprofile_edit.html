@@ -16,6 +16,15 @@
                 <h2>User Profile</h2>
                     <form  method="post" enctype="multipart/form-data" id="myForm">
                     {% csrf_token %}
+                    <label>User</label>
+                    <select name="user" class="form-control">
+                        <option value="">--SELECT--</option>
+                        {% for user in user_list %}
+                            <option value="{{ user.id }}" {% if user.id|stringformat:"s" == user_id|stringformat:"s" %} selected {% endif %}>
+                                {{ user.first_name }} ({{user.roles.name}})
+                            </option>
+                        {% endfor %}
+                    </select>
                     {% for form_field in form %}
                     <div class="form-group">
                         {{ form_field.label_tag }}
