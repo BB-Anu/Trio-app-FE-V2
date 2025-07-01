@@ -353,25 +353,27 @@ def clientprofile_edit(request,pk):
                         del updated_data[field_name]
                         updated_data[field_name] = request.POST.get(field_name)
             # Serialize the updated data as JSON
-                cleaned_data = form.cleaned_data
-                files, cleaned_data = image_filescreate(cleaned_data)
-                json_data = cleaned_data if files else json.dumps(cleaned_data)
-                print('==json_data==,',json_data)
-            response = call_put_method_without_token(BASEURL, f'clientprofile/{pk}/', json_data)
+            cleaned_data = form.cleaned_data
+            files, cleaned_data = image_filescreate(cleaned_data)
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+            print('==json_data==,',json_data)
 
-            if response.status_code in [200,201]: 
+            response = call_post_method_with_token_v2(BASEURL, f'clientprofile/{pk}/', json_data,files)
+
+            if response['status_code'] ==1: 
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
-                return redirect('clientprofile') 
+                return redirect('clientprofile_list') 
             else:
-                error_message = response.json()
-                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+                # error_message = response.json()
+                # messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+                return redirect('clientprofile_list')
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
         form = ClientProfileEditForm(initial=clientprofile_data,user_choices=users)
 
     context={
-        'form':form,
+        'form':form,'user_id':clientprofile_data['user_id'],'user_list':users
     }
     return render(request,'clientprofile_edit.html',context)
 
@@ -708,6 +710,50 @@ def tasktemplate_edit(request,pk):
 
     context={
         'form':form,
+    }
+    return render(request,'tasktemplate_edit.html',context)
+
+
+# view function
+def tasktemplate_view(request,pk):
+    tasktemplate = call_get_method_without_token(BASEURL, f'tasktemplate/{pk}/')
+    
+    if tasktemplate.status_code in [200,201]:
+        tasktemplate_data = tasktemplate.json()
+    else:
+        print('error------',tasktemplate)
+        messages.error(request, 'Failed to retrieve data for tasktemplate. Please check your connection and try again.', extra_tags='warning')
+        return redirect('tasktemplate')
+
+    if request.method=="POST":
+        form=TaskTemplateForm(request.POST, initial=tasktemplate_data)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            updated_data['branch']=request.session['branch']
+            updated_data['updated_by']=request.session['user_data']['id']
+
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+            json_data = json.dumps(updated_data)
+            response = call_put_method_without_token(BASEURL, f'tasktemplate/{pk}/', json_data)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('tasktemplate') 
+            else:
+                error_message = response.json()
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = TaskTemplateForm(initial=tasktemplate_data)
+
+    context={
+        'form':form,'view':True
     }
     return render(request,'tasktemplate_edit.html',context)
 
@@ -3365,6 +3411,7 @@ def userprofile_edit(request,pk):
                 return redirect('userprofile_list') 
             else:
                 error_message = response.json()
+                print('==error_message==',error_message)
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
         else:
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
@@ -3375,6 +3422,65 @@ def userprofile_edit(request,pk):
         'form':form,
     }
     return render(request,'userprofile_edit.html',context)
+
+
+def userprofile_view(request,pk):
+    user_token=request.session['user_token']
+
+    endpoint1='UserManagement/user/'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        clients = records_response2.json()
+    # endpoint3='UserManagement/role/'    
+    # records_response2 = call_get_method_without_token(BASEURL,endpoint3)
+    # print('records_response.status_code',records_response2.status_code)
+    # if records_response2.status_code not in [200,201]:
+    #     messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    # else:
+    #     folder = records_response2.json()
+    userprofile = call_get_method(BASEURL, f'userprofile/{pk}/',user_token)
+    
+    if userprofile.status_code in [200,201]:
+        userprofile_data = userprofile.json()
+    else:
+        print('error------',userprofile)
+        messages.error(request, 'Failed to retrieve data for userprofile. Please check your connection and try again.', extra_tags='warning')
+        return redirect('userprofile')
+
+    if request.method=="POST":
+        form=UserProfileViewForm(request.POST, initial=userprofile_data,user_choices=clients,)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+            json_data = json.dumps(updated_data)
+            response = call_put_method_without_token(BASEURL, f'userprofile/{pk}/', json_data)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('userprofile_list') 
+            else:
+                error_message = response.json()
+                print('==error_message==',error_message)
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = UserProfileViewForm(initial=userprofile_data,user_choices=clients,)
+
+    context={
+        'form':form,'user_id':userprofile_data['user']['id'],'user_list':clients,'view':True
+
+    }
+    return render(request,'userprofile_edit.html',context)
+
 
 def userprofile_delete(request,pk):
     end_point = f'userprofile/{pk}/'
@@ -3990,11 +4096,13 @@ def trioprofile(request):
             else:
                 messages.success(request,'Data Successfully Saved', extra_tags="success")
                 return redirect('trioprofile_list')
+        else:
+            print('errors===',form.errors)
     else:
-        print('errorss',form.errors)
+        print('errorss')
     try:
         # getting data from backend
-        records_response = call_get_method_without_token(BASEURL,endpoint)
+        records_response = call_get_method(BASEURL,endpoint,user_token)
         if records_response.status_code not in [200,201]:
             messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
         else:
@@ -4088,6 +4196,73 @@ def trioprofile_edit(request,pk):
 
     context={
         'form':form,
+    }
+    return render(request,'trioprofile_edit.html',context)
+
+
+# view function
+def trioprofile_view(request,pk):
+    user_token=request.session['user_token']
+
+    endpoint1='trio_user/'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        clients = records_response2.json()
+        print('-clients-',clients)
+
+    endpoint3='tasktemplate/'    
+    records_response2 = call_get_method(BASEURL,endpoint3,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        folder = records_response2.json()
+    trioprofile = call_get_method(BASEURL, f'trioprofile/{pk}/',user_token)
+    
+    if trioprofile.status_code in [200,201]:
+        trioprofile_data = trioprofile.json()
+        print('profile data------',trioprofile_data)
+        # Flatten initial data
+        if isinstance(trioprofile_data.get('user'), dict):
+            trioprofile_data['user'] = trioprofile_data['user']['id']
+        if isinstance(trioprofile_data.get('task_template'), dict):
+            trioprofile_data['task_template'] = trioprofile_data['task_template']['id']
+
+    else:
+        print('error------',trioprofile)
+        messages.error(request, 'Failed to retrieve data for trioprofile. Please check your connection and try again.', extra_tags='warning')
+        return redirect('trioprofile')
+
+    if request.method=="POST":
+        form=TRIOProfileViewForm(request.POST, initial=trioprofile_data,user_choices=clients,task_template_choices=folder)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+            json_data = json.dumps(updated_data)
+            response = call_put_method_without_token(BASEURL, f'trioprofile/{pk}/', json_data)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('trioprofile_list') 
+            else:
+                error_message = response.json()
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = TRIOProfileViewForm(initial=trioprofile_data,user_choices=clients,task_template_choices=folder)
+
+    context={
+        'form':form,'user_id':trioprofile_data['user_id'],'user_list':clients,'view':True
+
     }
     return render(request,'trioprofile_edit.html',context)
 
@@ -5823,6 +5998,58 @@ def auditorprofile_edit(request,pk):
     }
     return render(request,'auditorprofile_edit.html',context)
 
+#view function==
+
+def auditorprofile_view(request,pk):
+    user_token=request.session['user_token']
+    endpoint1='UserManagement/user/'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        employee = records_response2.json()
+    auditorprofile = call_get_method_without_token(BASEURL, f'auditorprofile/{pk}/')
+    
+    if auditorprofile.status_code in [200,201]:
+        auditorprofile_data = auditorprofile.json()
+    else:
+        print('error------',auditorprofile)
+        messages.error(request, 'Failed to retrieve data for auditorprofile. Please check your connection and try again.', extra_tags='warning')
+        return redirect('auditorprofile')
+
+    if request.method=="POST":
+        form=AuditorProfileViewForm(request.POST, initial=auditorprofile_data,user_choices=employee)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+            json_data = json.dumps(updated_data)
+            response = call_put_method_without_token(BASEURL, f'auditorprofile/{pk}/', json_data)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('auditorprofile') 
+            else:
+                error_message = response.json()
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = AuditorProfileViewForm(initial=auditorprofile_data,user_choices=employee)
+
+    print('=auditorprofile_data==',auditorprofile_data)
+    context={
+        'form':form,'user_id':auditorprofile_data['user_id'],'user_list':employee,'view':True
+
+    }
+    return render(request,'auditorprofile_edit.html',context)
+
+
 def auditorprofile_delete(request,pk):
     end_point = f'auditorprofile/{pk}/'
     auditorprofile = call_delete_method_without_token(BASEURL, end_point)
@@ -5949,6 +6176,61 @@ def marketingagentprofile_edit(request,pk):
         'form':form,
     }
     return render(request,'marketingagentprofile_edit.html',context)
+
+#view function
+
+def marketingagentprofile_view(request,pk):
+    user_token=request.session['user_token']
+
+    endpoint1='agent_user/'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        employee=[]
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        employee = records_response2.json()
+
+    print('==employee=',employee)
+    marketingagentprofile = call_get_method(BASEURL, f'marketingagentprofile/{pk}/',user_token)
+    
+    if marketingagentprofile.status_code in [200,201]:
+        marketingagentprofile_data = marketingagentprofile.json()
+    else:
+        print('error------',marketingagentprofile)
+        messages.error(request, 'Failed to retrieve data for marketingagentprofile. Please check your connection and try again.', extra_tags='warning')
+        return redirect('marketingagentprofile')
+
+    if request.method=="POST":
+        form=MarketingAgentProfileViewForm(request.POST, initial=marketingagentprofile_data,user_choices=employee)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+            json_data = json.dumps(updated_data)
+            response = call_put_method_without_token(BASEURL, f'marketingagentprofile/{pk}/', json_data)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('marketingagentprofile_list') 
+            else:
+                error_message = response.json()
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = MarketingAgentProfileViewForm(initial=marketingagentprofile_data,user_choices=employee)
+
+    context={
+        'form':form,'user_id':marketingagentprofile_data['user_id'],'user_list':employee,'view':True
+
+    }
+    return render(request,'marketingagentprofile_edit.html',context)
+
 
 def marketingagentprofile_delete(request,pk):
     end_point = f'marketingagentprofile/{pk}/'
@@ -6310,6 +6592,58 @@ def lawyerprofile_edit(request,pk):
 
     context={
         'form':form,
+    }
+    return render(request,'lawyerprofile_edit.html',context)
+
+# view function
+def lawyerprofile_view(request,pk):
+    user_token=request.session['user_token']
+    endpoint1='lawyer_user/'    
+    records_response2 = call_get_method(BASEURL,endpoint1,user_token)
+    print('records_response.status_code',records_response2.status_code)
+    if records_response2.status_code not in [200,201]:
+        messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
+    else:
+        employee = records_response2.json()
+        print('----',employee)
+    lawyerprofile = call_get_method(BASEURL, f'lawyerprofile/{pk}/',user_token)
+    
+    if lawyerprofile.status_code in [200,201]:
+        lawyerprofile_data = lawyerprofile.json()
+        print('data-----',lawyerprofile_data)
+
+    else:
+        print('error------',lawyerprofile.status_code)
+        messages.error(request, 'Failed to retrieve data for lawyerprofile. Please check your connection and try again.', extra_tags='warning')
+        return redirect('lawyerprofile_list')
+
+    if request.method=="POST":
+        form=LawyerProfileViewForm(request.POST, initial=lawyerprofile_data,user_choices=employee)
+        if form.is_valid():
+            updated_data = form.cleaned_data
+            for field_name, field in form.fields.items():
+                if isinstance(field.widget, forms.DateInput) or isinstance(field, forms.DateField) or isinstance(field, forms.DateTimeField):
+                    if updated_data[field_name]:
+                        del updated_data[field_name]
+                        updated_data[field_name] = request.POST.get(field_name)
+            # Serialize the updated data as JSON
+            json_data = json.dumps(updated_data)
+            response = call_put_method_without_token(BASEURL, f'lawyerprofile/{pk}/', json_data)
+
+            if response.status_code in [200,201]: 
+                messages.success(request, 'Your data has been successfully saved', extra_tags='success')
+                return redirect('lawyerprofile_list') 
+            else:
+                error_message = response.json()
+                messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
+        else:
+            print("An error occurred: Expecting value: line 1 column 1 (char 0)")
+    else:
+        form = LawyerProfileViewForm(initial=lawyerprofile_data,user_choices=employee)
+
+    context={
+        'form':form,'user_id':lawyerprofile_data['user_id'],'user_list':employee,'view':True
+
     }
     return render(request,'lawyerprofile_edit.html',context)
 

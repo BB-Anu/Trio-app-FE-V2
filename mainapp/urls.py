@@ -25,6 +25,7 @@ urlpatterns = [
     
 	path("tasktemplate/", tasktemplate, name="tasktemplate"),
 	path("tasktemplate_list/", tasktemplate_list, name="tasktemplate_list"),
+	path("tasktemplate_view/<pk>/", tasktemplate_view, name="tasktemplate_view"),
 	path("tasktemplate_edit/<pk>/", tasktemplate_edit, name="tasktemplate_edit"),
 	path("tasktemplate_delete/<pk>/", tasktemplate_delete, name="tasktemplate_delete"),
     
@@ -118,6 +119,7 @@ urlpatterns = [
 	path("userprofile/", userprofile, name="userprofile"),
 	path("userprofile_list/", userprofile_list, name="userprofile_list"),
 	path("userprofile_edit/<pk>/", userprofile_edit, name="userprofile_edit"),
+	path("userprofile_view/<pk>/", userprofile_view, name="userprofile_view"),
 	path("userprofile_delete/<pk>/", userprofile_delete, name="userprofile_delete"),
     
 	path("documentaccess/", documentaccess, name="documentaccess"),
@@ -142,6 +144,7 @@ urlpatterns = [
     
 	path("trioprofile/", trioprofile, name="trioprofile"),
 	path("trioprofile_list/", trioprofile_list, name="trioprofile_list"),
+	path("trioprofile_view/<pk>/", trioprofile_view, name="trioprofile_view"),
 	path("trioprofile_edit/<pk>/", trioprofile_edit, name="trioprofile_edit"),
 	path("trioprofile_delete/<pk>/", trioprofile_delete, name="trioprofile_delete"),
     
@@ -208,12 +211,14 @@ urlpatterns = [
     
 	path("auditorprofile/", auditorprofile, name="auditorprofile"),
 	path("auditorprofile_list/", auditorprofile_list, name="auditorprofile_list"),
+	path("auditorprofile_view/<pk>/", auditorprofile_view, name="auditorprofile_view"),
 	path("auditorprofile_edit/<pk>/", auditorprofile_edit, name="auditorprofile_edit"),
 	path("auditorprofile_delete/<pk>/", auditorprofile_delete, name="auditorprofile_delete"),
     
 	path("marketingagentprofile/", marketingagentprofile, name="marketingagentprofile"),
 	path("marketingagentprofile_list/", marketingagentprofile_list, name="marketingagentprofile_list"),
 	path("marketingagentprofile_edit/<pk>/", marketingagentprofile_edit, name="marketingagentprofile_edit"),
+	path("marketingagentprofile_view/<pk>/", marketingagentprofile_view, name="marketingagentprofile_view"),
 	path("marketingagentprofile_delete/<pk>/", marketingagentprofile_delete, name="marketingagentprofile_delete"),
     
 	path("issuereport/", issuereport, name="issuereport"),
@@ -228,6 +233,7 @@ urlpatterns = [
     
 	path("lawyerprofile/", lawyerprofile, name="lawyerprofile"),
 	path("lawyerprofile_list/", lawyerprofile_list, name="lawyerprofile_list"),
+	path("lawyerprofile_view/<pk>/", lawyerprofile_view, name="lawyerprofile_view"),
 	path("lawyerprofile_edit/<pk>/", lawyerprofile_edit, name="lawyerprofile_edit"),
 	path("lawyerprofile_delete/<pk>/", lawyerprofile_delete, name="lawyerprofile_delete"),
     

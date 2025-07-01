@@ -16,6 +16,8 @@
                             <thead class="bg-col">
                                 <tr>
                                     <th>No.</th>
+                    <th>Action</th>
+
 <th>user</th>
 <th>firm name</th>
 <th>license number</th>
@@ -28,13 +30,16 @@
 {% comment %} <th>is internal</th>
 <th>nda signed</th>
 <th>active</th> {% endcomment %}
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for data in records %}
                 <tr>
                     <td>{{forloop.counter}}</td>
+                     <td>
+                        <a href="{% url 'auditorprofile_view' data.id %}"><span data-toggle="tooltip" title="View" style="color: black;"><i class='fa fa-eye'></i></a>
+                        <a href="{% url 'auditorprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
+                    </td>
 
 <td>{{data.user}}</td>
 <td>{{data.firm_name}}</td>
@@ -48,10 +53,7 @@
 {% comment %} <td>{{data.is_internal}}</td>
 <td>{{data.nda_signed}}</td>
 <td>{{data.active}}</td> {% endcomment %}
-                    <td>
-                        <a href="{% url 'auditorprofile_edit' data.id %}"><span data-toggle="tooltip" title="edit" style="color: black;"><i class='fa fa-edit'></i></a>
-                        <a href="{% url 'auditorprofile_delete' data.id %}"><span data-toggle="tooltip" title="Delete" style="color: black;"><i class='fa fa-trash' onclick="alert('You want to Delete this Item..?')"></i></a>
-                    </td>
+                   
                 </tr>
                 {% endfor %}
             </tbody>
