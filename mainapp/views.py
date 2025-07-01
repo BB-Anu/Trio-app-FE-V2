@@ -249,15 +249,16 @@ def clientprofile(request):
 def clientprofile_list(request):
     user_token=request.session['user_token']
     endpoint = 'clientprofile/'
-        # getting data from backend
+    # getting data from backend
     records_response = call_get_method(BASEURL,endpoint,user_token)
     if records_response.status_code not in [200,201]:
-            messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
+        records=[]
+        messages.error(request, f"Failed to fetch records. {records_response.json()}", extra_tags="warning")
     else:
-            records = records_response.json()
-            # You can pass 'records' to your template for rendering
-            context = {'records': records}
-            return render(request, 'clientprofile_list.html', context)
+        records = records_response.json()
+        # You can pass 'records' to your template for rendering
+        context = {'records': records,'BASEURL':BASEURL}
+        return render(request, 'clientprofile_list.html', context)
     return render(request,'clientprofile_list.html',context)
 
 
@@ -5032,13 +5033,13 @@ def timesheetentry(request):
             records = records_response.json()
             print('records',records)
             # You can pass 'records' to your template for rendering
-            context = {'form': form, 'records': records}
+            context = {'form': form, 'records': records,'BASEURL':BASEURL}
             return render(request, 'timesheetentry.html', context)
     except Exception as e:
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     
     context={
-        'form':form,
+        'form':form,'BASEURL':BASEURL
     }
     return render(request,'timesheetentry.html',context)
 
@@ -5151,11 +5152,11 @@ def timesheetentry_list(request):
         else:
             records = records_response.json()
             # You can pass 'records' to your template for rendering
-            context = {'records': records}
+            context = {'records': records,'BASEURL':BASEURL}
             return render(request, 'timesheetentry_list.html', context)
     except Exception as e:
         print("An error occurred: Expecting value: line 1 column 1 (char 0)")
-    return render(request,'timesheetentry_list.html')
+        return render(request,'timesheetentry_list.html')
 
 # def get_task(request, task_id):
 #     user_token = request.session['user_token']
@@ -5248,6 +5249,7 @@ def timesheetentry_edit(request,pk):
         messages.error(request, f"Failed to fetch records. {records_response2.json()}", extra_tags="warning")
     else:
         timesheet = records_response2.json()
+        print('==timesheet===',timesheet)
     hours = timesheet[0]  # or any index or filter logic
     given_hours = hours.get('total_working_hours')
     print('Given Hours:', given_hours)
@@ -5257,13 +5259,28 @@ def timesheetentry_edit(request,pk):
     
     if timesheetentry.status_code in [200,201]:
         timesheetentry_data = timesheetentry.json()
+        print('==timesheetentry_data==',timesheetentry_data)
+
+        # After getting timesheetentry_data:
+        document_url = timesheetentry_data.get('document')
+        attachment_url = timesheetentry_data.get('attachment')
+
+        # Make sure they are full URLs if needed:
+        # If they’re file paths, add MEDIA_URL prefix.
+
+        if document_url and not document_url.startswith('http'):
+            document_url = f"{BASEURL}{document_url}"
+
+        if attachment_url and not attachment_url.startswith('http'):
+            attachment_url = f"{BASEURL}{attachment_url}"
+
     else:
         print('error------',timesheetentry)
         messages.error(request, 'Failed to retrieve data for timesheetentry. Please check your connection and try again.', extra_tags='warning')
         return redirect('timesheetentry_list')
 
     if request.method=="POST":
-        form=TimesheetEntryForm(request.POST,request.FILES, initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
+        form=TimesheetEntryEditForm(request.POST,request.FILES, initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
         if form.is_valid():
             updated_data = form.cleaned_data
             for field_name, field in form.fields.items():
@@ -5272,22 +5289,64 @@ def timesheetentry_edit(request,pk):
                         del updated_data[field_name]
                         updated_data[field_name] = request.POST.get(field_name)
             # Serialize the updated data as JSON
-            json_data = json.dumps(updated_data)
-            response = call_put_method_without_token(BASEURL, f'timesheetentry/{pk}/', json_data)
+            # json_data = json.dumps(updated_data)
+            # if not request.FILES.get('document') and timesheetentry_data.get('document'):
+            #     form.cleaned_data['document'] = timesheetentry_data.get('document')
 
-            if response.status_code in [200,201]: 
+            # if not request.FILES.get('attachment') and timesheetentry_data.get('attachment'):
+            #     form.cleaned_data['attachment'] = timesheetentry_data.get('attachment')
+
+            
+            cleaned_data = form.cleaned_data
+            print('cleaned_data',cleaned_data)
+
+            files = {}
+
+            # For document
+            if request.FILES.get('document'):
+                files['document'] = request.FILES['document']
+            else:
+                # Don't put the old path in files or json_data
+                form.cleaned_data.pop('document', None)
+
+            # For attachment
+            if request.FILES.get('attachment'):
+                files['attachment'] = request.FILES['attachment']
+            else:
+                form.cleaned_data.pop('attachment', None)
+            files, cleaned_data = image_filescreate(cleaned_data)
+
+            # if request.FILES.get('document'):
+            #     files['document'] = request.FILES['document']
+            # elif cleaned_data.get('document'):
+            #     # Don’t include existing path in files.
+            #     pass
+
+            # if request.FILES.get('attachment'):
+            #     files['attachment'] = request.FILES['attachment']
+            # elif cleaned_data.get('attachment'):
+            #     # Same here.
+                # pass
+            json_data = cleaned_data if files else json.dumps(cleaned_data)
+            print('==json_data==,',json_data)
+            response = call_put_method_with_token_v2(BASEURL, f'timesheetentry/{pk}/', json_data,files)
+
+            if response['status_code'] == 0:
                 messages.success(request, 'Your data has been successfully saved', extra_tags='success')
                 return redirect('timesheetentry_list') 
             else:
-                error_message = response.json()
+                # error_message = response.json()
+                error_message='Something Wrong'
                 messages.error(request, f"Oops..! {error_message}", extra_tags='warning')
         else:
+            print('===form.errors==',form.errors)
             print("An error occurred: Expecting value: line 1 column 1 (char 0)")
     else:
-        form = TimesheetEntryForm(initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
+        form = TimesheetEntryEditForm(initial=timesheetentry_data,timesheet_choices=timesheet,task_choices=task)
 
     context={
-        'form':form,
+        'form':form,'document_url': document_url,
+        'attachment_url': attachment_url,
     }
     return render(request,'timesheetentry_edit.html',context)
 

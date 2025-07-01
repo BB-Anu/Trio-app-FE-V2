@@ -23,10 +23,10 @@
                         <br>
                         {% if view %}
                             {% if form_field.name == 'document' and form.initial.document %}
-                            File: <a href="http://127.0.0.1:9000/{{ form.initial.document }}" target="_blank">{{ form.initial.document }}</a><br><br>
+                            File: <a href="{{BASEURL}}{{ form.initial.document }}" target="_blank">{{ form.initial.document }}</a><br><br>
                             {% endif %}
                             {% if form_field.name == 'attachment' and form.initial.attachment %}
-                            Attachment: <a href="http://127.0.0.1:9000/{{ form.initial.attachment }}" target="_blank">{{ form.initial.attachment }}</a><br><br>
+                            Attachment: <a href="{{BASEURL}}{{ form.initial.attachment }}" target="_blank">{{ form.initial.attachment }}</a><br><br>
                             {% endif %}
                         {% endif %}
                         {{ form_field }}

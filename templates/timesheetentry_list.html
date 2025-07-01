@@ -10,7 +10,8 @@
                 </a>
                 {% comment %} <h3>{{ screen_name }}</h3> {% endcomment %}
                 <h3>Timesheet Entry</h3>
-            </div>                <div class="card-body">
+            </div>                
+            <div class="card-body">
                     <div class="table-responsive">
                         <table id="tableID" class="display table table-hover">
                             <thead class="bg-col">
@@ -44,16 +45,37 @@
 <td>{{data.task}}</td>
 <td>{{data.hours}}</td>
 <td>{{data.work_done}}</td>
-{% comment %} <td>{{data.uploaded_at}}</td> {% endcomment %}
-<td>{{data.document}}</td>
+<td>
+  {% if data.document %}
+    <a href="{{BASEURL}}{{ data.document }}" target='__blank__' download>
+      <button type="button" class="btn-primary" >Download</button>
+    </a>
+  {% else %}
+    No Document
+  {% endif %}
+</td>
+
+<td>
+  {% if data.attachment %}
+    <a href="{{BASEURL}}{{ data.attachment }}" target='__blank__' download>
+      <button type="button" class="btn-primary">Download</button>
+    </a>
+  {% else %}
+    No Attachment
+  {% endif %}
+</td>
+
+<td>{{data.approved_by}}</td>
+<td>{{data.status}}</td>
+
 {% comment %} <td>{{data.file_type}}</td> {% endcomment %}
-<td>{{data.attachment_name}}</td>
+{% comment %} <td>{{data.uploaded_at}}</td> {% endcomment %}
+
 {% comment %} <td>{{data.attachment_type}}</td> {% endcomment %}
 {% comment %} <td>{{data.is_late_hours}}</td>
 <td>{{data.is_wfh_hours}}</td>
 <td>{{data.payment_status}}</td> {% endcomment %}
-<td>{{data.approved_by}}</td>
-<td>{{data.status}}</td>
+
 {% comment %} <td>{{data.created_by}}</td>
 <td>{{data.created_at}}</td> {% endcomment %}
                     <td>

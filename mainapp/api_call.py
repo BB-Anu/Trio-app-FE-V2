@@ -109,9 +109,6 @@ def call_delete_method(BASE_URL, endpoint,  access_token):
     else:
         return response
     
-
-
-
 def call_post_method_with_token_v2(URL, endpoint, data, files=None):
     api_url = URL + endpoint
     # headers = {"Authorization": f'Bearer {access_token}'}
@@ -148,3 +145,30 @@ def call_post_method_for_without_token_v2(base_url, endpoint, data):
         headers=headers
     )
     return response
+
+
+
+def call_put_method_with_token_v2(URL, endpoint, data, files=None):
+    api_url = URL + endpoint
+    # headers = {"Authorization": f'Bearer {access_token}'}
+ 
+    if files:
+        response = requests.put(api_url, data=data, files=files)
+        print('response',response)
+    else:
+        headers = {
+        'Content-Type': 'application/json', 
+        }
+        response = requests.put(api_url, data=data, headers=headers)
+    if response.status_code in [200, 201]:
+        try:
+            return {'status_code': 0, 'data': response.json()}
+        except json.JSONDecodeError:
+            return {'status_code': 1, 'data': 'Invalid JSON response'}
+    else:
+        try:
+            print('==response==',response)
+            return {'status_code': 1, 'data': response.json()}
+        except json.JSONDecodeError:
+            return {'status_code': 1, 'data': 'Something went wrong'}
+        
