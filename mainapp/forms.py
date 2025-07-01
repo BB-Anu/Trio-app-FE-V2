@@ -831,6 +831,8 @@ class TaskTimesheetForm(forms.Form):
 # 		if selected_user_choices:
 # 			self.fields['timesheet'].initial = selected_user_choices
 
+
+
 class TimesheetEntryForm(forms.Form):
 	task = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control"}))
 	timesheet = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control"}))
@@ -838,17 +840,17 @@ class TimesheetEntryForm(forms.Form):
 	hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
 	work_done = forms.CharField(required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
 	document=forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
-	filename = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
-	file_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# filename = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# file_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
 	attachment=forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
-	attachment_name = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
-	attachment_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# attachment_name = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# attachment_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
 
 	def __init__(self, *args, **kwargs):
 		user_choices_list = kwargs.pop('timesheet_choices', [])
 		entity_choices_list = kwargs.pop('task_choices', [])
 		initial_data = kwargs.get("initial", {})
-		# selected_user_choices = initial_data.get('timesheet', '')
+		selected_user_choices = initial_data.get('timesheet', '')
 		selected_entity_choices = initial_data.get('task', '')
 		super().__init__(*args, **kwargs)
 		self.fields['timesheet'].choices = [('', '---select---')] + [
@@ -861,8 +863,52 @@ class TimesheetEntryForm(forms.Form):
 		]
 		if selected_entity_choices:
 			self.fields['task'].initial = selected_entity_choices
-		# if selected_user_choices:
-		# 	self.fields['timesheet'].initial = selected_user_choices
+		if selected_user_choices:
+			self.fields['timesheet'].initial = selected_user_choices
+
+	def clean(self):
+		cleaned_data = super().clean()
+		given_hours = cleaned_data.get('given_hours')
+		entered_hours = cleaned_data.get('hours')
+
+		if given_hours is not None and entered_hours is not None:
+			if entered_hours > given_hours:
+				raise forms.ValidationError(f"Entered hours ({entered_hours}) exceed the available given hours ({given_hours}).")
+
+
+
+class TimesheetEntryEditForm(forms.Form):
+	task = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control",'readonly':'readonly'}))
+	timesheet = forms.ChoiceField(required=True, widget=forms.Select(attrs={"class": "form-control",'readonly':'readonly'}))
+	# given_hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control", "readonly": "readonly"}))
+	hours = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control",'readonly':'readonly'}))
+	work_done = forms.CharField(required=True, widget=forms.Textarea(attrs={"class": "form-control"}))
+	document=forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
+	# filename = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# file_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+	attachment=forms.FileField(validators=[FileExtensionValidator(allowed_extensions=["pdf", "doc", "docx"])],required=False,widget=forms.ClearableFileInput(attrs={"class": "form-control-file"}))
+	# attachment_name = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+	# attachment_type = forms.CharField(max_length=250, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
+
+	def __init__(self, *args, **kwargs):
+		user_choices_list = kwargs.pop('timesheet_choices', [])
+		entity_choices_list = kwargs.pop('task_choices', [])
+		initial_data = kwargs.get("initial", {})
+		selected_user_choices = initial_data.get('timesheet', '')
+		selected_entity_choices = initial_data.get('task', '')
+		super().__init__(*args, **kwargs)
+		self.fields['timesheet'].choices = [('', '---select---')] + [
+			(record.get('id', ''), f"{record.get('id', '')} - {record.get('task', '')[:100]}")
+			for record in user_choices_list
+		]
+		self.fields['task'].choices = [('', '---select---')] + [
+			(record.get('id', ''), f"{record.get('id', '')} - {record.get('template', {}).get('name', '')}")
+			for record in entity_choices_list
+		]
+		if selected_entity_choices:
+			self.fields['task'].initial = selected_entity_choices
+		if selected_user_choices:
+			self.fields['timesheet'].initial = selected_user_choices
 
 	def clean(self):
 		cleaned_data = super().clean()

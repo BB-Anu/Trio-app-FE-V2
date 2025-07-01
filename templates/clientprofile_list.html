@@ -65,7 +65,12 @@
 <td>{{data.contact_email}}</td>
 <td>{{data.contact_phone}}</td>
 <td>{{data.enterprise_size}}</td>
-<td>{{data.tax_compliance_cert}}</td>
+{% comment %} <td>{{data.tax_compliance_cert}}</td> {% endcomment %}
+<td>
+  <a href="{{BASEURL}}{{ data.tax_compliance_cert }}" target="_blank" download>
+    📄 Download Certificate
+  </a>
+</td>
                     
                 </tr>
                 {% endfor %}
